@@ -236,15 +236,40 @@
 <details class="plat-group"><summary><a href="#glossgenius" class="nav-link plat-link"><span class="tier-dot none"></span>GlossGenius</a><span class="group-chev">▾</span></summary>
 <div class="sub-nav">
 <a href="#glossgenius-private-api-reverse-engineered-inferred-not-guaranteed" class="sub-link">Private API (reverse-engineered — inferred, not guaranteed)</a>
+<a href="#glossgenius-merchant-auth" class="sub-link">Merchant — Auth (post-login)</a>
+<a href="#glossgenius-merchant-appts" class="sub-link">Merchant — Appointments / Calendar</a>
+<a href="#glossgenius-merchant-clients" class="sub-link">Merchant — Clients</a>
+<a href="#glossgenius-merchant-services" class="sub-link">Merchant — Services</a>
+<a href="#glossgenius-merchant-staff" class="sub-link">Merchant — Staff / Users</a>
+<a href="#glossgenius-merchant-payments" class="sub-link">Merchant — Payments / Transactions</a>
+<a href="#glossgenius-merchant-reports" class="sub-link">Merchant — Reports / Analytics</a>
+<a href="#glossgenius-merchant-messages" class="sub-link">Merchant — Messages / Inbox</a>
+<a href="#glossgenius-merchant-reviews" class="sub-link">Merchant — Reviews</a>
 </div></details>
 <details class="plat-group"><summary><a href="#booksy" class="nav-link plat-link"><span class="tier-dot none"></span>Booksy</a><span class="group-chev">▾</span></summary>
 <div class="sub-nav">
 <a href="#booksy-private-consumer-api-reverse-engineered" class="sub-link">Private consumer API (reverse-engineered)</a>
+<a href="#booksy-merchant-auth" class="sub-link">Merchant Biz — Auth (post-login)</a>
+<a href="#booksy-merchant-appts" class="sub-link">Merchant Biz — Appointments / Calendar</a>
+<a href="#booksy-merchant-services" class="sub-link">Merchant Biz — Services</a>
+<a href="#booksy-merchant-staff" class="sub-link">Merchant Biz — Staff</a>
+<a href="#booksy-merchant-clients" class="sub-link">Merchant Biz — Clients</a>
+<a href="#booksy-merchant-business" class="sub-link">Merchant Biz — Business Profile / Hours</a>
+<a href="#booksy-merchant-reviews" class="sub-link">Merchant Biz — Reviews</a>
+<a href="#booksy-merchant-partner-official" class="sub-link">Booksy Partner Public API (OFFICIAL subset)</a>
 </div></details>
 <details class="plat-group"><summary><a href="#fresha" class="nav-link plat-link"><span class="tier-dot none"></span>Fresha</a><span class="group-chev">▾</span></summary>
 <div class="sub-nav">
 <a href="#fresha-graphql-consumer-gateway" class="sub-link">GraphQL (consumer gateway)</a>
 <a href="#fresha-json-api-microservices" class="sub-link">JSON:API microservices</a>
+<a href="#fresha-merchant-auth" class="sub-link">Merchant — Auth (post-login)</a>
+<a href="#fresha-merchant-gql" class="sub-link">Merchant — GraphQL Gateways</a>
+<a href="#fresha-merchant-calendar" class="sub-link">Merchant — Calendar / Appointments</a>
+<a href="#fresha-merchant-clients" class="sub-link">Merchant — Clients</a>
+<a href="#fresha-merchant-services" class="sub-link">Merchant — Services / Staff / Inventory</a>
+<a href="#fresha-merchant-payments" class="sub-link">Merchant — Payments (Fresha Pay / Adyen)</a>
+<a href="#fresha-merchant-marketing" class="sub-link">Merchant — Marketing & Retention</a>
+<a href="#fresha-merchant-reporting" class="sub-link">Merchant — Reporting / Analytics</a>
 </div></details>
 </nav>
 </aside>
@@ -1265,7 +1290,126 @@ date=<span class="string">2026-04-22</span></pre></div></details>
 }</pre><div class="note">GG has service <strong>variants</strong> (long/short hair price tiers) and add-ons. Capture real field names from network tab before production use.</div></div></details>
 
     <div class="alert info"><strong>Recommended path:</strong> Use Playwright to capture real network traces and lock down the exact schemas (incl. variant/add-on field names) before relying on them.</div>
-  </div></details></section>
+  </div></details>
+    <details class="topic" id="glossgenius-merchant-auth"><summary><span class="topic-title">Merchant — Auth (post-login)</span><span class="topic-count">3</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/auth/login</span><span class="purpose">Merchant login → JWT</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"email"</span>: <span class="string">"owner@salon.com"</span>,
+  <span class="key">"password"</span>: <span class="string">"****"</span>
+}</pre><div class="note">Returns short-lived JWT + refresh token. 2FA may add a /verify step. Stored in localStorage as <code>gg_auth_token</code>. All subsequent calls use <code>Authorization: Bearer {jwt}</code>.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/auth/refresh</span><span class="purpose">Refresh access token</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"refresh_token"</span>: <span class="string">"..."</span> }</pre></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/me</span><span class="purpose">Current user + business profile</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">JWT claims contain business_id so most endpoints don't need it in the path.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-appts"><summary><span class="topic-title">Merchant — Appointments / Calendar</span><span class="topic-count">5</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/appointments?start_date=&end_date=</span><span class="purpose">List appointments in range</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>start_date=<span class="string">2026-04-21</span>
+end_date=<span class="string">2026-04-28</span>
+staff_id=<span class="string">uuid</span>
+status=<span class="string">confirmed</span></pre></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/appointments/:id</span><span class="purpose">Single appointment detail</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Returns notes, deposit status, add-ons, payment state.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/appointments</span><span class="purpose">Create booking (merchant side)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+  <span class="key">"client_id"</span>: <span class="string">"uuid"</span>,
+  <span class="key">"staff_id"</span>:  <span class="string">"uuid"</span>,
+  <span class="key">"services"</span>: [{ <span class="key">"service_id"</span>: <span class="string">"uuid"</span>, <span class="key">"variant_id"</span>: <span class="string">"short"</span> }],
+  <span class="key">"start_time"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
+  <span class="key">"notes"</span>: <span class="string">"First visit"</span>
+}</pre></div></details>
+<details class="endpoint"><summary><span class="method patch">PATCH</span><span class="path">/v1/appointments/:id</span><span class="purpose">Reschedule / change status</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"start_time"</span>: <span class="string">"2026-04-22T16:00:00Z"</span>,
+  <span class="key">"status"</span>: <span class="string">"confirmed"</span>   <span class="comment">// confirmed | cancelled | no_show</span>
+}</pre></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/calendar/availability?staff_id=&date=</span><span class="purpose">Slots per staff</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>staff_id=<span class="string">uuid</span>
+date=<span class="string">2026-04-22</span>
+service_ids[]=<span class="string">uuid</span></pre></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-clients"><summary><span class="topic-title">Merchant — Clients</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/clients?query=&page=</span><span class="purpose">Search / list clients</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>query=<span class="string">Jane</span>
+page=<span class="number">1</span>
+per_page=<span class="number">50</span></pre><div class="note">Returns name, phone, email, lifetime spend, last visit, tags.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/clients/:id</span><span class="purpose">Client profile (notes, tags, formulas)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/clients/:id/appointments</span><span class="purpose">Visit history</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/clients</span><span class="purpose">Create client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"first_name"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"last_name"</span>:  <span class="string">"Doe"</span>,
+  <span class="key">"email"</span>:      <span class="string">"jane@example.com"</span>,
+  <span class="key">"phone"</span>:      <span class="string">"+15551234567"</span>,
+  <span class="key">"tags"</span>:       [<span class="string">"VIP"</span>]
+}</pre></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-services"><summary><span class="topic-title">Merchant — Services</span><span class="topic-count">2</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/services</span><span class="purpose">Service catalog</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Includes name, duration, price, category, deposit config, variants[].</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/service_categories</span><span class="purpose">List categories</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-staff"><summary><span class="topic-title">Merchant — Staff / Users</span><span class="topic-count">2</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/staff</span><span class="purpose">Staff roster + roles + commission</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/staff/:id/schedule</span><span class="purpose">Working hours / time off</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-payments"><summary><span class="topic-title">Merchant — Payments / Transactions</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/transactions?start=&end=</span><span class="purpose">Sales ledger</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>start=<span class="string">2026-04-01</span>
+end=<span class="string">2026-04-30</span></pre><div class="note">Includes tips, tax, payment method (GG card reader vs manual).</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/transactions/:id</span><span class="purpose">Line-item detail</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/checkouts</span><span class="purpose">Start POS checkout flow</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+  <span class="key">"client_id"</span>: <span class="string">"uuid"</span>,
+  <span class="key">"appointment_id"</span>: <span class="string">"uuid"</span>,
+  <span class="key">"line_items"</span>: [{ <span class="key">"type"</span>: <span class="string">"service"</span>, <span class="key">"id"</span>: <span class="string">"svc-uuid"</span> }],
+  <span class="key">"tip"</span>: <span class="number">15.00</span>
+}</pre></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/payouts</span><span class="purpose">Stripe-backed payouts</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Status, arrival date, bank account last 4.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-reports"><summary><span class="topic-title">Merchant — Reports / Analytics</span><span class="topic-count">2</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/reports/summary?range=</span><span class="purpose">Dashboard KPI summary</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>range=<span class="string">last_30_days</span>   <span class="comment">// today | this_week | last_30_days | custom</span></pre><div class="note">Revenue, bookings, new clients, avg ticket.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/reports/sales</span><span class="purpose">Sales by service / staff breakdown</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-messages"><summary><span class="topic-title">Merchant — Messages / Inbox</span><span class="topic-count">3</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/conversations</span><span class="purpose">Two-way SMS threads</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">List of threads with clients. Returns last message + unread count.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/conversations/:id/messages</span><span class="purpose">Message history</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/conversations/:id/messages</span><span class="purpose">Send SMS</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"body"</span>: <span class="string">"Reminder: appt tomorrow at 3pm"</span> }</pre></div></details>
+
+    </div></details>
+
+    <details class="topic" id="glossgenius-merchant-reviews"><summary><span class="topic-title">Merchant — Reviews</span><span class="topic-count">1</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/reviews</span><span class="purpose">Client reviews post-visit</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Rating, comment, client_id.</div></div></details>
+
+    </div></details>
+</section>
 
   <!-- ============== BOOKSY ============== -->
   <section class="platform" id="booksy">
@@ -1314,7 +1458,109 @@ date=<span class="string">2026-04-22</span></pre></div></details>
 }</pre>
     <div class="note">Booksy's core unit is <code>service_variant_id</code> — a service like "Haircut" has variants like "Short hair / Long hair / Kids" with different durations &amp; prices. Fetch via <code>GET /businesses/{id}/services</code> — each service has a <code>variants[]</code> array. Capture exact multi-service payload from the app's network tab.</div>
     </div></details>
-  </div></details></section>
+  </div></details>
+    <details class="topic" id="booksy-merchant-auth"><summary><span class="topic-title">Merchant Biz — Auth (post-login)</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/login/</span><span class="purpose">Merchant login → JWT</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"email"</span>: <span class="string">"owner@shop.com"</span>, <span class="key">"password"</span>: <span class="string">"****"</span> }</pre><div class="note">Required headers on ALL biz calls: <code>X-Api-Key: web-{uuid}</code> (static, from web bundle) + <code>Authorization: Bearer {JWT}</code> + <code>Accept: application/json; version=2</code>.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/refresh_token/</span><span class="purpose">Refresh access token</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/logout/</span><span class="purpose">Logout</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/</span><span class="purpose">Current user + business profile</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-appts"><summary><span class="topic-title">Merchant Biz — Appointments / Calendar</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/appointments/</span><span class="purpose">List appointments</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>date_from=<span class="string">2026-04-21</span>
+date_to=<span class="string">2026-04-28</span>
+staffer_id=<span class="number">5678</span></pre></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/appointments/</span><span class="purpose">Create appointment</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+  <span class="key">"customer_id"</span>: <span class="number">12345</span>,
+  <span class="key">"staffer_id"</span>:  <span class="number">5678</span>,
+  <span class="key">"service_variant_id"</span>: <span class="number">1234</span>,
+  <span class="key">"start_date"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>
+}</pre></div></details>
+<details class="endpoint"><summary><span class="method patch">PATCH</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/appointments/{id}/</span><span class="purpose">Edit</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method delete">DEL</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/appointments/{id}/</span><span class="purpose">Cancel</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-services"><summary><span class="topic-title">Merchant Biz — Services</span><span class="topic-count">5</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/services/</span><span class="purpose">List services</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/services/</span><span class="purpose">Create service</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method patch">PATCH</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/services/{id}/</span><span class="purpose">Edit service</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/service_categories/</span><span class="purpose">Categories</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/service_variants/</span><span class="purpose">Service variants (durations/tiers)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-staff"><summary><span class="topic-title">Merchant Biz — Staff</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/staffers/</span><span class="purpose">List staff</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/staffers/</span><span class="purpose">Add staff</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{ <span class="key">"first_name"</span>: <span class="string">"Alex"</span>, <span class="key">"email"</span>: <span class="string">"alex@shop.com"</span>, <span class="key">"role"</span>: <span class="string">"stylist"</span> }</pre></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/staffers/{id}/working_hours/</span><span class="purpose">Working hours</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/staffers/{id}/permissions/</span><span class="purpose">Permissions</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-clients"><summary><span class="topic-title">Merchant Biz — Clients</span><span class="topic-count">5</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/customers/</span><span class="purpose">List clients</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>search=<span class="string">Jane</span>
+page=<span class="number">1</span></pre></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/customers/</span><span class="purpose">Create client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/customers/{id}/notes/</span><span class="purpose">Client notes</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/customers/{id}/appointments/</span><span class="purpose">Visit history</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/customers/import/</span><span class="purpose">CSV import</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-business"><summary><span class="topic-title">Merchant Biz — Business Profile / Hours</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/</span><span class="purpose">Business profile</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method patch">PATCH</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/</span><span class="purpose">Update profile</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/business_schedules/</span><span class="purpose">Operating hours</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/business_amenities/</span><span class="purpose">Amenities</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-reviews"><summary><span class="topic-title">Merchant Biz — Reviews</span><span class="topic-count">2</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/reviews/</span><span class="purpose">Reviews (merchant view)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Customer-side read: <code>GET /api/{cc}/2/customer_api/businesses/{id}/reviews</code> (public).</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/api/{cc}/2/business_api/me/businesses/{id}/reviews/{id}/reply/</span><span class="purpose">Reply to review</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="booksy-merchant-partner-official"><summary><span class="topic-title">Booksy Partner Public API (OFFICIAL subset)</span><span class="topic-count">3</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/public-api/{cc}/business_listing/</span><span class="purpose">Partner OAuth — exchange for JWT</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Official partner flow (not merchant login). Uses RS256 JWT signed with partner key → returns access/refresh tokens.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/public-api/{cc}/business/{id}/appointment/</span><span class="purpose">Official partner-grade create appointment</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Subset of the internal biz API.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">/public-api/{cc}/business/{id}/user/staffer/</span><span class="purpose">Official partner add-staff</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+</section>
 
   <!-- ============== FRESHA ============== -->
   <section class="platform" id="fresha">
@@ -1369,7 +1615,131 @@ date=<span class="string">2026-04-22</span></pre></div></details>
     <div class="body-panel"><div class="note">Per domain, each microservice follows JSON:API 1.0 envelope: <code>{ "data": { "type": "...", "id": "...", "attributes": {...} } }</code>. Specific endpoint paths are not publicly documented — capture via DevTools.</div></div></details>
 
     <div class="alert info"><strong>Practical path:</strong> Scraping Fresha marketplace pages (Apify has a Fresha extractor) or reverse-engineering GraphQL — both carry ToS risk.</div>
-  </div></details></section>
+  </div></details>
+    <details class="topic" id="fresha-merchant-auth"><summary><span class="topic-title">Merchant — Auth (post-login)</span><span class="topic-count">3</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://auth-api.fresha.com/...</span><span class="purpose">Merchant login → JWT</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">JSON:API-style auth service. Returns access + refresh JWTs.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://refresh.fresha.com/...</span><span class="purpose">Refresh access token</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Isolated subdomain so the refresh cookie scope is tight.</div></div></details>
+<details class="endpoint"><summary><span class="method get">GET</span><span class="path">https://unleash-proxy.fresha.com/proxy</span><span class="purpose">Per-merchant feature flags</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Unleash feature-flag proxy keyed by merchant JWT.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-gql"><summary><span class="topic-title">Merchant — GraphQL Gateways</span><span class="topic-count">4</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://partners-api-gateway.fresha.com/graphql</span><span class="purpose">Primary merchant GraphQL gateway</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (example)</div><pre>{
+  <span class="key">"operationName"</span>: <span class="string">"Calendar"</span>,
+  <span class="key">"query"</span>: <span class="string">"query Calendar($from:Date!,$to:Date!){ calendar(from:$from,to:$to){ appointments{ id status start end client{ id name } staff{ id name } services{ id } } } }"</span>,
+  <span class="key">"variables"</span>: { <span class="key">"from"</span>: <span class="string">"2026-04-21"</span>, <span class="key">"to"</span>: <span class="string">"2026-04-28"</span> }
+}</pre><div class="note">Apollo-style gateway; wraps many subservices. Introspection is disabled — capture real queries from DevTools.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://partners-api-gateway-sub.fresha.com/graphql</span><span class="purpose">Subscriptions / websocket variant</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://sale-activity-gql.fresha.com/graphql</span><span class="purpose">Sales / checkout activity GQL</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Elixir/Absinthe — RootQueryType.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://customers-gql.fresha.com/graphql</span><span class="purpose">Clients domain GQL</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-calendar"><summary><span class="topic-title">Merchant — Calendar / Appointments</span><span class="topic-count">5</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://partners-calendar-api.fresha.com</span><span class="purpose">Appointment CRUD</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">JSON:API. Capture exact paths via DevTools.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://partners-calendar-ws.fresha.com</span><span class="purpose">WebSocket for live calendar updates</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://group-appointments-partners-api.fresha.com</span><span class="purpose">Group / class bookings</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://calendar-sync-api.fresha.com</span><span class="purpose">Google / iCal two-way sync</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://google-appt-redirection-api.fresha.com</span><span class="purpose">Google Reserve-with redirects</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-clients"><summary><span class="topic-title">Merchant — Clients</span><span class="topic-count">3</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://customers-api.fresha.com</span><span class="purpose">Client profiles / notes / history</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://consultation-forms-api.fresha.com</span><span class="purpose">Intake / consultation forms</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://customer-notifier-api.fresha.com</span><span class="purpose">Send SMS/email to clients</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-services"><summary><span class="topic-title">Merchant — Services / Staff / Inventory</span><span class="topic-count">8</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://merchants-api.fresha.com</span><span class="purpose">Venue, services, categories, pricing</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://professional-profiles-api.fresha.com</span><span class="purpose">Staff profiles</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://staff-working-hours-api.fresha.com</span><span class="purpose">Shift scheduling</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://timesheets-api.fresha.com</span><span class="purpose">Clock-in / clock-out</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://commissions-api.fresha.com</span><span class="purpose">Staff commission rules</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://pay-runs-api.fresha.com</span><span class="purpose">Staff payroll runs</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://inventory-api.fresha.com</span><span class="purpose">Products / stock</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://shopkeeper-api.fresha.com</span><span class="purpose">Retail POS / till</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-payments"><summary><span class="topic-title">Merchant — Payments (Fresha Pay / Adyen)</span><span class="topic-count">9</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://payments.fresha.com</span><span class="purpose">Card payments, terminals</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://checkout-api.fresha.com</span><span class="purpose">Checkout / sale finalization</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://deposits.fresha.com</span><span class="purpose">Booking deposits</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://adyen-accounts-api.fresha.com</span><span class="purpose">Adyen KYC accounts</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://adyen-platform-api.fresha.com</span><span class="purpose">Adyen platform ops</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://adyen-wallets-api.fresha.com</span><span class="purpose">Adyen wallets / payouts</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://wallet-top-ups-api.fresha.com</span><span class="purpose">Internal wallet top-ups</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://wallet-transfers-api.fresha.com</span><span class="purpose">Internal wallet transfers</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://financial-statement-api.fresha.com</span><span class="purpose">Statements</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-marketing"><summary><span class="topic-title">Merchant — Marketing &amp; Retention</span><span class="topic-count">6</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://deals-api.fresha.com</span><span class="purpose">Discounts, flash deals</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://gift-cards-api.fresha.com</span><span class="purpose">Gift card issuance / redemption</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://memberships-api.fresha.com</span><span class="purpose">Memberships / packages</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://email-composer-api.fresha.com</span><span class="purpose">Campaign composer</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://referrals-api.fresha.com</span><span class="purpose">Client referral program</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://google-reviews-boost-api.fresha.com</span><span class="purpose">Google review nudges</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+
+    <details class="topic" id="fresha-merchant-reporting"><summary><span class="topic-title">Merchant — Reporting / Analytics</span><span class="topic-count">6</span><span class="topic-chev">▾</span></summary><div class="topic-inner">
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://analytics-api.fresha.com</span><span class="purpose">Dashboard widgets</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://partners-reporting-api.fresha.com</span><span class="purpose">Report generation</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://reports.fresha.com</span><span class="purpose">Report delivery</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://activity-feed-api.fresha.com</span><span class="purpose">Audit / activity log</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://sale-activity-api.fresha.com</span><span class="purpose">Sales ledger (REST)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+<details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://warehouse.fresha.com</span><span class="purpose">Data warehouse / BI exports</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">No body.</div></div></details>
+
+    </div></details>
+</section>
 
   <div class="footer">
     Generated 2026-04-21 · Zoca WIN AI Frontdesk · Click any endpoint to see body/params · Live URL: <a href="https://mega-greninja.github.io/zoca-reports/api-dashboard.html" style="color:var(--text-subtle)">mega-greninja.github.io/zoca-reports/api-dashboard.html</a>
