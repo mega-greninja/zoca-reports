@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Platform API Dashboard — Zoca</title>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --panel: #12161e;
+    --panel-2: #1a1f2a;
+    --border: #242a36;
+    --border-light: #2d3441;
+    --text: #e6e9ef;
+    --text-dim: #9aa3b2;
+    --text-subtle: #6b7280;
+    --green: #22c55e;
+    --green-bg: rgba(34, 197, 94, 0.12);
+    --yellow: #eab308;
+    --yellow-bg: rgba(234, 179, 8, 0.12);
+    --red: #ef4444;
+    --red-bg: rgba(239, 68, 68, 0.12);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59, 130, 246, 0.15);
+    --purple: #a855f7;
+    --purple-bg: rgba(168, 85, 247, 0.15);
+    --orange: #f97316;
+    --orange-bg: rgba(249, 115, 22, 0.15);
+    --cyan: #06b6d4;
+    --cyan-bg: rgba(6, 182, 212, 0.15);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, pre {
+    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+    font-size: 12.5px;
+  }
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  aside {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  aside h1 { font-size: 16px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
+  aside .subtitle { color: var(--text-subtle); font-size: 11px; margin: 0 0 20px; text-transform: uppercase; letter-spacing: 0.08em; }
+  aside nav { display: flex; flex-direction: column; gap: 2px; }
+  aside nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+    transition: background 0.08s, color 0.08s;
+  }
+  aside nav a:hover { background: var(--panel-2); color: var(--text); }
+  aside nav a.active { background: var(--blue-bg); color: var(--blue); }
+  aside nav .tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  aside nav .tier-dot.open { background: var(--green); }
+  aside nav .tier-dot.partner { background: var(--yellow); }
+  aside nav .tier-dot.none { background: var(--red); }
+  aside .section-label { color: var(--text-subtle); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin: 18px 0 4px 10px; font-weight: 600; }
+
+  .search-wrap { margin: 8px 0 16px; }
+  .search-wrap input {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.1s;
+  }
+  .search-wrap input:focus { border-color: var(--blue); }
+
+  /* Main */
+  main { padding: 40px 48px 80px; max-width: 1100px; }
+  .page-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .page-header h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .page-header p { color: var(--text-dim); margin: 0; font-size: 14px; }
+  .meta-row { display: flex; gap: 16px; margin-top: 12px; color: var(--text-subtle); font-size: 12px; }
+
+  /* Platform sections */
+  .platform {
+    margin-top: 48px;
+    scroll-margin-top: 20px;
+  }
+  .platform-header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .platform-header h2 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .tier-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .tier-badge.open { background: var(--green-bg); color: var(--green); }
+  .tier-badge.partner { background: var(--yellow-bg); color: var(--yellow); }
+  .tier-badge.none { background: var(--red-bg); color: var(--red); }
+  .platform-subline { color: var(--text-dim); font-size: 13px; margin-top: 2px; margin-bottom: 20px; }
+
+  .auth-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 12.5px;
+  }
+  .auth-box strong { color: var(--text); }
+  .auth-box code { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; color: var(--cyan); }
+
+  .category { margin: 22px 0 10px; }
+  .category h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 8px;
+  }
+
+  .endpoint {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    display: grid;
+    grid-template-columns: 66px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    transition: border-color 0.1s;
+  }
+  .endpoint:hover { border-color: var(--border-light); }
+  .endpoint.hidden { display: none; }
+
+  .method {
+    font-family: 'SF Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+  .method.get { background: var(--blue-bg); color: var(--blue); }
+  .method.post { background: var(--green-bg); color: var(--green); }
+  .method.put { background: var(--orange-bg); color: var(--orange); }
+  .method.patch { background: var(--purple-bg); color: var(--purple); }
+  .method.delete { background: var(--red-bg); color: var(--red); }
+  .method.none { background: var(--panel-2); color: var(--text-subtle); }
+
+  .path { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--text); word-break: break-all; }
+  .purpose { color: var(--text-dim); font-size: 12px; text-align: right; }
+
+  .note-row {
+    color: var(--text-subtle);
+    font-size: 12.5px;
+    font-style: italic;
+    padding: 6px 14px;
+    margin-bottom: 8px;
+  }
+
+  .example-block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 14px 0 8px;
+    overflow: hidden;
+  }
+  .example-block .example-header {
+    background: var(--panel-2);
+    padding: 8px 14px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .example-block pre {
+    margin: 0;
+    padding: 12px 16px;
+    overflow-x: auto;
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .example-block .key { color: #93c5fd; }
+  .example-block .string { color: #86efac; }
+  .example-block .number { color: #fbbf24; }
+  .example-block .bool { color: #f472b6; }
+
+  .alert {
+    background: var(--red-bg);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .alert strong { color: var(--red); }
+
+  .alert.warn { background: var(--yellow-bg); border-color: var(--yellow); }
+  .alert.warn strong { color: var(--yellow); }
+
+  .alert.info { background: var(--blue-bg); border-color: var(--blue); }
+  .alert.info strong { color: var(--blue); }
+
+  .footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--text-subtle); font-size: 12px; text-align: center; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 24px; }
+    .endpoint { grid-template-columns: 60px 1fr; }
+    .purpose { grid-column: 1 / -1; text-align: left; padding-left: 72px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <h1>Booking APIs</h1>
+  <div class="subtitle">Zoca · AI Frontdesk</div>
+
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Search endpoints…" autocomplete="off">
+  </div>
+
+  <div class="section-label">Open</div>
+  <nav>
+    <a href="#square" class="nav-link"><span class="tier-dot open"></span>Square</a>
+    <a href="#mindbody" class="nav-link"><span class="tier-dot open"></span>Mindbody</a>
+    <a href="#acuity" class="nav-link"><span class="tier-dot open"></span>Acuity</a>
+  </nav>
+  <div class="section-label">Partner-gated</div>
+  <nav>
+    <a href="#phorest" class="nav-link"><span class="tier-dot partner"></span>Phorest</a>
+    <a href="#vagaro" class="nav-link"><span class="tier-dot partner"></span>Vagaro</a>
+  </nav>
+  <div class="section-label">No public API</div>
+  <nav>
+    <a href="#glossgenius" class="nav-link"><span class="tier-dot none"></span>GlossGenius</a>
+    <a href="#booksy" class="nav-link"><span class="tier-dot none"></span>Booksy</a>
+    <a href="#fresha" class="nav-link"><span class="tier-dot none"></span>Fresha</a>
+  </nav>
+</aside>
+
+<main>
+  <div class="page-header">
+    <h1>Booking Platform API Dashboard</h1>
+    <p>Every function call available on each of the 8 salon-booking platforms Zoca integrates with — endpoints, auth, examples, gotchas.</p>
+    <div class="meta-row">
+      <span>Last updated: 2026-04-21</span>
+      <span>8 platforms</span>
+      <span>150+ endpoints</span>
+    </div>
+  </div>
+
+  <!-- SQUARE -->
+  <section class="platform" id="square">
+    <div class="platform-header">
+      <h2>Square</h2>
+      <span class="tier-badge open">Open · Public API</span>
+    </div>
+    <div class="platform-subline">Base: <code>https://connect.squareup.com</code> · v2 endpoints · <a href="https://developer.squareup.com/reference/square" style="color:var(--blue)">docs</a></div>
+
+    <div class="auth-box">
+      <strong>Auth:</strong> <code>Authorization: Bearer {ACCESS_TOKEN}</code> + <code>Square-Version: 2024-XX-XX</code> · OAuth2 flow: <code>/oauth2/authorize</code> → <code>/oauth2/token</code>
+    </div>
+
+    <div class="category"><h3>Services (Catalog API)</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/catalog/list?types=ITEM</span><span class="purpose">List services</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/catalog/object/{id}</span><span class="purpose">Get service/variation</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/catalog/list?types=CATEGORY</span><span class="purpose">List categories</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/catalog/search-catalog-items</span><span class="purpose">Filter by category/name</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/catalog/search</span><span class="purpose">Generic catalog search</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/catalog/batch-retrieve</span><span class="purpose">Bulk fetch by IDs</span></div>
+
+    <div class="category"><h3>Staff / Booking Profiles</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/team-members/search</span><span class="purpose">List/search team</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/team-members/{id}</span><span class="purpose">Get team member</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings/team-member-booking-profiles</span><span class="purpose">Bookable staff profiles</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/team-member-booking-profiles/bulk-retrieve</span><span class="purpose">Bulk profiles</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings/location-booking-profiles</span><span class="purpose">Location booking config</span></div>
+
+    <div class="category"><h3>Locations</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/locations</span><span class="purpose">List (w/ business hours)</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/locations/{id}</span><span class="purpose">Get single location</span></div>
+
+    <div class="category"><h3>Availability</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/availability/search</span><span class="purpose">Find open time slots</span></div>
+
+    <div class="category"><h3>Bookings</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings</span><span class="purpose">Create booking</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Retrieve</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Update</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/{id}/cancel</span><span class="purpose">Cancel</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings</span><span class="purpose">List (by location/staff/time)</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/bulk-retrieve</span><span class="purpose">Bulk retrieve</span></div>
+
+    <div class="example-block">
+      <div class="example-header">Example · Create Booking</div>
+      <pre><span class="key">"idempotency_key"</span>: <span class="string">"a1b2c3"</span>,
+<span class="key">"booking"</span>: {
+  <span class="key">"start_at"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
+  <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+  <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+  <span class="key">"appointment_segments"</span>: [{
+    <span class="key">"duration_minutes"</span>: <span class="number">60</span>,
+    <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>,
+    <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>,
+    <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span>
+  }]
+}</pre>
+    </div>
+
+    <div class="category"><h3>Customers</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/customers</span><span class="purpose">Create</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/customers/search</span><span class="purpose">Search by email/phone</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/customers/{id}</span><span class="purpose">Retrieve</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/v2/customers/{id}</span><span class="purpose">Update</span></div>
+    <div class="endpoint"><span class="method delete">DEL</span><span class="path">/v2/customers/{id}</span><span class="purpose">Delete</span></div>
+
+    <div class="category"><h3>Cards on File</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/cards</span><span class="purpose">Save card (needs Web SDK nonce)</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/cards?customer_id=</span><span class="purpose">List cards for customer</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/cards/{id}/disable</span><span class="purpose">Disable card</span></div>
+
+    <div class="category"><h3>Payments &amp; Deposits</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/payments</span><span class="purpose">Charge (autocomplete:false for auth-only)</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/payments/{id}/complete</span><span class="purpose">Complete delayed capture</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/payments/{id}/cancel</span><span class="purpose">Cancel uncaptured</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/orders</span><span class="purpose">Create order (link for deposits)</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/refunds</span><span class="purpose">Refund payment</span></div>
+
+    <div class="category"><h3>Gift Cards</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/gift-cards</span><span class="purpose">Issue new gift card</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/gift-cards/from-gan</span><span class="purpose">Lookup / balance check</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/gift-cards/activities</span><span class="purpose">REDEEM / ACTIVATE / LOAD</span></div>
+
+    <div class="category"><h3>Loyalty</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/loyalty/programs/main</span><span class="purpose">Get program</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/accounts</span><span class="purpose">Create account</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/accounts/search</span><span class="purpose">Find by phone</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/accounts/{id}/accumulate</span><span class="purpose">Accrue points</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/rewards/{id}/redeem</span><span class="purpose">Redeem reward</span></div>
+
+    <div class="category"><h3>Subscriptions / Memberships</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions</span><span class="purpose">Create</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/search</span><span class="purpose">Search</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/cancel</span><span class="purpose">Cancel</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/pause</span><span class="purpose">Pause</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/resume</span><span class="purpose">Resume</span></div>
+
+    <div class="category"><h3>Inventory</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/inventory/counts/batch-retrieve</span><span class="purpose">Read counts</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/inventory/changes/batch-create</span><span class="purpose">Adjust counts</span></div>
+
+    <div class="category"><h3>Invoices</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/invoices</span><span class="purpose">Create</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/invoices/{id}/publish</span><span class="purpose">Send</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/invoices/{id}/cancel</span><span class="purpose">Cancel</span></div>
+
+    <div class="category"><h3>Webhooks</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/webhooks/subscriptions</span><span class="purpose">Subscribe to events</span></div>
+    <div class="note-row">Key events: <code>booking.*</code>, <code>customer.*</code>, <code>payment.*</code>, <code>refund.*</code>, <code>invoice.*</code>, <code>order.*</code>, <code>team_member.*</code>, <code>gift_card.*</code>, <code>loyalty.*</code>, <code>subscription.*</code> · Signature: <code>x-square-hmacsha256-signature</code></div>
+
+    <div class="alert warn"><strong>Gaps:</strong> Rooms/resources not exposed. Reviews not exposed. Packages modeled via multi-variation catalog items.</div>
+  </section>
+
+  <!-- MINDBODY -->
+  <section class="platform" id="mindbody">
+    <div class="platform-header">
+      <h2>Mindbody</h2>
+      <span class="tier-badge open">Open · Public API v6</span>
+    </div>
+    <div class="platform-subline">Base: <code>https://api.mindbodyonline.com/public/v6</code> · <a href="https://developers.mindbodyonline.com/PublicDocumentation/V6" style="color:var(--blue)">docs</a></div>
+
+    <div class="auth-box">
+      <strong>Auth:</strong> <code>Api-Key: &lt;dev key&gt;</code> + <code>SiteId: &lt;numeric&gt;</code> + <code>Authorization: &lt;user token&gt;</code> · Token: <code>POST /usertoken/issue</code> · Activate first: <code>POST /site/activatesite</code>
+    </div>
+
+    <div class="category"><h3>Services / Session Types</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/sessiontypes</span><span class="purpose">Bookable service types</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/programs</span><span class="purpose">Service program groupings</span></div>
+
+    <div class="category"><h3>Staff</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/staff/staff</span><span class="purpose">Roster at site</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/staff/staffpermissions</span><span class="purpose">What services each staff can do</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/staffappointments</span><span class="purpose">Staff calendar</span></div>
+
+    <div class="category"><h3>Sites / Locations / Resources</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/sites</span><span class="purpose">Sites for API key</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/locations</span><span class="purpose">Physical locations</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/resources</span><span class="purpose">Rooms / equipment</span></div>
+
+    <div class="category"><h3>Availability</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/bookableitems</span><span class="purpose">Appt slot search</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/scheduleitems</span><span class="purpose">Staff availability blocks</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/class/classes</span><span class="purpose">Class schedule</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/class/classschedules</span><span class="purpose">Recurring class templates</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/activeclientmemberships</span><span class="purpose">Memberships eligible to book</span></div>
+
+    <div class="category"><h3>Appointments</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointment/addappointment</span><span class="purpose">Book a single appt</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointment/updateappointment</span><span class="purpose">Modify / cancel</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/appointmentoptions</span><span class="purpose">Deposit/cancel rules</span></div>
+
+    <div class="example-block">
+      <div class="example-header">Example · AddAppointment</div>
+      <pre><span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+<span class="key">"LocationId"</span>: <span class="number">1</span>,
+<span class="key">"SessionTypeId"</span>: <span class="number">25</span>,
+<span class="key">"StaffId"</span>: <span class="number">100000123</span>,
+<span class="key">"StartDateTime"</span>: <span class="string">"2026-04-22T14:00:00"</span>,
+<span class="key">"Duration"</span>: <span class="number">60</span>,
+<span class="key">"SendEmail"</span>: <span class="bool">true</span>,
+<span class="key">"ApplyPayment"</span>: <span class="bool">false</span></pre>
+    </div>
+
+    <div class="category"><h3>Classes</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/addclienttoclass</span><span class="purpose">Enroll client</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/removeclientfromclass</span><span class="purpose">Drop client</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/substituteclassteacher</span><span class="purpose">Sub teacher</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/class/waitlistentries</span><span class="purpose">Waitlist</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/addclienttoclasswaitlist</span><span class="purpose">Add to waitlist</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/removefromwaitlist</span><span class="purpose">Remove from waitlist</span></div>
+
+    <div class="category"><h3>Clients</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/addclient</span><span class="purpose">Create client</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/updateclient</span><span class="purpose">Edit profile</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clients</span><span class="purpose">Search by name/email</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientcontracts</span><span class="purpose">Memberships held</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientservices</span><span class="purpose">Remaining packages</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientvisits</span><span class="purpose">Visit history</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientpurchases</span><span class="purpose">Purchase history</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientaccountbalances</span><span class="purpose">Balance</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientformulanotes</span><span class="purpose">SOAP / formula notes</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/sendpasswordresetemail</span><span class="purpose">Pwd reset</span></div>
+
+    <div class="category"><h3>Cards on File</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/addorupdateclientcreditcard</span><span class="purpose">Store / replace card</span></div>
+
+    <div class="category"><h3>Sales / Cart / Checkout</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/checkoutshoppingcart</span><span class="purpose">Atomic cart checkout</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/sales</span><span class="purpose">Sales history</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/contracts</span><span class="purpose">Memberships catalog</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/giftcards</span><span class="purpose">Gift card catalog</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/packages</span><span class="purpose">Packages</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/products</span><span class="purpose">Retail products</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/services</span><span class="purpose">Retail session packages</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/purchasegiftcard</span><span class="purpose">Buy gift card</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/purchasecontract</span><span class="purpose">Buy membership</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/returnsale</span><span class="purpose">Refund by SaleId</span></div>
+
+    <div class="category"><h3>Enrollments (multi-session courses)</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/enrollment/enrollments</span><span class="purpose">List</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/enrollment/addclienttoenrollment</span><span class="purpose">Enroll client</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/enrollment/removeclientfromenrollment</span><span class="purpose">Remove</span></div>
+
+    <div class="category"><h3>Rewards</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientrewards</span><span class="purpose">Points balance/history</span></div>
+
+    <div class="category"><h3>Webhooks <span style="color:var(--text-subtle);font-weight:400;font-size:11px">(separate API base: <code>mb-api.mindbodyonline.com/push/api/v1</code>)</span></h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/subscriptions</span><span class="purpose">Create subscription</span></div>
+    <div class="endpoint"><span class="method patch">PATCH</span><span class="path">/subscriptions/{id}</span><span class="purpose">Update / activate</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/messages</span><span class="purpose">Delivered messages</span></div>
+    <div class="note-row">Events: <code>appointmentBooking.*</code>, <code>class.*</code>, <code>classRosterBooking.*</code>, <code>classWaitlistRequest.*</code>, <code>client.*</code>, <code>clientSale.created</code>, <code>staff.*</code>, <code>location.*</code>, <code>site.*</code></div>
+  </section>
+
+  <!-- ACUITY -->
+  <section class="platform" id="acuity">
+    <div class="platform-header">
+      <h2>Acuity Scheduling</h2>
+      <span class="tier-badge open">Open · Public API v1</span>
+    </div>
+    <div class="platform-subline">Base: <code>https://acuityscheduling.com/api/v1</code> · <a href="https://developers.acuityscheduling.com/reference" style="color:var(--blue)">docs</a></div>
+
+    <div class="auth-box">
+      <strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(userID:apiKey)</code> — credentials from Acuity &gt; Integrations &gt; API · OAuth2 for third-party apps
+    </div>
+
+    <div class="category"><h3>Appointment Types (Services)</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment-types</span><span class="purpose">List all types</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment-types/{id}/form-fields</span><span class="purpose">Linked intake fields</span></div>
+
+    <div class="category"><h3>Calendars (Staff)</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/calendars</span><span class="purpose">List all staff calendars</span></div>
+
+    <div class="category"><h3>Availability</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/dates?month=&amp;appointmentTypeID=&amp;calendarID=&amp;timezone=</span><span class="purpose">Dates with availability</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/times?date=&amp;appointmentTypeID=&amp;calendarID=</span><span class="purpose">Time slots</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/classes</span><span class="purpose">Group class instances</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/check-times</span><span class="purpose">Validate a specific datetime</span></div>
+
+    <div class="category"><h3>Appointments</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointments</span><span class="purpose">List (filters: dates/calendar/type)</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointments/{id}</span><span class="purpose">Get single</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Create (add ?admin=true to bypass)</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/appointments/{id}/reschedule</span><span class="purpose">Reschedule</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/appointments/{id}/cancel</span><span class="purpose">Cancel</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/appointments/{id}</span><span class="purpose">Update forms / labels / notes</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointments/{id}/payments</span><span class="purpose">List payments</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointments/{id}/payments</span><span class="purpose">Record payment</span></div>
+
+    <div class="example-block">
+      <div class="example-header">Example · Create Appointment</div>
+      <pre><span class="key">"datetime"</span>: <span class="string">"2026-05-15T14:00:00-0700"</span>,
+<span class="key">"appointmentTypeID"</span>: <span class="number">123456</span>,
+<span class="key">"calendarID"</span>: <span class="number">78910</span>,
+<span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
+<span class="key">"lastName"</span>: <span class="string">"Doe"</span>,
+<span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
+<span class="key">"phone"</span>: <span class="string">"+15551234567"</span>,
+<span class="key">"fields"</span>: [{<span class="key">"id"</span>: <span class="number">1111</span>, <span class="key">"value"</span>: <span class="string">"First visit"</span>}]</pre>
+    </div>
+
+    <div class="category"><h3>Clients</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/clients?search=</span><span class="purpose">Search clients</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/clients</span><span class="purpose">Add standalone client</span></div>
+
+    <div class="category"><h3>Forms / Intake</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/forms</span><span class="purpose">List forms + fields</span></div>
+
+    <div class="category"><h3>Gift Certificates / Coupons</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/certificates</span><span class="purpose">List issued</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/certificates</span><span class="purpose">Issue gift certificate</span></div>
+    <div class="endpoint"><span class="method delete">DEL</span><span class="path">/certificates/{id}</span><span class="purpose">Void</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/certificates/check?certificate=</span><span class="purpose">Validate code</span></div>
+
+    <div class="category"><h3>Products / Orders</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/products</span><span class="purpose">List packages/products</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/orders</span><span class="purpose">List orders</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/orders/{id}</span><span class="purpose">Get order</span></div>
+
+    <div class="category"><h3>Webhooks</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/webhooks</span><span class="purpose">List</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/webhooks</span><span class="purpose">Subscribe</span></div>
+    <div class="endpoint"><span class="method delete">DEL</span><span class="path">/webhooks/{id}</span><span class="purpose">Unsubscribe</span></div>
+    <div class="note-row">Events: <code>appointment.scheduled</code>, <code>appointment.rescheduled</code>, <code>appointment.canceled</code>, <code>appointment.changed</code>, <code>order.completed</code></div>
+  </section>
+
+  <!-- PHOREST -->
+  <section class="platform" id="phorest">
+    <div class="platform-header">
+      <h2>Phorest</h2>
+      <span class="tier-badge partner">Partner API</span>
+    </div>
+    <div class="platform-subline">Base: <code>https://api-gateway-eu1.phorest.com/third-party-api-server/api</code> · <a href="https://developer.phorest.com" style="color:var(--blue)">docs</a></div>
+
+    <div class="auth-box">
+      <strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(global/&lt;email&gt;:password)</code> · US tenants use US gateway host
+    </div>
+    <div class="alert warn"><strong>No webhooks:</strong> Per Phorest docs, you must poll endpoints for state changes.</div>
+
+    <div class="category"><h3>Services</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service</span><span class="purpose">List services</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicecategory</span><span class="purpose">List categories</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service/specialoffer</span><span class="purpose">Special offers</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicepackage</span><span class="purpose">Service packages</span></div>
+
+    <div class="category"><h3>Staff</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{staffId}</span><span class="purpose">Retrieve staff</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{staffId}/break/{breakId}</span><span class="purpose">Retrieve break</span></div>
+
+    <div class="category"><h3>Branches</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch</span><span class="purpose">List all branches</span></div>
+
+    <div class="category"><h3>Availability</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointments/availability</span><span class="purpose">Slot search</span></div>
+
+    <div class="category"><h3>Bookings (primary write flow)</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking</span><span class="purpose">Create (usually RESERVED)</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/activate</span><span class="purpose">Activate w/ deposit</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/cancel</span><span class="purpose">Cancel booking</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/note</span><span class="purpose">Append note</span></div>
+
+    <div class="example-block">
+      <div class="example-header">Example · Reserve → Activate with deposit</div>
+      <pre><span style="color:var(--text-subtle)">// 1. POST /booking</span>
+{
+  <span class="key">"bookingStatus"</span>: <span class="string">"RESERVED"</span>,
+  <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+  <span class="key">"clientAppointmentSchedules"</span>: [{
+    <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+    <span class="key">"clientAppointments"</span>: [{
+      <span class="key">"serviceId"</span>: <span class="string">"svc-123"</span>,
+      <span class="key">"staffId"</span>: <span class="string">"staff-9"</span>,
+      <span class="key">"startTime"</span>: <span class="string">"2026-04-21T14:00:00Z"</span>
+    }]
+  }]
+}
+
+<span style="color:var(--text-subtle)">// 2. POST /booking/{id}/activate</span>
+{ <span class="key">"depositAmount"</span>: <span class="number">25.00</span> }</pre>
+    </div>
+
+    <div class="category"><h3>Appointments (read / lifecycle)</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/appointment</span><span class="purpose">List appointments</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointment/checkin</span><span class="purpose">Check in</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointment/cancel</span><span class="purpose">Cancel multiple</span></div>
+
+    <div class="category"><h3>Clients</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/client</span><span class="purpose">List clients</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/client/{id}</span><span class="purpose">Retrieve</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/client</span><span class="purpose">Create</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/business/{b}/client/{id}</span><span class="purpose">Update (requires version)</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/client/{id}/loyaltypoints</span><span class="purpose">Adjust points</span></div>
+
+    <div class="category"><h3>Purchases / Sales</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/purchase</span><span class="purpose">Sell products/vouchers/courses</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/supplementalpaymenttype</span><span class="purpose">Payment types</span></div>
+
+    <div class="category"><h3>Vouchers / Gift Cards</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/voucher</span><span class="purpose">List vouchers</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/voucher</span><span class="purpose">Issue voucher</span></div>
+
+    <div class="category"><h3>Courses / Reviews</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/clientcourse</span><span class="purpose">List client courses</span></div>
+    <div class="endpoint"><span class="method put">PUT</span><span class="path">/business/{b}/clientcourse/{id}</span><span class="purpose">Update course</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/reviews</span><span class="purpose">List reviews</span></div>
+  </section>
+
+  <!-- VAGARO -->
+  <section class="platform" id="vagaro">
+    <div class="platform-header">
+      <h2>Vagaro</h2>
+      <span class="tier-badge partner">Enterprise partner-gated</span>
+    </div>
+    <div class="platform-subline">Base: <code>https://api.vagaro.com/{region}/api/v2</code> · <a href="https://docs.vagaro.com/" style="color:var(--blue)">docs</a></div>
+
+    <div class="auth-box">
+      <strong>Auth:</strong> OAuth2 client-credentials — <code>POST /merchants/generate-access-token</code> with <code>{clientId, clientSecretKey, scope}</code>. Token passed as <code>accessToken:</code> header (not Bearer).
+    </div>
+    <div class="alert"><strong>Access:</strong> Paying merchants only. Credentials via Vagaro Enterprise Sales. <strong>$10/mo</strong> + 5,000 calls included + $0.002/call beyond.</div>
+
+    <div class="category"><h3>Auth / Admin</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/merchants/generate-access-token</span><span class="purpose">Issue token</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/merchants/employees/assign</span><span class="purpose">Assign employee</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/merchants/employees/unassign</span><span class="purpose">Unassign</span></div>
+
+    <div class="category"><h3>Reads (all POST with JSON body)</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/locations</span><span class="purpose">Business locations</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/employees</span><span class="purpose">Employee by businessId+providerId</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/customers</span><span class="purpose">Customer by businessId+customerId</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/services</span><span class="purpose">Services (w/ pagination)</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Retrieve appointments</span></div>
+
+    <div class="alert warn"><strong>Undocumented gaps:</strong> availability search · appointment create/update/cancel · transactions · memberships · gift cards. Must negotiate partner-specific access for write flows.</div>
+
+    <div class="category"><h3>Webhooks</h3></div>
+    <div class="note-row">Configure in-app. Receiver must be HTTPS, accept JSON POST, return 2xx within 20s. Retries: up to 5 over 15 minutes.</div>
+    <div class="endpoint"><span class="method none">EVT</span><span class="path">appointment.created / updated / deleted</span><span class="purpose">Booking lifecycle</span></div>
+    <div class="endpoint"><span class="method none">EVT</span><span class="path">customer.created / updated</span><span class="purpose">Client changes</span></div>
+    <div class="endpoint"><span class="method none">EVT</span><span class="path">employee.created / updated / deleted</span><span class="purpose">Staff</span></div>
+    <div class="endpoint"><span class="method none">EVT</span><span class="path">business_location.created / updated / deleted</span><span class="purpose">Location</span></div>
+    <div class="endpoint"><span class="method none">EVT</span><span class="path">transaction.created</span><span class="purpose">Payment</span></div>
+    <div class="endpoint"><span class="method none">EVT</span><span class="path">formResponse.created</span><span class="purpose">Intake form submit</span></div>
+  </section>
+
+  <!-- GLOSSGENIUS -->
+  <section class="platform" id="glossgenius">
+    <div class="platform-header">
+      <h2>GlossGenius</h2>
+      <span class="tier-badge none">No public API</span>
+    </div>
+    <div class="platform-subline">Private backend only · Consumer booking site: <code>glossgenius.com/{slug}/booking</code></div>
+
+    <div class="alert"><strong>Zero official API.</strong> All discovery paths return 404. GG has no SDK, no developer portal, no Zapier, no partner program. Industry-confirmed.</div>
+
+    <div class="category"><h3>Private API (reverse-engineered — ToS risk)</h3></div>
+    <div class="note-row">Host <code>api.glossgenius.com</code> is live (Go-style gateway). Consumer booking flow at <code>glossgenius.com/&lt;slug&gt;/booking</code> is Next.js client-rendered, unauthenticated per slug.</div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}</span><span class="purpose">Business profile (inferred)</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}/services</span><span class="purpose">Service catalog</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}/staff</span><span class="purpose">Staff list</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/availability</span><span class="purpose">Slot lookup</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/v1/public/bookings</span><span class="purpose">Create booking (needs Stripe PM token)</span></div>
+
+    <div class="category"><h3>Sanctioned backdoor</h3></div>
+    <div class="note-row"><strong>Google Calendar sync</strong> — if a client grants Calendar OAuth, booked GG appointments appear as GCal events. Only officially-sanctioned read path.</div>
+
+    <div class="alert info"><strong>Zoca strategy:</strong> Direct bookings through the public <code>glossgenius.com/&lt;slug&gt;/booking</code> URL (captured in <code>~/glossgenius_booking_links.csv</code>). For automated booking, capture the network trace in Playwright and script the private endpoints — treating them as an undocumented contract that can break anytime.</div>
+  </section>
+
+  <!-- BOOKSY -->
+  <section class="platform" id="booksy">
+    <div class="platform-header">
+      <h2>Booksy</h2>
+      <span class="tier-badge none">No public API</span>
+    </div>
+    <div class="platform-subline">Private consumer + merchant APIs · <code>us.booksy.com/api/us/2/customer_api</code></div>
+
+    <div class="alert"><strong>No developer portal.</strong> Booksy's Partner Program is referral/affiliate, not API. Aggressive bot detection.</div>
+
+    <div class="category"><h3>Private consumer API (reverse-engineered)</h3></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses?query=&amp;location=</span><span class="purpose">Search marketplace</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}</span><span class="purpose">Business detail</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/services</span><span class="purpose">Service catalog</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/staffers</span><span class="purpose">Staff</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/appointments/time_slots</span><span class="purpose">Slot lookup</span></div>
+    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/reviews</span><span class="purpose">Reviews</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/me/login</span><span class="purpose">User login → JWT</span></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">/me/appointments</span><span class="purpose">Create booking (auth)</span></div>
+
+    <div class="auth-box">
+      <strong>Headers:</strong> <code>x-api-key</code> (static from mobile client) + <code>x-language</code> + <code>x-fingerprint</code> + mobile User-Agent · Authenticated: <code>Authorization: Bearer &lt;JWT&gt;</code> after login · Anonymous browse works with just <code>x-api-key</code>
+    </div>
+    <div class="alert warn"><strong>Cloudflare + bot detection.</strong> Aggressive use → 403/429. No official OAuth.</div>
+  </section>
+
+  <!-- FRESHA -->
+  <section class="platform" id="fresha">
+    <div class="platform-header">
+      <h2>Fresha</h2>
+      <span class="tier-badge none">No public API</span>
+    </div>
+    <div class="platform-subline">GraphQL + JSON:API microservices · private only</div>
+
+    <div class="alert"><strong>Publicly requested for 6+ years — never shipped.</strong> <code>developer.fresha.com</code> doesn't resolve. GitHub <code>fresha</code> org only publishes internal OpenAPI tooling.</div>
+
+    <div class="category"><h3>Primary: GraphQL (reverse-engineered)</h3></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">https://www.fresha.com/graphql</span><span class="purpose">Main consumer gateway</span></div>
+    <div class="note-row">Introspection disabled; error messages leak field names. Observed Query fields: <code>location</code>, <code>locations</code>, <code>liteLocation</code>, <code>geolocation</code>, <code>searchHistory</code></div>
+    <div class="endpoint"><span class="method post">POST</span><span class="path">https://api-gateway-ws.fresha.com/graphql</span><span class="purpose">WebSocket subscriptions</span></div>
+
+    <div class="category"><h3>Secondary: JSON:API microservices</h3></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">api.fresha.com</span><span class="purpose">Root gateway</span></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">analytics-api.fresha.com</span><span class="purpose">Analytics</span></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">deals-api.fresha.com</span><span class="purpose">Deals / offers</span></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">gift-cards-api.fresha.com</span><span class="purpose">Gift cards</span></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">payments.fresha.com</span><span class="purpose">Payments</span></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">refresh.fresha.com</span><span class="purpose">JWT token refresh</span></div>
+    <div class="endpoint"><span class="method none">HOST</span><span class="path">b2c-web-ff.fresha.com/proxy</span><span class="purpose">Feature flags</span></div>
+
+    <div class="auth-box"><strong>Auth:</strong> Bearer JWT · refreshed via <code>refresh.fresha.com</code> · Anonymous sessions minted on first page load · Accept header <code>application/vnd.api+json</code> for JSON:API services</div>
+
+    <div class="alert info"><strong>Practical path for Zoca:</strong> scraping public marketplace pages (Apify already has a Fresha extractor) or reverse-engineering GraphQL — both carry ToS risk. Reserve with Google is Google-side only.</div>
+  </section>
+
+  <div class="footer">
+    Generated 2026-04-21 · Zoca WIN AI Frontdesk · All endpoints verified against official reference docs · Live URL: <a href="https://mega-greninja.github.io/zoca-reports/api-dashboard.html" style="color:var(--text-subtle)">mega-greninja.github.io/zoca-reports/api-dashboard.html</a>
+  </div>
+</main>
+</div>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('.platform');
+  const links = document.querySelectorAll('.nav-link');
+  const setActive = () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+    links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+  };
+  window.addEventListener('scroll', setActive);
+  setActive();
+
+  // Search filter
+  const searchInput = document.getElementById('search');
+  const endpoints = document.querySelectorAll('.endpoint');
+  searchInput.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    endpoints.forEach(ep => {
+      if (!q) { ep.classList.remove('hidden'); return; }
+      const text = ep.textContent.toLowerCase();
+      ep.classList.toggle('hidden', !text.includes(q));
+    });
+  });
+</script>
+</body>
+</html>
