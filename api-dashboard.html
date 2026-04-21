@@ -233,8 +233,9 @@ cursor=<span class="string">eyJw...</span></pre></div></details>
 
     <div class="category"><h3>Bookings</h3></div>
 
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings</span><span class="purpose">Create booking</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings</span><span class="purpose">Create booking (single / multi / couple)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single service</div><pre>{
   <span class="key">"idempotency_key"</span>: <span class="string">"a1b2c3-unique"</span>,
   <span class="key">"booking"</span>: {
     <span class="key">"start_at"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
@@ -243,12 +244,38 @@ cursor=<span class="string">eyJw...</span></pre></div></details>
     <span class="key">"customer_note"</span>: <span class="string">"First visit"</span>,
     <span class="key">"appointment_segments"</span>: [{
       <span class="key">"duration_minutes"</span>: <span class="number">60</span>,
-      <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>,
+      <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>,        <span class="comment">// NOT item id — variation id</span>
       <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>,
       <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span>
     }]
   }
-}</pre></div></details>
+}</pre>
+    <div class="label">Body — multi-service / add-ons (1 customer, 2 segments)</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"combo-1"</span>,
+  <span class="key">"booking"</span>: {
+    <span class="key">"start_at"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
+    <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+    <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+    <span class="key">"appointment_segments"</span>: [
+      { <span class="key">"duration_minutes"</span>: <span class="number">60</span>, <span class="key">"service_variation_id"</span>: <span class="string">"VAR_HAIRCUT"</span>,  <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>, <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span> },
+      { <span class="key">"duration_minutes"</span>: <span class="number">30</span>, <span class="key">"service_variation_id"</span>: <span class="string">"VAR_BEARD_ADDON"</span>, <span class="key">"service_variation_version"</span>: <span class="number">1712000000001</span>, <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span> }
+    ]
+  }
+}</pre>
+    <div class="label">Body — couple / 2-resource (2 segments, 2 staff, same start)</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"couple-1"</span>,
+  <span class="key">"booking"</span>: {
+    <span class="key">"start_at"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
+    <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+    <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+    <span class="key">"appointment_segments"</span>: [
+      { <span class="key">"duration_minutes"</span>: <span class="number">60</span>, <span class="key">"service_variation_id"</span>: <span class="string">"VAR_MASSAGE_60"</span>, <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>, <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span> },
+      { <span class="key">"duration_minutes"</span>: <span class="number">60</span>, <span class="key">"service_variation_id"</span>: <span class="string">"VAR_MASSAGE_60"</span>, <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>, <span class="key">"team_member_id"</span>: <span class="string">"TM_2"</span> }
+    ]
+  }
+}</pre>
+    <div class="note">Square Bookings API takes only <strong>one customer_id per booking</strong>. True 2-client couples book as separate bookings or model the partner as a modifier. Service-level price variants (e.g. 60 vs 90 min) are separate <code>ITEM_VARIATION</code>s in Catalog.</div>
+    </div></details>
 
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Retrieve</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Returns booking with all segments + status.</div></div></details>
 
@@ -510,8 +537,9 @@ StaffIds=<span class="number">100123</span>
 HideCanceledClasses=<span class="bool">true</span></pre></div></details>
 
     <div class="category"><h3>Appointments</h3></div>
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/addappointment</span><span class="purpose">Book a single appointment</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/addappointment</span><span class="purpose">Book appointment (with add-ons support)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single session</div><pre>{
   <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
   <span class="key">"LocationId"</span>: <span class="number">1</span>,
   <span class="key">"SessionTypeId"</span>: <span class="number">25</span>,
@@ -521,6 +549,28 @@ HideCanceledClasses=<span class="bool">true</span></pre></div></details>
   <span class="key">"SendEmail"</span>: <span class="bool">true</span>,
   <span class="key">"ApplyPayment"</span>: <span class="bool">false</span>,
   <span class="key">"Notes"</span>: <span class="string">"Booked via AI frontdesk"</span>
+}</pre>
+    <div class="label">Body — with add-ons (inline)</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"LocationId"</span>: <span class="number">1</span>,
+  <span class="key">"SessionTypeId"</span>: <span class="number">25</span>,             <span class="comment">// primary session type</span>
+  <span class="key">"StaffId"</span>: <span class="number">100000123</span>,
+  <span class="key">"StartDateTime"</span>: <span class="string">"2026-04-22T14:00:00"</span>,
+  <span class="key">"Duration"</span>: <span class="number">90</span>,                     <span class="comment">// base + add-on duration</span>
+  <span class="key">"AppointmentAddOns"</span>: [
+    { <span class="key">"AddOnId"</span>: <span class="number">42</span>, <span class="key">"Duration"</span>: <span class="number">15</span>, <span class="key">"StaffId"</span>: <span class="number">100000123</span> },
+    { <span class="key">"AddOnId"</span>: <span class="number">57</span>, <span class="key">"Duration"</span>: <span class="number">15</span>, <span class="key">"StaffId"</span>: <span class="number">100000123</span> }
+  ]
+}</pre>
+    <div class="note">Mindbody's SessionType can have a <strong>GenderPreference</strong>, <strong>DefaultTimeLength</strong>, and linked add-on session types. Fetch them via <code>GET /site/sessiontypes</code>. Class "variations" live in separate SessionTypes, not variations on one item.</div>
+    </div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/addappointmentaddon</span><span class="purpose">Add add-on to existing appt</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"AppointmentId"</span>: <span class="number">55555</span>,
+  <span class="key">"AddOns"</span>: [
+    { <span class="key">"AddOnId"</span>: <span class="number">42</span>, <span class="key">"Duration"</span>: <span class="number">15</span>, <span class="key">"StaffId"</span>: <span class="number">100000123</span> }
+  ]
 }</pre></div></details>
 
     <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/updateappointment</span><span class="purpose">Modify / cancel</span><span class="chev">▶</span></summary>
@@ -587,8 +637,9 @@ Email=<span class="string">jane@example.com</span></pre></div></details>
 }</pre></div></details>
 
     <div class="category"><h3>Sales / Cart / Checkout</h3></div>
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/sale/checkoutshoppingcart</span><span class="purpose">Atomic cart checkout</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/sale/checkoutshoppingcart</span><span class="purpose">Atomic cart (service + product + package + tip)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single service</div><pre>{
   <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
   <span class="key">"Test"</span>: <span class="bool">false</span>,
   <span class="key">"CartItems"</span>: [
@@ -598,7 +649,23 @@ Email=<span class="string">jane@example.com</span></pre></div></details>
     { <span class="key">"Type"</span>: <span class="string">"StoredCard"</span>, <span class="key">"Metadata"</span>: { <span class="key">"Amount"</span>: <span class="number">75.00</span> } }
   ],
   <span class="key">"SendEmail"</span>: <span class="bool">true</span>
-}</pre></div></details>
+}</pre>
+    <div class="label">Body — multi-item cart (service + product + gift card + tip)</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"CartItems"</span>: [
+    { <span class="key">"Item"</span>: { <span class="key">"Type"</span>: <span class="string">"Service"</span>,    <span class="key">"Metadata"</span>: { <span class="key">"Id"</span>: <span class="number">25</span> } }, <span class="key">"Quantity"</span>: <span class="number">1</span> },
+    { <span class="key">"Item"</span>: { <span class="key">"Type"</span>: <span class="string">"Product"</span>,    <span class="key">"Metadata"</span>: { <span class="key">"Id"</span>: <span class="number">500</span> } }, <span class="key">"Quantity"</span>: <span class="number">2</span> },
+    { <span class="key">"Item"</span>: { <span class="key">"Type"</span>: <span class="string">"GiftCard"</span>,   <span class="key">"Metadata"</span>: { <span class="key">"Id"</span>: <span class="number">987</span>, <span class="key">"Amount"</span>: <span class="number">50.00</span> } } },
+    { <span class="key">"Item"</span>: { <span class="key">"Type"</span>: <span class="string">"Tip"</span>,        <span class="key">"Metadata"</span>: { <span class="key">"Amount"</span>: <span class="number">15.00</span>, <span class="key">"StaffId"</span>: <span class="number">100000123</span> } } }
+  ],
+  <span class="key">"Payments"</span>: [
+    { <span class="key">"Type"</span>: <span class="string">"StoredCard"</span>, <span class="key">"Metadata"</span>: { <span class="key">"Amount"</span>: <span class="number">200.00</span> } }
+  ],
+  <span class="key">"PromotionCode"</span>: <span class="string">"SPRING20"</span>,
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>
+}</pre>
+    <div class="note">Item types: <code>Service</code> (session), <code>Product</code> (retail), <code>GiftCard</code>, <code>Contract</code> (membership), <code>Package</code>, <code>Tip</code>, <code>Account</code> (account credit). Payment types: <code>StoredCard</code>, <code>Cash</code>, <code>Check</code>, <code>GiftCard</code>, <code>CustomPayment</code>, <code>PackageCredit</code>.</div>
+    </div></details>
     <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/sale/purchasegiftcard</span><span class="purpose">Buy gift card</span><span class="chev">▶</span></summary>
     <div class="body-panel"><div class="label">Body</div><pre>{
   <span class="key">"GiftCardId"</span>: <span class="number">987</span>,
@@ -670,8 +737,9 @@ calendarID=<span class="number">78910</span>
 appointmentTypeID=<span class="number">123456</span>
 canceled=<span class="bool">false</span></pre></div></details>
 
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Create (?admin=true to bypass rules)</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Create (with add-ons + certificate)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — base appointment</div><pre>{
   <span class="key">"datetime"</span>: <span class="string">"2026-05-15T14:00:00-0700"</span>,
   <span class="key">"appointmentTypeID"</span>: <span class="number">123456</span>,
   <span class="key">"calendarID"</span>: <span class="number">78910</span>,
@@ -680,7 +748,19 @@ canceled=<span class="bool">false</span></pre></div></details>
   <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
   <span class="key">"phone"</span>: <span class="string">"+15551234567"</span>,
   <span class="key">"fields"</span>: [{<span class="key">"id"</span>: <span class="number">1111</span>, <span class="key">"value"</span>: <span class="string">"First visit"</span>}]
-}</pre></div></details>
+}</pre>
+    <div class="label">Body — with add-on services + gift certificate</div><pre>{
+  <span class="key">"datetime"</span>: <span class="string">"2026-05-15T14:00:00-0700"</span>,
+  <span class="key">"appointmentTypeID"</span>: <span class="number">123456</span>,          <span class="comment">// primary service</span>
+  <span class="key">"addonIDs"</span>: [<span class="number">789</span>, <span class="number">790</span>],                     <span class="comment">// array of add-on type IDs</span>
+  <span class="key">"calendarID"</span>: <span class="number">78910</span>,
+  <span class="key">"firstName"</span>: <span class="string">"Jane"</span>, <span class="key">"lastName"</span>: <span class="string">"Doe"</span>,
+  <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>, <span class="key">"phone"</span>: <span class="string">"+15551234567"</span>,
+  <span class="key">"certificate"</span>: <span class="string">"GIFT-CERT-ABC"</span>,                 <span class="comment">// optional gift cert code</span>
+  <span class="key">"fields"</span>: [{<span class="key">"id"</span>: <span class="number">1111</span>, <span class="key">"value"</span>: <span class="string">"First visit"</span>}]
+}</pre>
+    <div class="note">Acuity has no true "service variation" concept — each duration/price combo is its own <strong>appointmentTypeID</strong>. Add-ons are separate appointment types flagged <code>addonTypeID</code>. Fetch addon eligibility via <code>GET /appointment-types/{id}/addons</code>. For couples, create two appointments at the same datetime on different calendars — Acuity has no atomic couple endpoint.</div>
+    </div></details>
 
     <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/appointments/{id}/reschedule</span><span class="purpose">Reschedule</span><span class="chev">▶</span></summary>
     <div class="body-panel"><div class="label">Body</div><pre>{
@@ -750,8 +830,9 @@ target=<span class="string">https://tasks.zoca.ai/webhooks/acuity</span></pre></
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch</span><span class="purpose">List branches</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Availability</h3></div>
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointments/availability</span><span class="purpose">Slot search</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointments/availability</span><span class="purpose">Slot search (multi-service / couple)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single service</div><pre>{
   <span class="key">"startTime"</span>: <span class="string">"2026-04-21T09:00:00Z"</span>,
   <span class="key">"endTime"</span>:   <span class="string">"2026-04-21T18:00:00Z"</span>,
   <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
@@ -760,11 +841,33 @@ target=<span class="string">https://tasks.zoca.ai/webhooks/acuity</span></pre></
     <span class="key">"serviceIds"</span>: [<span class="string">"svc-123"</span>]
   }],
   <span class="key">"isOnlineAvailability"</span>: <span class="bool">true</span>
-}</pre></div></details>
+}</pre>
+    <div class="label">Body — multi-service / add-ons (1 client, 2 services back-to-back)</div><pre>{
+  <span class="key">"startTime"</span>: <span class="string">"2026-04-21T09:00:00Z"</span>,
+  <span class="key">"endTime"</span>:   <span class="string">"2026-04-21T18:00:00Z"</span>,
+  <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+  <span class="key">"clientServiceSelections"</span>: [{
+    <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+    <span class="key">"serviceIds"</span>: [<span class="string">"svc-haircut"</span>, <span class="string">"svc-beard-addon"</span>]    <span class="comment">// order matters for sequencing</span>
+  }],
+  <span class="key">"isOnlineAvailability"</span>: <span class="bool">true</span>
+}</pre>
+    <div class="label">Body — couple (2 clients, same slot)</div><pre>{
+  <span class="key">"startTime"</span>: <span class="string">"2026-04-21T09:00:00Z"</span>,
+  <span class="key">"endTime"</span>:   <span class="string">"2026-04-21T18:00:00Z"</span>,
+  <span class="key">"clientServiceSelections"</span>: [
+    { <span class="key">"clientId"</span>: <span class="string">"clientA"</span>, <span class="key">"serviceIds"</span>: [<span class="string">"svc-massage-60"</span>] },
+    { <span class="key">"clientId"</span>: <span class="string">"clientB"</span>, <span class="key">"serviceIds"</span>: [<span class="string">"svc-massage-60"</span>] }
+  ],
+  <span class="key">"isOnlineAvailability"</span>: <span class="bool">true</span>
+}</pre>
+    <div class="note">Phorest handles variations as separate <code>serviceId</code>s — fetch via <code>GET /service</code>. The response includes <code>duration</code>, <code>price</code>, and <code>requiredStaffCategories</code> for resource matching.</div>
+    </div></details>
 
     <div class="category"><h3>Bookings (reserve → activate)</h3></div>
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking</span><span class="purpose">Create (RESERVED)</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking</span><span class="purpose">Create (single / multi-service / couple)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single service</div><pre>{
   <span class="key">"bookingStatus"</span>: <span class="string">"RESERVED"</span>,
   <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
   <span class="key">"note"</span>: <span class="string">"Prefers female stylist"</span>,
@@ -776,7 +879,33 @@ target=<span class="string">https://tasks.zoca.ai/webhooks/acuity</span></pre></
       <span class="key">"startTime"</span>: <span class="string">"2026-04-21T14:00:00Z"</span>
     }]
   }]
-}</pre></div></details>
+}</pre>
+    <div class="label">Body — multi-service / add-ons (1 client, back-to-back)</div><pre>{
+  <span class="key">"bookingStatus"</span>: <span class="string">"RESERVED"</span>,
+  <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+  <span class="key">"clientAppointmentSchedules"</span>: [{
+    <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+    <span class="key">"clientAppointments"</span>: [
+      { <span class="key">"serviceId"</span>: <span class="string">"svc-haircut"</span>,    <span class="key">"staffId"</span>: <span class="string">"staff-9"</span>, <span class="key">"startTime"</span>: <span class="string">"2026-04-21T14:00:00Z"</span> },
+      { <span class="key">"serviceId"</span>: <span class="string">"svc-beard-addon"</span>, <span class="key">"staffId"</span>: <span class="string">"staff-9"</span>, <span class="key">"startTime"</span>: <span class="string">"2026-04-21T15:00:00Z"</span> }
+    ]
+  }]
+}</pre>
+    <div class="label">Body — couple (2 clients, same start)</div><pre>{
+  <span class="key">"bookingStatus"</span>: <span class="string">"RESERVED"</span>,
+  <span class="key">"clientAppointmentSchedules"</span>: [
+    {
+      <span class="key">"clientId"</span>: <span class="string">"clientA"</span>,
+      <span class="key">"clientAppointments"</span>: [{ <span class="key">"serviceId"</span>: <span class="string">"svc-massage-60"</span>, <span class="key">"staffId"</span>: <span class="string">"staff-1"</span>, <span class="key">"startTime"</span>: <span class="string">"2026-04-21T14:00:00Z"</span> }]
+    },
+    {
+      <span class="key">"clientId"</span>: <span class="string">"clientB"</span>,
+      <span class="key">"clientAppointments"</span>: [{ <span class="key">"serviceId"</span>: <span class="string">"svc-massage-60"</span>, <span class="key">"staffId"</span>: <span class="string">"staff-2"</span>, <span class="key">"startTime"</span>: <span class="string">"2026-04-21T14:00:00Z"</span> }]
+    }
+  ]
+}</pre>
+    <div class="note">Phorest is the strongest platform here for couples — <code>clientAppointmentSchedules[]</code> is explicitly designed for N clients × M appointments in one atomic booking.</div>
+    </div></details>
     <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/activate</span><span class="purpose">Activate (optional deposit)</span><span class="chev">▶</span></summary>
     <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"depositAmount"</span>: <span class="number">25.00</span> }</pre></div></details>
     <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/cancel</span><span class="purpose">Cancel</span><span class="chev">▶</span></summary>
@@ -936,7 +1065,19 @@ date=<span class="string">2026-04-22</span></pre></div></details>
   <span class="key">"stripe_payment_method_id"</span>: <span class="string">"pm_..."</span>    <span class="comment">// if deposit required</span>
 }</pre><div class="note">Actual schema TBD — capture from network tab on <code>glossgenius.com/&lt;slug&gt;/booking</code>.</div></div></details>
 
-    <div class="alert info"><strong>Recommended path:</strong> Use Playwright to capture real network traces and lock down the exact schemas before relying on them.</div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/public/bookings (multi-service)</span><span class="purpose">Cart / add-ons (inferred)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+  <span class="key">"business_id"</span>: <span class="string">"biz-uuid"</span>,
+  <span class="key">"start_time"</span>:  <span class="string">"2026-04-22T15:00:00Z"</span>,
+  <span class="key">"line_items"</span>: [
+    { <span class="key">"service_id"</span>: <span class="string">"svc-haircut"</span>,      <span class="key">"staff_id"</span>: <span class="string">"staff-uuid"</span>, <span class="key">"variant_id"</span>: <span class="string">"long-hair"</span> },
+    { <span class="key">"service_id"</span>: <span class="string">"svc-gloss-addon"</span>,  <span class="key">"staff_id"</span>: <span class="string">"staff-uuid"</span> }
+  ],
+  <span class="key">"client"</span>: { <span class="key">"first_name"</span>: <span class="string">"Jane"</span>, <span class="key">"email"</span>: <span class="string">"jane@example.com"</span> },
+  <span class="key">"stripe_payment_method_id"</span>: <span class="string">"pm_..."</span>
+}</pre><div class="note">GG has service <strong>variants</strong> (long/short hair price tiers) and add-ons. Capture real field names from network tab before production use.</div></div></details>
+
+    <div class="alert info"><strong>Recommended path:</strong> Use Playwright to capture real network traces and lock down the exact schemas (incl. variant/add-on field names) before relying on them.</div>
   </section>
 
   <!-- ============== BOOKSY ============== -->
@@ -968,14 +1109,24 @@ date=<span class="string">2026-04-22</span></pre></div></details>
   <span class="key">"password"</span>: <span class="string">"****"</span>
 }</pre></div></details>
 
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/me/appointments</span><span class="purpose">Create booking (auth)</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/me/appointments</span><span class="purpose">Create booking (single / multi-service)</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single service variant</div><pre>{
   <span class="key">"business_id"</span>: <span class="number">12345</span>,
   <span class="key">"staffer_id"</span>:  <span class="number">5678</span>,
-  <span class="key">"service_variant_id"</span>: <span class="number">1234</span>,
+  <span class="key">"service_variant_id"</span>: <span class="number">1234</span>,     <span class="comment">// Booksy variants = durations/price tiers per service</span>
   <span class="key">"start_date"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
-  <span class="key">"notes"</span>:      <span class="string">"First visit"</span>
-}</pre><div class="note">Exact payload needs network-tab capture.</div></div></details>
+  <span class="key">"notes"</span>: <span class="string">"First visit"</span>
+}</pre>
+    <div class="label">Body — multi-service / add-ons (inferred)</div><pre>{
+  <span class="key">"business_id"</span>: <span class="number">12345</span>,
+  <span class="key">"appointments"</span>: [
+    { <span class="key">"service_variant_id"</span>: <span class="number">1234</span>, <span class="key">"staffer_id"</span>: <span class="number">5678</span>, <span class="key">"start_date"</span>: <span class="string">"2026-04-22T15:00:00Z"</span> },
+    { <span class="key">"service_variant_id"</span>: <span class="number">1235</span>, <span class="key">"staffer_id"</span>: <span class="number">5678</span>, <span class="key">"start_date"</span>: <span class="string">"2026-04-22T16:00:00Z"</span> }
+  ]
+}</pre>
+    <div class="note">Booksy's core unit is <code>service_variant_id</code> — a service like "Haircut" has variants like "Short hair / Long hair / Kids" with different durations &amp; prices. Fetch via <code>GET /businesses/{id}/services</code> — each service has a <code>variants[]</code> array. Capture exact multi-service payload from the app's network tab.</div>
+    </div></details>
   </section>
 
   <!-- ============== FRESHA ============== -->
@@ -993,20 +1144,38 @@ date=<span class="string">2026-04-22</span></pre></div></details>
   <span class="key">"query"</span>: <span class="string">"query Location($slug:String!){ location(slug:$slug){ id name services{ id name price duration } staff{ id name } } }"</span>
 }</pre><div class="note">Introspection disabled; field names leaked via errors. Use the same queries the browser issues (captured from DevTools).</div></div></details>
 
-    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://www.fresha.com/graphql</span><span class="purpose">Create booking (mutation)</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Body (shape inferred)</div><pre>{
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://www.fresha.com/graphql</span><span class="purpose">Create booking — multi-service mutation</span><span class="chev">▶</span></summary>
+    <div class="body-panel">
+    <div class="label">Body — single service</div><pre>{
   <span class="key">"operationName"</span>: <span class="string">"CreateAppointment"</span>,
   <span class="key">"variables"</span>: {
     <span class="key">"input"</span>: {
       <span class="key">"locationId"</span>: <span class="string">"loc-uuid"</span>,
       <span class="key">"staffId"</span>:    <span class="string">"staff-uuid"</span>,
-      <span class="key">"services"</span>: [{ <span class="key">"serviceId"</span>: <span class="string">"svc-uuid"</span> }],
+      <span class="key">"services"</span>: [{ <span class="key">"serviceId"</span>: <span class="string">"svc-uuid"</span>, <span class="key">"variantId"</span>: <span class="string">"short-hair"</span> }],
       <span class="key">"startAt"</span>:    <span class="string">"2026-04-22T15:00:00Z"</span>,
       <span class="key">"client"</span>: { <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>, <span class="key">"phone"</span>: <span class="string">"+15551234567"</span> }
     }
   },
   <span class="key">"query"</span>: <span class="string">"mutation CreateAppointment($input: CreateAppointmentInput!){ createAppointment(input:$input){ id status } }"</span>
-}</pre></div></details>
+}</pre>
+    <div class="label">Body — multi-service / add-ons (shape inferred)</div><pre>{
+  <span class="key">"operationName"</span>: <span class="string">"CreateAppointment"</span>,
+  <span class="key">"variables"</span>: {
+    <span class="key">"input"</span>: {
+      <span class="key">"locationId"</span>: <span class="string">"loc-uuid"</span>,
+      <span class="key">"services"</span>: [
+        { <span class="key">"serviceId"</span>: <span class="string">"svc-haircut"</span>,   <span class="key">"variantId"</span>: <span class="string">"long-hair"</span>, <span class="key">"staffId"</span>: <span class="string">"staff-uuid"</span> },
+        { <span class="key">"serviceId"</span>: <span class="string">"svc-gloss-addon"</span>,                             <span class="key">"staffId"</span>: <span class="string">"staff-uuid"</span> },
+        { <span class="key">"serviceId"</span>: <span class="string">"svc-blowdry-addon"</span>,                           <span class="key">"staffId"</span>: <span class="string">"staff-uuid"</span> }
+      ],
+      <span class="key">"startAt"</span>:    <span class="string">"2026-04-22T15:00:00Z"</span>,
+      <span class="key">"client"</span>:     { <span class="key">"email"</span>: <span class="string">"jane@example.com"</span> }
+    }
+  }
+}</pre>
+    <div class="note">Fresha services have <strong>variants</strong> (e.g. short/medium/long hair with different prices + durations) and <strong>add-ons</strong> (modelled as additional services in the array). Exact GraphQL field names (<code>services</code> vs <code>lineItems</code>, <code>variantId</code> vs <code>priceVariantId</code>) need capture from DevTools — schema introspection is disabled.</div>
+    </div></details>
 
     <div class="category"><h3>JSON:API microservices</h3></div>
     <details class="endpoint"><summary><span class="method none">HOST</span><span class="path">api.fresha.com · analytics-api · deals-api · gift-cards-api · payments · refresh</span><span class="purpose">All require <code>Accept: application/vnd.api+json</code></span><span class="chev">▶</span></summary>
