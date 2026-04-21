@@ -185,6 +185,18 @@ catalog_version=<span class="number">1712000000</span>  <span class="comment">//
     <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/catalog/batch-retrieve</span><span class="purpose">Bulk fetch by IDs</span><span class="chev">▶</span></summary>
     <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"object_ids"</span>: [<span class="string">"OBJ_1"</span>, <span class="string">"OBJ_2"</span>], <span class="key">"include_related_objects"</span>: <span class="bool">true</span> }</pre></div></details>
 
+    <div class="category"><h3>Service Variations &amp; Add-ons (Modifiers)</h3></div>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/catalog/object/{ITEM_ID}?include_related_objects=true</span><span class="purpose">Get service with ALL variations</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>include_related_objects=<span class="bool">true</span></pre>
+    <div class="note">Each service (<code>ITEM</code>) has a <code>variations[]</code> array of <code>ITEM_VARIATION</code> objects — each variation is a separate bookable duration/price (e.g. 30/60/90 min, short/long hair). Booking uses <code>service_variation_id</code>, never item_id.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/catalog/list?types=MODIFIER_LIST</span><span class="purpose">List modifier groups (customizations)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Square uses <code>MODIFIER_LIST</code> + <code>MODIFIER</code> to model customizations &amp; add-ons (e.g. "+ Deep Conditioning $15"). Attached to items via <code>modifier_list_info</code>.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/catalog/list?types=MODIFIER</span><span class="purpose">List individual modifiers / add-ons</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Returns each modifier with <code>price_money</code>. For bookings, add-ons are modeled as <strong>extra appointment_segments</strong> (not modifiers on one segment) — modifiers apply at Order/Payment level.</div></div></details>
+
     <div class="category"><h3>Staff / Booking Profiles</h3></div>
 
     <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/team-members/search</span><span class="purpose">List/search team</span><span class="chev">▶</span></summary>
@@ -510,8 +522,25 @@ reference_id=<span class="string">optional-your-ref</span></pre></div></details>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/site/sessiontypes</span><span class="purpose">Bookable service types</span><span class="chev">▶</span></summary>
     <div class="body-panel"><div class="label">Query params</div><pre>programIDs=<span class="number">1</span>
 onlineOnly=<span class="bool">true</span>
-limit=<span class="number">100</span></pre></div></details>
+limit=<span class="number">100</span></pre>
+    <div class="note">Each SessionType is a bookable service. "Variations" don't exist as a concept — each duration/variant is its own SessionType. Response includes <code>DefaultTimeLength</code>, <code>DefaultTimeBetweenAppointments</code>, <code>Price</code>.</div></div></details>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/site/programs</span><span class="purpose">Service program groupings</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Filters: scheduleType (Appointment/Class/Enrollment).</div></div></details>
+
+    <div class="category"><h3>Service Variations &amp; Add-ons</h3></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment/bookableitems</span><span class="purpose">Slots include add-on slots when requested</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params (for add-on availability)</div><pre>SessionTypeIds=<span class="number">25</span>
+StaffIds=<span class="number">100123</span>
+StartDate=<span class="string">2026-04-21</span>
+EndDate=<span class="string">2026-04-22</span>
+IgnorePrepEndFinishTimes=<span class="bool">false</span>
+AppointmentId=<span class="number">55555</span>     <span class="comment">// pass existing appt to find compatible add-on slots</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/site/sessiontypes?programIDs=1&amp;onlineOnly=true</span><span class="purpose">Fetch add-on-eligible session types</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Add-ons in Mindbody are SessionTypes with <code>Program</code> id in the "Appointment" family but flagged as add-ons in site config. Each staff's <code>SessionType</code> permission list determines who can perform the add-on.</div></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/addappointmentaddon</span><span class="purpose">Attach add-on to existing booking</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"AppointmentId"</span>: <span class="number">55555</span>,
+  <span class="key">"AddOns"</span>: [{ <span class="key">"SessionTypeId"</span>: <span class="number">42</span>, <span class="key">"StaffId"</span>: <span class="number">100000123</span>, <span class="key">"Duration"</span>: <span class="number">15</span> }]
+}</pre></div></details>
 
     <div class="category"><h3>Staff</h3></div>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/staff/staff</span><span class="purpose">List staff at site</span><span class="chev">▶</span></summary>
@@ -703,9 +732,23 @@ Email=<span class="string">jane@example.com</span></pre></div></details>
     <div class="auth-box"><strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(userID:apiKey)</code></div>
 
     <div class="category"><h3>Appointment Types (Services)</h3></div>
-    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-types</span><span class="purpose">List all types</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Query params</div><pre>includeDeleted=<span class="bool">false</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-types</span><span class="purpose">List all services &amp; variations</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>includeDeleted=<span class="bool">false</span></pre>
+    <div class="note">Acuity has <strong>no concept of variations</strong> — each duration/price combo is its own <code>appointmentTypeID</code>. E.g. "Haircut 30min $40" + "Haircut 60min $75" are 2 separate appointment types. Filter the list client-side by name prefix to group them.</div></div></details>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-types/{id}/form-fields</span><span class="purpose">Linked intake fields</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+
+    <div class="category"><h3>Service Add-ons</h3></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-addons</span><span class="purpose">List ALL add-on types</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre><span class="comment">// none — returns all add-ons across site</span></pre>
+    <div class="note">Returns each add-on with <code>id</code>, <code>name</code>, <code>duration</code>, <code>price</code>. Used for the <code>addonIDs[]</code> array when creating an appointment.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-types/{id}/addons</span><span class="purpose">Add-ons allowed for a service</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Returns add-ons that can be combined with this specific appointment type — narrower than the full list. Use this before calling create-appointment with <code>addonIDs</code>.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/availability/times?appointmentTypeID=X&amp;addonIDs[]=Y</span><span class="purpose">Availability WITH add-ons</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>date=<span class="string">2026-05-15</span>
+appointmentTypeID=<span class="number">123456</span>
+addonIDs[]=<span class="number">789</span>&amp;addonIDs[]=<span class="number">790</span>    <span class="comment">// extends slot duration by add-on durations</span>
+calendarID=<span class="number">78910</span>
+timezone=<span class="string">America/Los_Angeles</span></pre></div></details>
 
     <div class="category"><h3>Calendars (Staff)</h3></div>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/calendars</span><span class="purpose">List all staff calendars</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
@@ -823,10 +866,13 @@ target=<span class="string">https://tasks.zoca.ai/webhooks/acuity</span></pre></
     <div class="alert warn"><strong>No webhooks:</strong> Poll for changes.</div>
 
     <div class="category"><h3>Services / Staff / Branches (reads)</h3></div>
-    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service</span><span class="purpose">List services</span><span class="chev">▶</span></summary>
-    <div class="body-panel"><div class="label">Query params</div><pre>page=<span class="number">0</span>&amp;size=<span class="number">200</span>&amp;serviceGroupId=<span class="string">grp-abc</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service</span><span class="purpose">List services + variations</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>page=<span class="number">0</span>&amp;size=<span class="number">200</span>&amp;serviceGroupId=<span class="string">grp-abc</span></pre>
+    <div class="note">Each service returns <code>duration</code>, <code>price</code>, <code>priceType</code>, <code>requiredStaffCategories</code>, and a <code>parentServiceId</code> — variations are represented as siblings sharing the same <code>parentServiceId</code> (e.g. "Haircut — Short/Medium/Long"). Add-ons are siblings whose <code>isAddon = true</code> or whose name pattern indicates an add-on.</div></div></details>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicecategory</span><span class="purpose">Categories</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
-    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{id}</span><span class="purpose">Retrieve staff</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service/specialoffer</span><span class="purpose">Special offers / bundles</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">Returns special-offer bundles (often pre-defined multi-service combos).</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicepackage</span><span class="purpose">Service packages (pre-paid bundles)</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">Packages = sellable groupings of N services at a discount. Redeem via <code>/purchase</code>.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{id}</span><span class="purpose">Retrieve staff</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">Staff response includes <code>categories[]</code> — staff can only perform services requiring matching categories.</div></div></details>
     <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch</span><span class="purpose">List branches</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Availability</h3></div>
