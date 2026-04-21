@@ -6,67 +6,27 @@
 <title>Booking Platform API Dashboard — Zoca</title>
 <style>
   :root {
-    --bg: #0a0c10;
-    --panel: #12161e;
-    --panel-2: #1a1f2a;
-    --border: #242a36;
-    --border-light: #2d3441;
-    --text: #e6e9ef;
-    --text-dim: #9aa3b2;
-    --text-subtle: #6b7280;
-    --green: #22c55e;
-    --green-bg: rgba(34, 197, 94, 0.12);
-    --yellow: #eab308;
-    --yellow-bg: rgba(234, 179, 8, 0.12);
-    --red: #ef4444;
-    --red-bg: rgba(239, 68, 68, 0.12);
-    --blue: #3b82f6;
-    --blue-bg: rgba(59, 130, 246, 0.15);
-    --purple: #a855f7;
-    --purple-bg: rgba(168, 85, 247, 0.15);
-    --orange: #f97316;
-    --orange-bg: rgba(249, 115, 22, 0.15);
-    --cyan: #06b6d4;
-    --cyan-bg: rgba(6, 182, 212, 0.15);
+    --bg: #0a0c10; --panel: #12161e; --panel-2: #1a1f2a;
+    --border: #242a36; --border-light: #2d3441;
+    --text: #e6e9ef; --text-dim: #9aa3b2; --text-subtle: #6b7280;
+    --green: #22c55e; --green-bg: rgba(34, 197, 94, 0.12);
+    --yellow: #eab308; --yellow-bg: rgba(234, 179, 8, 0.12);
+    --red: #ef4444; --red-bg: rgba(239, 68, 68, 0.12);
+    --blue: #3b82f6; --blue-bg: rgba(59, 130, 246, 0.15);
+    --purple: #a855f7; --purple-bg: rgba(168, 85, 247, 0.15);
+    --orange: #f97316; --orange-bg: rgba(249, 115, 22, 0.15);
+    --cyan: #06b6d4; --cyan-bg: rgba(6, 182, 212, 0.15);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-  code, pre {
-    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
-    font-size: 12.5px;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  code, pre { font-family: 'SF Mono', 'Monaco', 'Menlo', monospace; font-size: 12.5px; }
   .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-
-  /* Sidebar */
-  aside {
-    background: var(--panel);
-    border-right: 1px solid var(--border);
-    padding: 24px 20px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-  }
+  aside { background: var(--panel); border-right: 1px solid var(--border); padding: 24px 20px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   aside h1 { font-size: 16px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; }
   aside .subtitle { color: var(--text-subtle); font-size: 11px; margin: 0 0 20px; text-transform: uppercase; letter-spacing: 0.08em; }
   aside nav { display: flex; flex-direction: column; gap: 2px; }
-  aside nav a {
-    color: var(--text-dim);
-    text-decoration: none;
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    display: flex; align-items: center; gap: 10px;
-    transition: background 0.08s, color 0.08s;
-  }
+  aside nav a { color: var(--text-dim); text-decoration: none; padding: 8px 10px; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 10px; transition: background 0.08s, color 0.08s; }
   aside nav a:hover { background: var(--panel-2); color: var(--text); }
   aside nav a.active { background: var(--blue-bg); color: var(--blue); }
   aside nav .tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -74,158 +34,65 @@
   aside nav .tier-dot.partner { background: var(--yellow); }
   aside nav .tier-dot.none { background: var(--red); }
   aside .section-label { color: var(--text-subtle); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin: 18px 0 4px 10px; font-weight: 600; }
-
   .search-wrap { margin: 8px 0 16px; }
-  .search-wrap input {
-    width: 100%;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.1s;
-  }
+  .search-wrap input { width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 8px 12px; font-size: 13px; outline: none; transition: border-color 0.1s; }
   .search-wrap input:focus { border-color: var(--blue); }
-
-  /* Main */
+  .expand-all { margin-top: 8px; background: none; border: 1px solid var(--border); color: var(--text-dim); padding: 6px 10px; border-radius: 6px; font-size: 11.5px; cursor: pointer; width: 100%; }
+  .expand-all:hover { color: var(--text); border-color: var(--border-light); }
   main { padding: 40px 48px 80px; max-width: 1100px; }
   .page-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
   .page-header h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.02em; }
   .page-header p { color: var(--text-dim); margin: 0; font-size: 14px; }
   .meta-row { display: flex; gap: 16px; margin-top: 12px; color: var(--text-subtle); font-size: 12px; }
-
-  /* Platform sections */
-  .platform {
-    margin-top: 48px;
-    scroll-margin-top: 20px;
-  }
+  .platform { margin-top: 48px; scroll-margin-top: 20px; }
   .platform-header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
   .platform-header h2 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
-  .tier-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 5px;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
+  .tier-badge { display: inline-block; padding: 3px 10px; border-radius: 5px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
   .tier-badge.open { background: var(--green-bg); color: var(--green); }
   .tier-badge.partner { background: var(--yellow-bg); color: var(--yellow); }
   .tier-badge.none { background: var(--red-bg); color: var(--red); }
   .platform-subline { color: var(--text-dim); font-size: 13px; margin-top: 2px; margin-bottom: 20px; }
-
-  .auth-box {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--cyan);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    font-size: 12.5px;
-  }
+  .auth-box { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--cyan); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 12.5px; }
   .auth-box strong { color: var(--text); }
   .auth-box code { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; color: var(--cyan); }
-
   .category { margin: 22px 0 10px; }
-  .category h3 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin: 0 0 8px;
-  }
+  .category h3 { font-size: 13px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; }
 
-  .endpoint {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-bottom: 6px;
-    display: grid;
-    grid-template-columns: 66px 1fr auto;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    transition: border-color 0.1s;
-  }
-  .endpoint:hover { border-color: var(--border-light); }
-  .endpoint.hidden { display: none; }
+  /* Endpoint as details/summary */
+  details.endpoint { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; font-size: 13px; transition: border-color 0.1s; overflow: hidden; }
+  details.endpoint:hover { border-color: var(--border-light); }
+  details.endpoint.hidden { display: none; }
+  details.endpoint[open] { border-color: var(--border-light); background: var(--panel-2); }
+  details.endpoint summary { padding: 10px 14px; display: grid; grid-template-columns: 66px 1fr auto 16px; align-items: center; gap: 12px; cursor: pointer; list-style: none; user-select: none; }
+  details.endpoint summary::-webkit-details-marker { display: none; }
+  .chev { color: var(--text-subtle); font-size: 10px; transition: transform 0.15s; }
+  details.endpoint[open] .chev { transform: rotate(90deg); color: var(--text-dim); }
 
-  .method {
-    font-family: 'SF Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 4px;
-    text-align: center;
-    letter-spacing: 0.04em;
-  }
+  .method { font-family: 'SF Mono', monospace; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-align: center; letter-spacing: 0.04em; }
   .method.get { background: var(--blue-bg); color: var(--blue); }
   .method.post { background: var(--green-bg); color: var(--green); }
   .method.put { background: var(--orange-bg); color: var(--orange); }
   .method.patch { background: var(--purple-bg); color: var(--purple); }
   .method.delete { background: var(--red-bg); color: var(--red); }
   .method.none { background: var(--panel-2); color: var(--text-subtle); }
-
   .path { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--text); word-break: break-all; }
   .purpose { color: var(--text-dim); font-size: 12px; text-align: right; }
 
-  .note-row {
-    color: var(--text-subtle);
-    font-size: 12.5px;
-    font-style: italic;
-    padding: 6px 14px;
-    margin-bottom: 8px;
-  }
+  /* Body panel */
+  .body-panel { padding: 4px 14px 14px; border-top: 1px solid var(--border); background: var(--panel); }
+  .body-panel .label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-subtle); margin: 12px 0 6px; font-weight: 600; }
+  .body-panel pre { margin: 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; color: var(--text); font-size: 12px; line-height: 1.55; }
+  .body-panel .note { color: var(--text-dim); font-size: 12px; margin: 4px 0; font-style: italic; }
+  .key { color: #93c5fd; }
+  .string { color: #86efac; }
+  .number { color: #fbbf24; }
+  .bool { color: #f472b6; }
+  .comment { color: #6b7280; }
 
-  .example-block {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin: 14px 0 8px;
-    overflow: hidden;
-  }
-  .example-block .example-header {
-    background: var(--panel-2);
-    padding: 8px 14px;
-    font-size: 11.5px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-  }
-  .example-block pre {
-    margin: 0;
-    padding: 12px 16px;
-    overflow-x: auto;
-    color: var(--text);
-    font-size: 12px;
-    line-height: 1.5;
-  }
-  .example-block .key { color: #93c5fd; }
-  .example-block .string { color: #86efac; }
-  .example-block .number { color: #fbbf24; }
-  .example-block .bool { color: #f472b6; }
-
-  .alert {
-    background: var(--red-bg);
-    border: 1px solid var(--red);
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin: 16px 0;
-    color: var(--text);
-    font-size: 13px;
-  }
+  .alert { background: var(--red-bg); border: 1px solid var(--red); border-radius: 8px; padding: 14px 18px; margin: 16px 0; color: var(--text); font-size: 13px; }
   .alert strong { color: var(--red); }
-
   .alert.warn { background: var(--yellow-bg); border-color: var(--yellow); }
   .alert.warn strong { color: var(--yellow); }
-
   .alert.info { background: var(--blue-bg); border-color: var(--blue); }
   .alert.info strong { color: var(--blue); }
 
@@ -235,8 +102,8 @@
     .layout { grid-template-columns: 1fr; }
     aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
     main { padding: 24px; }
-    .endpoint { grid-template-columns: 60px 1fr; }
-    .purpose { grid-column: 1 / -1; text-align: left; padding-left: 72px; }
+    details.endpoint summary { grid-template-columns: 60px 1fr 16px; }
+    .purpose { display: none; }
   }
 </style>
 </head>
@@ -246,11 +113,10 @@
 <aside>
   <h1>Booking APIs</h1>
   <div class="subtitle">Zoca · AI Frontdesk</div>
-
   <div class="search-wrap">
     <input type="text" id="search" placeholder="Search endpoints…" autocomplete="off">
+    <button class="expand-all" id="expand-all">Expand all</button>
   </div>
-
   <div class="section-label">Open</div>
   <nav>
     <a href="#square" class="nav-link"><span class="tier-dot open"></span>Square</a>
@@ -273,339 +139,635 @@
 <main>
   <div class="page-header">
     <h1>Booking Platform API Dashboard</h1>
-    <p>Every function call available on each of the 8 salon-booking platforms Zoca integrates with — endpoints, auth, examples, gotchas.</p>
+    <p>Every function call across the 8 salon platforms. Click any endpoint to see its request body / query params.</p>
     <div class="meta-row">
       <span>Last updated: 2026-04-21</span>
       <span>8 platforms</span>
-      <span>150+ endpoints</span>
+      <span>150+ endpoints with bodies</span>
     </div>
   </div>
 
-  <!-- SQUARE -->
+  <!-- ============== SQUARE ============== -->
   <section class="platform" id="square">
-    <div class="platform-header">
-      <h2>Square</h2>
-      <span class="tier-badge open">Open · Public API</span>
-    </div>
-    <div class="platform-subline">Base: <code>https://connect.squareup.com</code> · v2 endpoints · <a href="https://developer.squareup.com/reference/square" style="color:var(--blue)">docs</a></div>
-
-    <div class="auth-box">
-      <strong>Auth:</strong> <code>Authorization: Bearer {ACCESS_TOKEN}</code> + <code>Square-Version: 2024-XX-XX</code> · OAuth2 flow: <code>/oauth2/authorize</code> → <code>/oauth2/token</code>
-    </div>
+    <div class="platform-header"><h2>Square</h2><span class="tier-badge open">Open · Public API</span></div>
+    <div class="platform-subline">Base: <code>https://connect.squareup.com</code> · v2 endpoints · all JSON bodies require <code>Content-Type: application/json</code></div>
+    <div class="auth-box"><strong>Auth headers:</strong> <code>Authorization: Bearer {ACCESS_TOKEN}</code> + <code>Square-Version: 2024-10-17</code> (or latest)</div>
 
     <div class="category"><h3>Services (Catalog API)</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/catalog/list?types=ITEM</span><span class="purpose">List services</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/catalog/object/{id}</span><span class="purpose">Get service/variation</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/catalog/list?types=CATEGORY</span><span class="purpose">List categories</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/catalog/search-catalog-items</span><span class="purpose">Filter by category/name</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/catalog/search</span><span class="purpose">Generic catalog search</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/catalog/batch-retrieve</span><span class="purpose">Bulk fetch by IDs</span></div>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/catalog/list?types=ITEM</span><span class="purpose">List services</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>types=ITEM              <span class="comment">// or CATEGORY, TAX, DISCOUNT, MODIFIER, IMAGE, ITEM_VARIATION, SUBSCRIPTION_PLAN</span>
+cursor=<span class="string">eyJwYWd..</span>          <span class="comment">// pagination</span>
+catalog_version=<span class="number">1712000000</span>  <span class="comment">// optional, read a specific version</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/catalog/object/{id}</span><span class="purpose">Get service/variation</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>include_related_objects=<span class="bool">true</span>   <span class="comment">// returns linked variations, modifiers, taxes</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/catalog/search-catalog-items</span><span class="purpose">Filter by category/name</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"text_filter"</span>: <span class="string">"haircut"</span>,
+  <span class="key">"category_ids"</span>: [<span class="string">"CAT_ABC"</span>],
+  <span class="key">"stock_levels"</span>: [<span class="string">"OUT"</span>, <span class="string">"LOW"</span>],
+  <span class="key">"enabled_location_ids"</span>: [<span class="string">"L123"</span>],
+  <span class="key">"limit"</span>: <span class="number">100</span>,
+  <span class="key">"cursor"</span>: <span class="string">""</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/catalog/search</span><span class="purpose">Generic catalog search</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"object_types"</span>: [<span class="string">"ITEM"</span>, <span class="string">"ITEM_VARIATION"</span>],
+  <span class="key">"query"</span>: {
+    <span class="key">"exact_query"</span>: { <span class="key">"attribute_name"</span>: <span class="string">"name"</span>, <span class="key">"attribute_value"</span>: <span class="string">"Blowout"</span> }
+  },
+  <span class="key">"limit"</span>: <span class="number">50</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/catalog/batch-retrieve</span><span class="purpose">Bulk fetch by IDs</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"object_ids"</span>: [<span class="string">"OBJ_1"</span>, <span class="string">"OBJ_2"</span>], <span class="key">"include_related_objects"</span>: <span class="bool">true</span> }</pre></div></details>
 
     <div class="category"><h3>Staff / Booking Profiles</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/team-members/search</span><span class="purpose">List/search team</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/team-members/{id}</span><span class="purpose">Get team member</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings/team-member-booking-profiles</span><span class="purpose">Bookable staff profiles</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/team-member-booking-profiles/bulk-retrieve</span><span class="purpose">Bulk profiles</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings/location-booking-profiles</span><span class="purpose">Location booking config</span></div>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/team-members/search</span><span class="purpose">List/search team</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"query"</span>: {
+    <span class="key">"filter"</span>: {
+      <span class="key">"location_ids"</span>: [<span class="string">"L123"</span>],
+      <span class="key">"status"</span>: <span class="string">"ACTIVE"</span>
+    }
+  },
+  <span class="key">"limit"</span>: <span class="number">100</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/team-members/{id}</span><span class="purpose">Get team member</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Returns `team_member` object.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/bookings/team-member-booking-profiles</span><span class="purpose">Bookable staff profiles</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>bookable_only=<span class="bool">true</span>
+location_id=<span class="string">L123</span>
+limit=<span class="number">100</span>
+cursor=<span class="string">eyJw...</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings/team-member-booking-profiles/bulk-retrieve</span><span class="purpose">Bulk profiles</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"team_member_ids"</span>: [<span class="string">"TM_1"</span>, <span class="string">"TM_2"</span>] }</pre></div></details>
 
     <div class="category"><h3>Locations</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/locations</span><span class="purpose">List (w/ business hours)</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/locations/{id}</span><span class="purpose">Get single location</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/locations</span><span class="purpose">List all (with business hours)</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Returns `locations[]` with `business_hours.periods`.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/locations/{id}</span><span class="purpose">Get single</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Availability</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/availability/search</span><span class="purpose">Find open time slots</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings/availability/search</span><span class="purpose">Find open time slots</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"query"</span>: {
+    <span class="key">"filter"</span>: {
+      <span class="key">"start_at_range"</span>: {
+        <span class="key">"start_at"</span>: <span class="string">"2026-04-21T13:00:00Z"</span>,
+        <span class="key">"end_at"</span>:   <span class="string">"2026-04-22T01:00:00Z"</span>
+      },
+      <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+      <span class="key">"segment_filters"</span>: [{
+        <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>,
+        <span class="key">"team_member_id_filter"</span>: { <span class="key">"any"</span>: [<span class="string">"TM_1"</span>, <span class="string">"TM_2"</span>] }
+      }]
+    }
+  }
+}</pre></div></details>
 
     <div class="category"><h3>Bookings</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings</span><span class="purpose">Create booking</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Retrieve</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Update</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/{id}/cancel</span><span class="purpose">Cancel</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/bookings</span><span class="purpose">List (by location/staff/time)</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/bookings/bulk-retrieve</span><span class="purpose">Bulk retrieve</span></div>
 
-    <div class="example-block">
-      <div class="example-header">Example · Create Booking</div>
-      <pre><span class="key">"idempotency_key"</span>: <span class="string">"a1b2c3"</span>,
-<span class="key">"booking"</span>: {
-  <span class="key">"start_at"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
-  <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
-  <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
-  <span class="key">"appointment_segments"</span>: [{
-    <span class="key">"duration_minutes"</span>: <span class="number">60</span>,
-    <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>,
-    <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>,
-    <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span>
-  }]
-}</pre>
-    </div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings</span><span class="purpose">Create booking</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"a1b2c3-unique"</span>,
+  <span class="key">"booking"</span>: {
+    <span class="key">"start_at"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
+    <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+    <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+    <span class="key">"customer_note"</span>: <span class="string">"First visit"</span>,
+    <span class="key">"appointment_segments"</span>: [{
+      <span class="key">"duration_minutes"</span>: <span class="number">60</span>,
+      <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>,
+      <span class="key">"service_variation_version"</span>: <span class="number">1712000000000</span>,
+      <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span>
+    }]
+  }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Retrieve</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Returns booking with all segments + status.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/v2/bookings/{id}</span><span class="purpose">Update / reschedule</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"update-1"</span>,
+  <span class="key">"booking"</span>: {
+    <span class="key">"version"</span>: <span class="number">2</span>,
+    <span class="key">"start_at"</span>: <span class="string">"2026-04-23T16:00:00Z"</span>,
+    <span class="key">"appointment_segments"</span>: [{ <span class="key">"duration_minutes"</span>: <span class="number">60</span>, <span class="key">"service_variation_id"</span>: <span class="string">"VAR_ABC"</span>, <span class="key">"team_member_id"</span>: <span class="string">"TM_1"</span> }]
+  }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings/{id}/cancel</span><span class="purpose">Cancel</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"cancel-1"</span>,
+  <span class="key">"booking_version"</span>: <span class="number">2</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/bookings</span><span class="purpose">List (by location/staff/time)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>location_id=<span class="string">L123</span>
+team_member_id=<span class="string">TM_1</span>
+start_at_min=<span class="string">2026-04-21T00:00:00Z</span>
+start_at_max=<span class="string">2026-04-28T00:00:00Z</span>
+limit=<span class="number">100</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/bookings/bulk-retrieve</span><span class="purpose">Bulk retrieve</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"booking_ids"</span>: [<span class="string">"BK_1"</span>, <span class="string">"BK_2"</span>] }</pre></div></details>
 
     <div class="category"><h3>Customers</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/customers</span><span class="purpose">Create</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/customers/search</span><span class="purpose">Search by email/phone</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/customers/{id}</span><span class="purpose">Retrieve</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/v2/customers/{id}</span><span class="purpose">Update</span></div>
-    <div class="endpoint"><span class="method delete">DEL</span><span class="path">/v2/customers/{id}</span><span class="purpose">Delete</span></div>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/customers</span><span class="purpose">Create</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"cust-unique-1"</span>,
+  <span class="key">"given_name"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"family_name"</span>: <span class="string">"Doe"</span>,
+  <span class="key">"email_address"</span>: <span class="string">"jane@example.com"</span>,
+  <span class="key">"phone_number"</span>: <span class="string">"+14155551234"</span>,
+  <span class="key">"address"</span>: { <span class="key">"postal_code"</span>: <span class="string">"94103"</span> },
+  <span class="key">"note"</span>: <span class="string">"Referred by IG"</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/customers/search</span><span class="purpose">Search by email/phone</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"query"</span>: {
+    <span class="key">"filter"</span>: {
+      <span class="key">"email_address"</span>: { <span class="key">"exact"</span>: <span class="string">"jane@example.com"</span> },
+      <span class="key">"phone_number"</span>:  { <span class="key">"exact"</span>: <span class="string">"+14155551234"</span> }
+    }
+  },
+  <span class="key">"limit"</span>: <span class="number">50</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/v2/customers/{id}</span><span class="purpose">Update</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"email_address"</span>: <span class="string">"jane.doe@example.com"</span>,
+  <span class="key">"version"</span>: <span class="number">1</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method delete">DEL</span><span class="path">/v2/customers/{id}</span><span class="purpose">Delete</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Optional query param: <code>version</code>.</div></div></details>
 
     <div class="category"><h3>Cards on File</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/cards</span><span class="purpose">Save card (needs Web SDK nonce)</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/cards?customer_id=</span><span class="purpose">List cards for customer</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/cards/{id}/disable</span><span class="purpose">Disable card</span></div>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/cards</span><span class="purpose">Save card (needs Web SDK nonce)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"card-save-1"</span>,
+  <span class="key">"source_id"</span>: <span class="string">"cnon:card-nonce-from-web-sdk"</span>,
+  <span class="key">"card"</span>: {
+    <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+    <span class="key">"billing_address"</span>: { <span class="key">"postal_code"</span>: <span class="string">"94103"</span> },
+    <span class="key">"cardholder_name"</span>: <span class="string">"Jane Doe"</span>
+  }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/cards?customer_id=</span><span class="purpose">List cards for customer</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>customer_id=<span class="string">CUST_XYZ</span>
+include_disabled=<span class="bool">false</span>
+reference_id=<span class="string">optional-your-ref</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/cards/{id}/disable</span><span class="purpose">Disable card</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Payments &amp; Deposits</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/payments</span><span class="purpose">Charge (autocomplete:false for auth-only)</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/payments/{id}/complete</span><span class="purpose">Complete delayed capture</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/payments/{id}/cancel</span><span class="purpose">Cancel uncaptured</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/orders</span><span class="purpose">Create order (link for deposits)</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/refunds</span><span class="purpose">Refund payment</span></div>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/payments</span><span class="purpose">Charge (deposit or full)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (deposit example — auth-only)</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"pay-dep-1"</span>,
+  <span class="key">"source_id"</span>: <span class="string">"ccof:CARD_ID_ABC"</span>,   <span class="comment">// card-on-file prefix "ccof:"</span>
+  <span class="key">"amount_money"</span>: { <span class="key">"amount"</span>: <span class="number">2500</span>, <span class="key">"currency"</span>: <span class="string">"USD"</span> },
+  <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+  <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+  <span class="key">"autocomplete"</span>: <span class="bool">false</span>,      <span class="comment">// false = auth only (complete later)</span>
+  <span class="key">"order_id"</span>: <span class="string">"ORD_FOO"</span>,
+  <span class="key">"note"</span>: <span class="string">"$25 deposit for appt BK_123"</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/payments/{id}/complete</span><span class="purpose">Complete delayed capture</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{}   <span class="comment">// empty body; optional: { "version_token": "abc" }</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/payments/{id}/cancel</span><span class="purpose">Cancel uncaptured</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/orders</span><span class="purpose">Create order (link for deposits)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"order-1"</span>,
+  <span class="key">"order"</span>: {
+    <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+    <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+    <span class="key">"line_items"</span>: [{
+      <span class="key">"quantity"</span>: <span class="string">"1"</span>,
+      <span class="key">"catalog_object_id"</span>: <span class="string">"VAR_ABC"</span>
+    }]
+  }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/refunds</span><span class="purpose">Refund payment</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"refund-1"</span>,
+  <span class="key">"payment_id"</span>: <span class="string">"PAY_ID"</span>,
+  <span class="key">"amount_money"</span>: { <span class="key">"amount"</span>: <span class="number">1000</span>, <span class="key">"currency"</span>: <span class="string">"USD"</span> },
+  <span class="key">"reason"</span>: <span class="string">"Late cancel — policy refund"</span>
+}</pre></div></details>
 
     <div class="category"><h3>Gift Cards</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/gift-cards</span><span class="purpose">Issue new gift card</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/gift-cards/from-gan</span><span class="purpose">Lookup / balance check</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/gift-cards/activities</span><span class="purpose">REDEEM / ACTIVATE / LOAD</span></div>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/gift-cards</span><span class="purpose">Issue new gift card</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"gc-1"</span>,
+  <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+  <span class="key">"gift_card"</span>: { <span class="key">"type"</span>: <span class="string">"DIGITAL"</span> }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/gift-cards/from-gan</span><span class="purpose">Lookup / balance check</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"gan"</span>: <span class="string">"7783320001001234"</span> }</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/gift-cards/activities</span><span class="purpose">REDEEM / ACTIVATE / LOAD</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"gca-1"</span>,
+  <span class="key">"gift_card_activity"</span>: {
+    <span class="key">"type"</span>: <span class="string">"REDEEM"</span>,
+    <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+    <span class="key">"gift_card_id"</span>: <span class="string">"GC_ABC"</span>,
+    <span class="key">"redeem_activity_details"</span>: {
+      <span class="key">"amount_money"</span>: { <span class="key">"amount"</span>: <span class="number">5000</span>, <span class="key">"currency"</span>: <span class="string">"USD"</span> },
+      <span class="key">"payment_id"</span>: <span class="string">"PAY_FOO"</span>
+    }
+  }
+}</pre></div></details>
 
     <div class="category"><h3>Loyalty</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v2/loyalty/programs/main</span><span class="purpose">Get program</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/accounts</span><span class="purpose">Create account</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/accounts/search</span><span class="purpose">Find by phone</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/accounts/{id}/accumulate</span><span class="purpose">Accrue points</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/loyalty/rewards/{id}/redeem</span><span class="purpose">Redeem reward</span></div>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v2/loyalty/programs/main</span><span class="purpose">Get program</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/loyalty/accounts</span><span class="purpose">Create account</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"la-1"</span>,
+  <span class="key">"loyalty_account"</span>: {
+    <span class="key">"program_id"</span>: <span class="string">"PROG_ID"</span>,
+    <span class="key">"mapping"</span>: { <span class="key">"phone_number"</span>: <span class="string">"+14155551234"</span> }
+  }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/loyalty/accounts/search</span><span class="purpose">Find by phone</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"query"</span>: { <span class="key">"mappings"</span>: [{ <span class="key">"phone_number"</span>: <span class="string">"+14155551234"</span> }] } }</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/loyalty/accounts/{id}/accumulate</span><span class="purpose">Accrue points</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"pts-1"</span>,
+  <span class="key">"accumulate_points"</span>: { <span class="key">"order_id"</span>: <span class="string">"ORD_FOO"</span> },
+  <span class="key">"location_id"</span>: <span class="string">"L123"</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/loyalty/rewards/{id}/redeem</span><span class="purpose">Redeem reward</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"idempotency_key"</span>: <span class="string">"redeem-1"</span>, <span class="key">"location_id"</span>: <span class="string">"L123"</span> }</pre></div></details>
 
     <div class="category"><h3>Subscriptions / Memberships</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions</span><span class="purpose">Create</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/search</span><span class="purpose">Search</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/cancel</span><span class="purpose">Cancel</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/pause</span><span class="purpose">Pause</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/resume</span><span class="purpose">Resume</span></div>
 
-    <div class="category"><h3>Inventory</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/inventory/counts/batch-retrieve</span><span class="purpose">Read counts</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/inventory/changes/batch-create</span><span class="purpose">Adjust counts</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/subscriptions</span><span class="purpose">Create</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"sub-1"</span>,
+  <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+  <span class="key">"plan_variation_id"</span>: <span class="string">"PLAN_VAR"</span>,
+  <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span>,
+  <span class="key">"card_id"</span>: <span class="string">"CARD_ABC"</span>,
+  <span class="key">"start_date"</span>: <span class="string">"2026-05-01"</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/subscriptions/search</span><span class="purpose">Search</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"query"</span>: { <span class="key">"filter"</span>: { <span class="key">"customer_ids"</span>: [<span class="string">"CUST_XYZ"</span>] } } }</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/cancel</span><span class="purpose">Cancel</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/pause</span><span class="purpose">Pause</span><span class="chev">▶</span></summary><div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"pause_effective_date"</span>: <span class="string">"2026-06-01"</span>, <span class="key">"pause_cycle_duration"</span>: <span class="number">1</span> }</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/subscriptions/{id}/resume</span><span class="purpose">Resume</span><span class="chev">▶</span></summary><div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"resume_effective_date"</span>: <span class="string">"2026-07-01"</span> }</pre></div></details>
 
     <div class="category"><h3>Invoices</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/invoices</span><span class="purpose">Create</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/invoices/{id}/publish</span><span class="purpose">Send</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/invoices/{id}/cancel</span><span class="purpose">Cancel</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/invoices</span><span class="purpose">Create</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"inv-1"</span>,
+  <span class="key">"invoice"</span>: {
+    <span class="key">"location_id"</span>: <span class="string">"L123"</span>,
+    <span class="key">"order_id"</span>: <span class="string">"ORD_FOO"</span>,
+    <span class="key">"primary_recipient"</span>: { <span class="key">"customer_id"</span>: <span class="string">"CUST_XYZ"</span> },
+    <span class="key">"payment_requests"</span>: [{ <span class="key">"request_type"</span>: <span class="string">"BALANCE"</span>, <span class="key">"due_date"</span>: <span class="string">"2026-05-01"</span> }]
+  }
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/invoices/{id}/publish</span><span class="purpose">Send invoice</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"version"</span>: <span class="number">1</span>, <span class="key">"idempotency_key"</span>: <span class="string">"pub-1"</span> }</pre></div></details>
 
     <div class="category"><h3>Webhooks</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v2/webhooks/subscriptions</span><span class="purpose">Subscribe to events</span></div>
-    <div class="note-row">Key events: <code>booking.*</code>, <code>customer.*</code>, <code>payment.*</code>, <code>refund.*</code>, <code>invoice.*</code>, <code>order.*</code>, <code>team_member.*</code>, <code>gift_card.*</code>, <code>loyalty.*</code>, <code>subscription.*</code> · Signature: <code>x-square-hmacsha256-signature</code></div>
-
-    <div class="alert warn"><strong>Gaps:</strong> Rooms/resources not exposed. Reviews not exposed. Packages modeled via multi-variation catalog items.</div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v2/webhooks/subscriptions</span><span class="purpose">Subscribe to events</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"idempotency_key"</span>: <span class="string">"wh-1"</span>,
+  <span class="key">"subscription"</span>: {
+    <span class="key">"name"</span>: <span class="string">"Zoca Frontdesk"</span>,
+    <span class="key">"event_types"</span>: [<span class="string">"booking.created"</span>, <span class="string">"booking.updated"</span>, <span class="string">"payment.created"</span>],
+    <span class="key">"notification_url"</span>: <span class="string">"https://tasks.zoca.ai/webhooks/square"</span>,
+    <span class="key">"api_version"</span>: <span class="string">"2024-10-17"</span>
+  }
+}</pre></div></details>
   </section>
 
-  <!-- MINDBODY -->
+  <!-- ============== MINDBODY ============== -->
   <section class="platform" id="mindbody">
-    <div class="platform-header">
-      <h2>Mindbody</h2>
-      <span class="tier-badge open">Open · Public API v6</span>
-    </div>
-    <div class="platform-subline">Base: <code>https://api.mindbodyonline.com/public/v6</code> · <a href="https://developers.mindbodyonline.com/PublicDocumentation/V6" style="color:var(--blue)">docs</a></div>
+    <div class="platform-header"><h2>Mindbody</h2><span class="tier-badge open">Open · Public API v6</span></div>
+    <div class="platform-subline">Base: <code>https://api.mindbodyonline.com/public/v6</code></div>
+    <div class="auth-box"><strong>Headers (every call):</strong> <code>Api-Key: {dev_key}</code> + <code>SiteId: {numeric_site}</code> + <code>Authorization: {user_token}</code> · Token issue: <code>POST /usertoken/issue</code></div>
 
-    <div class="auth-box">
-      <strong>Auth:</strong> <code>Api-Key: &lt;dev key&gt;</code> + <code>SiteId: &lt;numeric&gt;</code> + <code>Authorization: &lt;user token&gt;</code> · Token: <code>POST /usertoken/issue</code> · Activate first: <code>POST /site/activatesite</code>
-    </div>
+    <div class="category"><h3>Auth</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/usertoken/issue</span><span class="purpose">Issue user token</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"Username"</span>: <span class="string">"Siteowner"</span>, <span class="key">"Password"</span>: <span class="string">"pass"</span> }</pre></div></details>
 
     <div class="category"><h3>Services / Session Types</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/sessiontypes</span><span class="purpose">Bookable service types</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/programs</span><span class="purpose">Service program groupings</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/site/sessiontypes</span><span class="purpose">Bookable service types</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>programIDs=<span class="number">1</span>
+onlineOnly=<span class="bool">true</span>
+limit=<span class="number">100</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/site/programs</span><span class="purpose">Service program groupings</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body. Filters: scheduleType (Appointment/Class/Enrollment).</div></div></details>
 
     <div class="category"><h3>Staff</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/staff/staff</span><span class="purpose">Roster at site</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/staff/staffpermissions</span><span class="purpose">What services each staff can do</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/staffappointments</span><span class="purpose">Staff calendar</span></div>
-
-    <div class="category"><h3>Sites / Locations / Resources</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/sites</span><span class="purpose">Sites for API key</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/locations</span><span class="purpose">Physical locations</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/site/resources</span><span class="purpose">Rooms / equipment</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/staff/staff</span><span class="purpose">List staff at site</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>staffIDs=<span class="number">100123</span>
+filters=SessionType             <span class="comment">// bookable staff only</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment/staffappointments</span><span class="purpose">Staff calendar</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>staffIDs=<span class="number">100123</span>
+startDate=<span class="string">2026-04-21</span>
+endDate=<span class="string">2026-04-28</span></pre></div></details>
 
     <div class="category"><h3>Availability</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/bookableitems</span><span class="purpose">Appt slot search</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/scheduleitems</span><span class="purpose">Staff availability blocks</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/class/classes</span><span class="purpose">Class schedule</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/class/classschedules</span><span class="purpose">Recurring class templates</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/activeclientmemberships</span><span class="purpose">Memberships eligible to book</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment/bookableitems</span><span class="purpose">Appt slot search</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>SessionTypeIds=<span class="number">25</span>
+StaffIds=<span class="number">100123</span>
+LocationIds=<span class="number">1</span>
+StartDate=<span class="string">2026-04-21</span>
+EndDate=<span class="string">2026-04-22</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/class/classes</span><span class="purpose">Class schedule</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>StartDateTime=<span class="string">2026-04-21T00:00</span>
+EndDateTime=<span class="string">2026-04-22T00:00</span>
+ClassIds=<span class="number">12345</span>
+StaffIds=<span class="number">100123</span>
+HideCanceledClasses=<span class="bool">true</span></pre></div></details>
 
     <div class="category"><h3>Appointments</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointment/addappointment</span><span class="purpose">Book a single appt</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointment/updateappointment</span><span class="purpose">Modify / cancel</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment/appointmentoptions</span><span class="purpose">Deposit/cancel rules</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/addappointment</span><span class="purpose">Book a single appointment</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"LocationId"</span>: <span class="number">1</span>,
+  <span class="key">"SessionTypeId"</span>: <span class="number">25</span>,
+  <span class="key">"StaffId"</span>: <span class="number">100000123</span>,
+  <span class="key">"StartDateTime"</span>: <span class="string">"2026-04-22T14:00:00"</span>,
+  <span class="key">"Duration"</span>: <span class="number">60</span>,
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>,
+  <span class="key">"ApplyPayment"</span>: <span class="bool">false</span>,
+  <span class="key">"Notes"</span>: <span class="string">"Booked via AI frontdesk"</span>
+}</pre></div></details>
 
-    <div class="example-block">
-      <div class="example-header">Example · AddAppointment</div>
-      <pre><span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
-<span class="key">"LocationId"</span>: <span class="number">1</span>,
-<span class="key">"SessionTypeId"</span>: <span class="number">25</span>,
-<span class="key">"StaffId"</span>: <span class="number">100000123</span>,
-<span class="key">"StartDateTime"</span>: <span class="string">"2026-04-22T14:00:00"</span>,
-<span class="key">"Duration"</span>: <span class="number">60</span>,
-<span class="key">"SendEmail"</span>: <span class="bool">true</span>,
-<span class="key">"ApplyPayment"</span>: <span class="bool">false</span></pre>
-    </div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointment/updateappointment</span><span class="purpose">Modify / cancel</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"AppointmentId"</span>: <span class="number">55555</span>,
+  <span class="key">"StartDateTime"</span>: <span class="string">"2026-04-23T15:00:00"</span>,
+  <span class="key">"StaffId"</span>: <span class="number">100000123</span>,
+  <span class="key">"Execute"</span>: <span class="string">"PartialPayment"</span>,     <span class="comment">// or "Cancel"</span>
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>
+}</pre></div></details>
 
     <div class="category"><h3>Classes</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/addclienttoclass</span><span class="purpose">Enroll client</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/removeclientfromclass</span><span class="purpose">Drop client</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/substituteclassteacher</span><span class="purpose">Sub teacher</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/class/waitlistentries</span><span class="purpose">Waitlist</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/addclienttoclasswaitlist</span><span class="purpose">Add to waitlist</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/class/removefromwaitlist</span><span class="purpose">Remove from waitlist</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/class/addclienttoclass</span><span class="purpose">Enroll client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"ClassId"</span>: <span class="number">12345</span>,
+  <span class="key">"RequirePayment"</span>: <span class="bool">true</span>,
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>,
+  <span class="key">"Waitlist"</span>: <span class="bool">false</span>,
+  <span class="key">"ClientServiceId"</span>: <span class="number">9876</span>    <span class="comment">// use an existing package</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/class/removeclientfromclass</span><span class="purpose">Drop client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"ClassId"</span>: <span class="number">12345</span>,
+  <span class="key">"LateCancel"</span>: <span class="bool">false</span>,
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/class/addclienttoclasswaitlist</span><span class="purpose">Add to waitlist</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>, <span class="key">"ClassId"</span>: <span class="number">12345</span>, <span class="key">"SendEmail"</span>: <span class="bool">true</span> }</pre></div></details>
 
     <div class="category"><h3>Clients</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/addclient</span><span class="purpose">Create client</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/updateclient</span><span class="purpose">Edit profile</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clients</span><span class="purpose">Search by name/email</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientcontracts</span><span class="purpose">Memberships held</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientservices</span><span class="purpose">Remaining packages</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientvisits</span><span class="purpose">Visit history</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientpurchases</span><span class="purpose">Purchase history</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientaccountbalances</span><span class="purpose">Balance</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientformulanotes</span><span class="purpose">SOAP / formula notes</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/sendpasswordresetemail</span><span class="purpose">Pwd reset</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/client/addclient</span><span class="purpose">Create client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"FirstName"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"LastName"</span>:  <span class="string">"Doe"</span>,
+  <span class="key">"Email"</span>:     <span class="string">"jane@example.com"</span>,
+  <span class="key">"MobilePhone"</span>: <span class="string">"+14155551234"</span>,
+  <span class="key">"BirthDate"</span>:  <span class="string">"1990-05-12"</span>,
+  <span class="key">"ReferredBy"</span>: <span class="string">"AI Frontdesk"</span>,
+  <span class="key">"SendAccountEmails"</span>: <span class="bool">true</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/client/updateclient</span><span class="purpose">Edit profile</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"Client"</span>: { <span class="key">"Id"</span>: <span class="string">"100012345"</span>, <span class="key">"Email"</span>: <span class="string">"new@example.com"</span> } }</pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/client/clients</span><span class="purpose">Search by name/email</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>SearchText=<span class="string">Jane</span>
+ClientIds=<span class="string">100012345</span>
+Email=<span class="string">jane@example.com</span></pre></div></details>
 
     <div class="category"><h3>Cards on File</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/client/addorupdateclientcreditcard</span><span class="purpose">Store / replace card</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/client/addorupdateclientcreditcard</span><span class="purpose">Store / replace card</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"CardNumber"</span>: <span class="string">"4111111111111111"</span>,
+  <span class="key">"ExpMonth"</span>: <span class="string">"12"</span>,
+  <span class="key">"ExpYear"</span>: <span class="string">"2028"</span>,
+  <span class="key">"LastFour"</span>: <span class="string">"1111"</span>,
+  <span class="key">"Billing"</span>: {
+    <span class="key">"Address"</span>: <span class="string">"123 Main St"</span>,
+    <span class="key">"City"</span>: <span class="string">"Austin"</span>,
+    <span class="key">"PostalCode"</span>: <span class="string">"78701"</span>,
+    <span class="key">"Country"</span>: <span class="string">"US"</span>
+  }
+}</pre></div></details>
 
     <div class="category"><h3>Sales / Cart / Checkout</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/checkoutshoppingcart</span><span class="purpose">Atomic cart checkout</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/sales</span><span class="purpose">Sales history</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/contracts</span><span class="purpose">Memberships catalog</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/giftcards</span><span class="purpose">Gift card catalog</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/packages</span><span class="purpose">Packages</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/products</span><span class="purpose">Retail products</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/sale/services</span><span class="purpose">Retail session packages</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/purchasegiftcard</span><span class="purpose">Buy gift card</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/purchasecontract</span><span class="purpose">Buy membership</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/sale/returnsale</span><span class="purpose">Refund by SaleId</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/sale/checkoutshoppingcart</span><span class="purpose">Atomic cart checkout</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"Test"</span>: <span class="bool">false</span>,
+  <span class="key">"CartItems"</span>: [
+    { <span class="key">"Item"</span>: { <span class="key">"Type"</span>: <span class="string">"Service"</span>, <span class="key">"Metadata"</span>: { <span class="key">"Id"</span>: <span class="number">25</span> } }, <span class="key">"Quantity"</span>: <span class="number">1</span> }
+  ],
+  <span class="key">"Payments"</span>: [
+    { <span class="key">"Type"</span>: <span class="string">"StoredCard"</span>, <span class="key">"Metadata"</span>: { <span class="key">"Amount"</span>: <span class="number">75.00</span> } }
+  ],
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/sale/purchasegiftcard</span><span class="purpose">Buy gift card</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"GiftCardId"</span>: <span class="number">987</span>,
+  <span class="key">"Amount"</span>: <span class="number">100.00</span>,
+  <span class="key">"Sender"</span>:   { <span class="key">"ClientId"</span>: <span class="string">"100012345"</span> },
+  <span class="key">"Recipient"</span>: { <span class="key">"Email"</span>: <span class="string">"friend@example.com"</span> }
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/sale/returnsale</span><span class="purpose">Refund by SaleId</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"SaleId"</span>: <span class="number">55555</span>, <span class="key">"Test"</span>: <span class="bool">false</span>, <span class="key">"SendEmail"</span>: <span class="bool">true</span> }</pre></div></details>
 
-    <div class="category"><h3>Enrollments (multi-session courses)</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/enrollment/enrollments</span><span class="purpose">List</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/enrollment/addclienttoenrollment</span><span class="purpose">Enroll client</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/enrollment/removeclientfromenrollment</span><span class="purpose">Remove</span></div>
+    <div class="category"><h3>Enrollments (multi-session)</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/enrollment/addclienttoenrollment</span><span class="purpose">Enroll client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"ClientId"</span>: <span class="string">"100012345"</span>,
+  <span class="key">"ClassScheduleId"</span>: <span class="number">9876</span>,
+  <span class="key">"RequirePayment"</span>: <span class="bool">true</span>,
+  <span class="key">"SendEmail"</span>: <span class="bool">true</span>
+}</pre></div></details>
 
-    <div class="category"><h3>Rewards</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/client/clientrewards</span><span class="purpose">Points balance/history</span></div>
-
-    <div class="category"><h3>Webhooks <span style="color:var(--text-subtle);font-weight:400;font-size:11px">(separate API base: <code>mb-api.mindbodyonline.com/push/api/v1</code>)</span></h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/subscriptions</span><span class="purpose">Create subscription</span></div>
-    <div class="endpoint"><span class="method patch">PATCH</span><span class="path">/subscriptions/{id}</span><span class="purpose">Update / activate</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/messages</span><span class="purpose">Delivered messages</span></div>
-    <div class="note-row">Events: <code>appointmentBooking.*</code>, <code>class.*</code>, <code>classRosterBooking.*</code>, <code>classWaitlistRequest.*</code>, <code>client.*</code>, <code>clientSale.created</code>, <code>staff.*</code>, <code>location.*</code>, <code>site.*</code></div>
+    <div class="category"><h3>Webhooks (separate API: <code>mb-api.mindbodyonline.com/push/api/v1</code>)</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/subscriptions</span><span class="purpose">Create webhook subscription</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"eventIds"</span>: [<span class="string">"appointmentBooking.created"</span>, <span class="string">"client.updated"</span>],
+  <span class="key">"eventSchemaVersion"</span>: <span class="number">1</span>,
+  <span class="key">"webhookUrl"</span>: <span class="string">"https://tasks.zoca.ai/webhooks/mindbody"</span>,
+  <span class="key">"subscriberName"</span>: <span class="string">"Zoca"</span>,
+  <span class="key">"subscriberContactEmail"</span>: <span class="string">"eng@zoca.com"</span>
+}</pre></div></details>
   </section>
 
-  <!-- ACUITY -->
+  <!-- ============== ACUITY ============== -->
   <section class="platform" id="acuity">
-    <div class="platform-header">
-      <h2>Acuity Scheduling</h2>
-      <span class="tier-badge open">Open · Public API v1</span>
-    </div>
-    <div class="platform-subline">Base: <code>https://acuityscheduling.com/api/v1</code> · <a href="https://developers.acuityscheduling.com/reference" style="color:var(--blue)">docs</a></div>
-
-    <div class="auth-box">
-      <strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(userID:apiKey)</code> — credentials from Acuity &gt; Integrations &gt; API · OAuth2 for third-party apps
-    </div>
+    <div class="platform-header"><h2>Acuity Scheduling</h2><span class="tier-badge open">Open · Public API v1</span></div>
+    <div class="platform-subline">Base: <code>https://acuityscheduling.com/api/v1</code></div>
+    <div class="auth-box"><strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(userID:apiKey)</code></div>
 
     <div class="category"><h3>Appointment Types (Services)</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment-types</span><span class="purpose">List all types</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointment-types/{id}/form-fields</span><span class="purpose">Linked intake fields</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-types</span><span class="purpose">List all types</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>includeDeleted=<span class="bool">false</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointment-types/{id}/form-fields</span><span class="purpose">Linked intake fields</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Calendars (Staff)</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/calendars</span><span class="purpose">List all staff calendars</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/calendars</span><span class="purpose">List all staff calendars</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Availability</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/dates?month=&amp;appointmentTypeID=&amp;calendarID=&amp;timezone=</span><span class="purpose">Dates with availability</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/times?date=&amp;appointmentTypeID=&amp;calendarID=</span><span class="purpose">Time slots</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/classes</span><span class="purpose">Group class instances</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/availability/check-times</span><span class="purpose">Validate a specific datetime</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/availability/dates</span><span class="purpose">Dates with availability</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>month=<span class="string">2026-05</span>
+appointmentTypeID=<span class="number">123456</span>
+calendarID=<span class="number">78910</span>
+timezone=<span class="string">America/Los_Angeles</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/availability/times</span><span class="purpose">Time slots on a date</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>date=<span class="string">2026-05-15</span>
+appointmentTypeID=<span class="number">123456</span>
+calendarID=<span class="number">78910</span>
+timezone=<span class="string">America/Los_Angeles</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/availability/classes</span><span class="purpose">Group class instances</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>month=<span class="string">2026-05</span>
+appointmentTypeID=<span class="number">123456</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/availability/check-times</span><span class="purpose">Validate a specific datetime</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>datetime=<span class="string">2026-05-15T14:00:00-0700</span>
+appointmentTypeID=<span class="number">123456</span>
+calendarID=<span class="number">78910</span></pre></div></details>
 
     <div class="category"><h3>Appointments</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointments</span><span class="purpose">List (filters: dates/calendar/type)</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointments/{id}</span><span class="purpose">Get single</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Create (add ?admin=true to bypass)</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/appointments/{id}/reschedule</span><span class="purpose">Reschedule</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/appointments/{id}/cancel</span><span class="purpose">Cancel</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/appointments/{id}</span><span class="purpose">Update forms / labels / notes</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/appointments/{id}/payments</span><span class="purpose">List payments</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointments/{id}/payments</span><span class="purpose">Record payment</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/appointments</span><span class="purpose">List appointments</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>minDate=<span class="string">2026-04-21</span>
+maxDate=<span class="string">2026-04-28</span>
+calendarID=<span class="number">78910</span>
+appointmentTypeID=<span class="number">123456</span>
+canceled=<span class="bool">false</span></pre></div></details>
 
-    <div class="example-block">
-      <div class="example-header">Example · Create Appointment</div>
-      <pre><span class="key">"datetime"</span>: <span class="string">"2026-05-15T14:00:00-0700"</span>,
-<span class="key">"appointmentTypeID"</span>: <span class="number">123456</span>,
-<span class="key">"calendarID"</span>: <span class="number">78910</span>,
-<span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
-<span class="key">"lastName"</span>: <span class="string">"Doe"</span>,
-<span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
-<span class="key">"phone"</span>: <span class="string">"+15551234567"</span>,
-<span class="key">"fields"</span>: [{<span class="key">"id"</span>: <span class="number">1111</span>, <span class="key">"value"</span>: <span class="string">"First visit"</span>}]</pre>
-    </div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Create (?admin=true to bypass rules)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"datetime"</span>: <span class="string">"2026-05-15T14:00:00-0700"</span>,
+  <span class="key">"appointmentTypeID"</span>: <span class="number">123456</span>,
+  <span class="key">"calendarID"</span>: <span class="number">78910</span>,
+  <span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"lastName"</span>: <span class="string">"Doe"</span>,
+  <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
+  <span class="key">"phone"</span>: <span class="string">"+15551234567"</span>,
+  <span class="key">"fields"</span>: [{<span class="key">"id"</span>: <span class="number">1111</span>, <span class="key">"value"</span>: <span class="string">"First visit"</span>}]
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/appointments/{id}/reschedule</span><span class="purpose">Reschedule</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"datetime"</span>: <span class="string">"2026-05-16T10:30:00-0700"</span>,
+  <span class="key">"calendarID"</span>: <span class="number">78910</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/appointments/{id}/cancel</span><span class="purpose">Cancel</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"cancelNote"</span>: <span class="string">"Client requested cancellation"</span> }</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/appointments/{id}</span><span class="purpose">Update fields / label / notes</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"fields"</span>: [{ <span class="key">"id"</span>: <span class="number">1111</span>, <span class="key">"value"</span>: <span class="string">"Updated intake"</span> }],
+  <span class="key">"labels"</span>: [{ <span class="key">"id"</span>: <span class="number">42</span> }],
+  <span class="key">"notes"</span>: <span class="string">"VIP client"</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointments/{id}/payments</span><span class="purpose">Record payment</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"amount"</span>: <span class="string">"25.00"</span>,
+  <span class="key">"processor"</span>: <span class="string">"stripe"</span>,        <span class="comment">// or "square", "paypal", "authnet", "braintree"</span>
+  <span class="key">"transactionID"</span>: <span class="string">"pi_stripe_ref"</span>
+}</pre></div></details>
 
     <div class="category"><h3>Clients</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/clients?search=</span><span class="purpose">Search clients</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/clients</span><span class="purpose">Add standalone client</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/clients</span><span class="purpose">Search clients</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>search=<span class="string">jane@example.com</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/clients</span><span class="purpose">Add standalone client</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"lastName"</span>: <span class="string">"Doe"</span>,
+  <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>,
+  <span class="key">"phone"</span>: <span class="string">"+15551234567"</span>,
+  <span class="key">"notes"</span>: <span class="string">"Prefers Tuesdays"</span>
+}</pre></div></details>
 
-    <div class="category"><h3>Forms / Intake</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/forms</span><span class="purpose">List forms + fields</span></div>
-
-    <div class="category"><h3>Gift Certificates / Coupons</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/certificates</span><span class="purpose">List issued</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/certificates</span><span class="purpose">Issue gift certificate</span></div>
-    <div class="endpoint"><span class="method delete">DEL</span><span class="path">/certificates/{id}</span><span class="purpose">Void</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/certificates/check?certificate=</span><span class="purpose">Validate code</span></div>
-
-    <div class="category"><h3>Products / Orders</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/products</span><span class="purpose">List packages/products</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/orders</span><span class="purpose">List orders</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/orders/{id}</span><span class="purpose">Get order</span></div>
+    <div class="category"><h3>Gift Certificates</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/certificates</span><span class="purpose">Issue gift certificate</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"certificate"</span>: <span class="string">"CUSTOM-CODE-1"</span>,
+  <span class="key">"amount"</span>: <span class="number">100.00</span>,
+  <span class="key">"email"</span>: <span class="string">"recipient@example.com"</span>,
+  <span class="key">"name"</span>: <span class="string">"Holiday gift"</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/certificates/check</span><span class="purpose">Validate code</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>certificate=<span class="string">CODE-ABC</span>
+appointmentTypeID=<span class="number">123456</span></pre></div></details>
 
     <div class="category"><h3>Webhooks</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/webhooks</span><span class="purpose">List</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/webhooks</span><span class="purpose">Subscribe</span></div>
-    <div class="endpoint"><span class="method delete">DEL</span><span class="path">/webhooks/{id}</span><span class="purpose">Unsubscribe</span></div>
-    <div class="note-row">Events: <code>appointment.scheduled</code>, <code>appointment.rescheduled</code>, <code>appointment.canceled</code>, <code>appointment.changed</code>, <code>order.completed</code></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/webhooks</span><span class="purpose">Subscribe</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (form-encoded)</div><pre>event=<span class="string">appointment.scheduled</span>
+target=<span class="string">https://tasks.zoca.ai/webhooks/acuity</span></pre></div></details>
   </section>
 
-  <!-- PHOREST -->
+  <!-- ============== PHOREST ============== -->
   <section class="platform" id="phorest">
-    <div class="platform-header">
-      <h2>Phorest</h2>
-      <span class="tier-badge partner">Partner API</span>
-    </div>
-    <div class="platform-subline">Base: <code>https://api-gateway-eu1.phorest.com/third-party-api-server/api</code> · <a href="https://developer.phorest.com" style="color:var(--blue)">docs</a></div>
+    <div class="platform-header"><h2>Phorest</h2><span class="tier-badge partner">Partner API</span></div>
+    <div class="platform-subline">Base: <code>https://api-gateway-eu1.phorest.com/third-party-api-server/api</code> (US host for US tenants)</div>
+    <div class="auth-box"><strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(global/&lt;email&gt;:password)</code></div>
+    <div class="alert warn"><strong>No webhooks:</strong> Poll for changes.</div>
 
-    <div class="auth-box">
-      <strong>Auth:</strong> HTTP Basic <code>Authorization: Basic base64(global/&lt;email&gt;:password)</code> · US tenants use US gateway host
-    </div>
-    <div class="alert warn"><strong>No webhooks:</strong> Per Phorest docs, you must poll endpoints for state changes.</div>
-
-    <div class="category"><h3>Services</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service</span><span class="purpose">List services</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicecategory</span><span class="purpose">List categories</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service/specialoffer</span><span class="purpose">Special offers</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicepackage</span><span class="purpose">Service packages</span></div>
-
-    <div class="category"><h3>Staff</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{staffId}</span><span class="purpose">Retrieve staff</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{staffId}/break/{breakId}</span><span class="purpose">Retrieve break</span></div>
-
-    <div class="category"><h3>Branches</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch</span><span class="purpose">List all branches</span></div>
+    <div class="category"><h3>Services / Staff / Branches (reads)</h3></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/service</span><span class="purpose">List services</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>page=<span class="number">0</span>&amp;size=<span class="number">200</span>&amp;serviceGroupId=<span class="string">grp-abc</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/servicecategory</span><span class="purpose">Categories</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/staff/{id}</span><span class="purpose">Retrieve staff</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch</span><span class="purpose">List branches</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">No body.</div></div></details>
 
     <div class="category"><h3>Availability</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointments/availability</span><span class="purpose">Slot search</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointments/availability</span><span class="purpose">Slot search</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"startTime"</span>: <span class="string">"2026-04-21T09:00:00Z"</span>,
+  <span class="key">"endTime"</span>:   <span class="string">"2026-04-21T18:00:00Z"</span>,
+  <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+  <span class="key">"clientServiceSelections"</span>: [{
+    <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+    <span class="key">"serviceIds"</span>: [<span class="string">"svc-123"</span>]
+  }],
+  <span class="key">"isOnlineAvailability"</span>: <span class="bool">true</span>
+}</pre></div></details>
 
-    <div class="category"><h3>Bookings (primary write flow)</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking</span><span class="purpose">Create (usually RESERVED)</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/activate</span><span class="purpose">Activate w/ deposit</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/cancel</span><span class="purpose">Cancel booking</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/note</span><span class="purpose">Append note</span></div>
-
-    <div class="example-block">
-      <div class="example-header">Example · Reserve → Activate with deposit</div>
-      <pre><span style="color:var(--text-subtle)">// 1. POST /booking</span>
-{
+    <div class="category"><h3>Bookings (reserve → activate)</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking</span><span class="purpose">Create (RESERVED)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
   <span class="key">"bookingStatus"</span>: <span class="string">"RESERVED"</span>,
   <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+  <span class="key">"note"</span>: <span class="string">"Prefers female stylist"</span>,
   <span class="key">"clientAppointmentSchedules"</span>: [{
     <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
     <span class="key">"clientAppointments"</span>: [{
@@ -614,156 +776,247 @@
       <span class="key">"startTime"</span>: <span class="string">"2026-04-21T14:00:00Z"</span>
     }]
   }]
-}
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/activate</span><span class="purpose">Activate (optional deposit)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"depositAmount"</span>: <span class="number">25.00</span> }</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/cancel</span><span class="purpose">Cancel</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"cancellationReason"</span>: <span class="string">"CLIENT_REQUEST"</span>, <span class="key">"notifyClient"</span>: <span class="bool">true</span> }</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/booking/{id}/note</span><span class="purpose">Append note</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"note"</span>: <span class="string">"Client requested parking info"</span> }</pre></div></details>
 
-<span style="color:var(--text-subtle)">// 2. POST /booking/{id}/activate</span>
-{ <span class="key">"depositAmount"</span>: <span class="number">25.00</span> }</pre>
-    </div>
-
-    <div class="category"><h3>Appointments (read / lifecycle)</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/appointment</span><span class="purpose">List appointments</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointment/checkin</span><span class="purpose">Check in</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointment/cancel</span><span class="purpose">Cancel multiple</span></div>
+    <div class="category"><h3>Appointments (lifecycle)</h3></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/appointment</span><span class="purpose">List appointments</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>from_date=<span class="string">2026-04-21T00:00:00Z</span>
+to_date=<span class="string">2026-04-28T00:00:00Z</span>
+staff_id=<span class="string">staff-9</span></pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/appointment/checkin</span><span class="purpose">Check in</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"appointmentIds"</span>: [<span class="string">"appt-1"</span>, <span class="string">"appt-2"</span>] }</pre></div></details>
 
     <div class="category"><h3>Clients</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/client</span><span class="purpose">List clients</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/client/{id}</span><span class="purpose">Retrieve</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/client</span><span class="purpose">Create</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/business/{b}/client/{id}</span><span class="purpose">Update (requires version)</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/client/{id}/loyaltypoints</span><span class="purpose">Adjust points</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/client</span><span class="purpose">Create</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"lastName"</span>:  <span class="string">"Doe"</span>,
+  <span class="key">"email"</span>:     <span class="string">"jane@example.com"</span>,
+  <span class="key">"mobile"</span>:    <span class="string">"+15551234567"</span>,
+  <span class="key">"emailMarketingConsent"</span>: <span class="bool">true</span>,
+  <span class="key">"smsMarketingConsent"</span>:  <span class="bool">true</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method put">PUT</span><span class="path">/business/{b}/client/{id}</span><span class="purpose">Update (requires version)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"firstName"</span>: <span class="string">"Jane"</span>,
+  <span class="key">"lastName"</span>:  <span class="string">"Doe-Smith"</span>,
+  <span class="key">"version"</span>:   <span class="number">3</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/client/{id}/loyaltypoints</span><span class="purpose">Adjust points</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"loyaltyPoints"</span>: <span class="number">50</span>, <span class="key">"reason"</span>: <span class="string">"Referral bonus"</span> }</pre></div></details>
 
-    <div class="category"><h3>Purchases / Sales</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/purchase</span><span class="purpose">Sell products/vouchers/courses</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/supplementalpaymenttype</span><span class="purpose">Payment types</span></div>
-
-    <div class="category"><h3>Vouchers / Gift Cards</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/voucher</span><span class="purpose">List vouchers</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/business/{b}/voucher</span><span class="purpose">Issue voucher</span></div>
-
-    <div class="category"><h3>Courses / Reviews</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/clientcourse</span><span class="purpose">List client courses</span></div>
-    <div class="endpoint"><span class="method put">PUT</span><span class="path">/business/{b}/clientcourse/{id}</span><span class="purpose">Update course</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/business/{b}/branch/{br}/reviews</span><span class="purpose">List reviews</span></div>
+    <div class="category"><h3>Purchases / Vouchers</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/branch/{br}/purchase</span><span class="purpose">Sell products / vouchers / courses</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>,
+  <span class="key">"purchaseItems"</span>: [{
+    <span class="key">"itemType"</span>: <span class="string">"VOUCHER"</span>,
+    <span class="key">"itemId"</span>:   <span class="string">"vchr-50"</span>,
+    <span class="key">"price"</span>:    <span class="number">50.00</span>
+  }],
+  <span class="key">"payments"</span>: [{ <span class="key">"paymentType"</span>: <span class="string">"CARD"</span>, <span class="key">"amount"</span>: <span class="number">50.00</span> }]
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/business/{b}/voucher</span><span class="purpose">Issue voucher</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"value"</span>: <span class="number">50.00</span>,
+  <span class="key">"expiryDate"</span>: <span class="string">"2027-04-21"</span>,
+  <span class="key">"clientId"</span>: <span class="string">"clientAbc"</span>
+}</pre></div></details>
   </section>
 
-  <!-- VAGARO -->
+  <!-- ============== VAGARO ============== -->
   <section class="platform" id="vagaro">
-    <div class="platform-header">
-      <h2>Vagaro</h2>
-      <span class="tier-badge partner">Enterprise partner-gated</span>
-    </div>
-    <div class="platform-subline">Base: <code>https://api.vagaro.com/{region}/api/v2</code> · <a href="https://docs.vagaro.com/" style="color:var(--blue)">docs</a></div>
-
-    <div class="auth-box">
-      <strong>Auth:</strong> OAuth2 client-credentials — <code>POST /merchants/generate-access-token</code> with <code>{clientId, clientSecretKey, scope}</code>. Token passed as <code>accessToken:</code> header (not Bearer).
-    </div>
-    <div class="alert"><strong>Access:</strong> Paying merchants only. Credentials via Vagaro Enterprise Sales. <strong>$10/mo</strong> + 5,000 calls included + $0.002/call beyond.</div>
+    <div class="platform-header"><h2>Vagaro</h2><span class="tier-badge partner">Enterprise partner-gated</span></div>
+    <div class="platform-subline">Base: <code>https://api.vagaro.com/{region}/api/v2</code> · Docs: <a href="https://docs.vagaro.com" style="color:var(--blue)">docs.vagaro.com</a></div>
+    <div class="auth-box"><strong>Auth:</strong> OAuth2 client-credentials → token passed as <code>accessToken:</code> header (NOT Bearer).</div>
+    <div class="alert"><strong>Access:</strong> Partner-gated. $10/mo + $0.002/call after 5,000.</div>
 
     <div class="category"><h3>Auth / Admin</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/merchants/generate-access-token</span><span class="purpose">Issue token</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/merchants/employees/assign</span><span class="purpose">Assign employee</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/merchants/employees/unassign</span><span class="purpose">Unassign</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/merchants/generate-access-token</span><span class="purpose">Issue token</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"clientId"</span>: <span class="string">"CLIENT_ID"</span>,
+  <span class="key">"clientSecretKey"</span>: <span class="string">"CLIENT_SECRET"</span>,
+  <span class="key">"scope"</span>: <span class="string">"appointments customers services"</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/merchants/employees/assign</span><span class="purpose">Assign employee</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"businessIds"</span>: [<span class="string">"biz-1"</span>],
+  <span class="key">"employeeId"</span>: <span class="string">"emp-1"</span>,
+  <span class="key">"accessLevelId"</span>: <span class="number">3</span>,
+  <span class="key">"provisionCalendar"</span>: <span class="bool">true</span>
+}</pre></div></details>
 
     <div class="category"><h3>Reads (all POST with JSON body)</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/locations</span><span class="purpose">Business locations</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/employees</span><span class="purpose">Employee by businessId+providerId</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/customers</span><span class="purpose">Customer by businessId+customerId</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/services</span><span class="purpose">Services (w/ pagination)</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Retrieve appointments</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/locations</span><span class="purpose">Business locations</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"businessId"</span>: <span class="string">"biz-1"</span>,
+  <span class="key">"pageNumber"</span>: <span class="number">1</span>,
+  <span class="key">"pageSize"</span>:   <span class="number">50</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/employees</span><span class="purpose">Employee lookup</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"businessId"</span>: <span class="string">"biz-1"</span>, <span class="key">"serviceProviderId"</span>: <span class="string">"emp-1"</span> }</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/customers</span><span class="purpose">Customer lookup</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{ <span class="key">"businessId"</span>: <span class="string">"biz-1"</span>, <span class="key">"customerId"</span>: <span class="string">"cust-1"</span> }</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/services</span><span class="purpose">Service catalog</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"businessId"</span>: <span class="string">"biz-1"</span>,
+  <span class="key">"serviceId"</span>: <span class="string">"svc-1"</span>,   <span class="comment">// optional filter</span>
+  <span class="key">"pageNumber"</span>: <span class="number">1</span>,
+  <span class="key">"pageSize"</span>:   <span class="number">100</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/appointments</span><span class="purpose">Retrieve appointments</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"businessId"</span>: <span class="string">"biz-1"</span>,
+  <span class="key">"startDate"</span>: <span class="string">"2026-04-21T00:00:00Z"</span>,
+  <span class="key">"endDate"</span>:   <span class="string">"2026-04-28T00:00:00Z"</span>
+}</pre></div></details>
 
-    <div class="alert warn"><strong>Undocumented gaps:</strong> availability search · appointment create/update/cancel · transactions · memberships · gift cards. Must negotiate partner-specific access for write flows.</div>
+    <div class="alert warn"><strong>Undocumented:</strong> availability search · create/update/cancel appointment · transactions · memberships · gift cards. Partner-specific access required for write flows.</div>
 
-    <div class="category"><h3>Webhooks</h3></div>
-    <div class="note-row">Configure in-app. Receiver must be HTTPS, accept JSON POST, return 2xx within 20s. Retries: up to 5 over 15 minutes.</div>
-    <div class="endpoint"><span class="method none">EVT</span><span class="path">appointment.created / updated / deleted</span><span class="purpose">Booking lifecycle</span></div>
-    <div class="endpoint"><span class="method none">EVT</span><span class="path">customer.created / updated</span><span class="purpose">Client changes</span></div>
-    <div class="endpoint"><span class="method none">EVT</span><span class="path">employee.created / updated / deleted</span><span class="purpose">Staff</span></div>
-    <div class="endpoint"><span class="method none">EVT</span><span class="path">business_location.created / updated / deleted</span><span class="purpose">Location</span></div>
-    <div class="endpoint"><span class="method none">EVT</span><span class="path">transaction.created</span><span class="purpose">Payment</span></div>
-    <div class="endpoint"><span class="method none">EVT</span><span class="path">formResponse.created</span><span class="purpose">Intake form submit</span></div>
+    <div class="category"><h3>Webhook events (configure in merchant UI)</h3></div>
+    <details class="endpoint"><summary><span class="method none">EVT</span><span class="path">appointment.created / updated / deleted</span><span class="purpose">Booking lifecycle</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Sample payload</div><pre>{
+  <span class="key">"eventType"</span>: <span class="string">"appointment.created"</span>,
+  <span class="key">"appointmentId"</span>: <span class="string">"appt-123"</span>,
+  <span class="key">"startTime"</span>:  <span class="string">"2026-04-22T14:00:00Z"</span>,
+  <span class="key">"endTime"</span>:    <span class="string">"2026-04-22T15:00:00Z"</span>,
+  <span class="key">"bookingStatus"</span>: <span class="string">"Confirmed"</span>,
+  <span class="key">"serviceId"</span>:    <span class="string">"svc-1"</span>,
+  <span class="key">"serviceTitle"</span>: <span class="string">"Haircut"</span>,
+  <span class="key">"customerId"</span>:   <span class="string">"cust-1"</span>,
+  <span class="key">"serviceProviderId"</span>: <span class="string">"emp-1"</span>,
+  <span class="key">"businessId"</span>: <span class="string">"biz-1"</span>,
+  <span class="key">"amount"</span>: <span class="number">65.00</span>,
+  <span class="key">"onlineVsInhouse"</span>: <span class="string">"Online"</span>,
+  <span class="key">"appointmentTypeName"</span>: <span class="string">"Returning"</span>,
+  <span class="key">"bookingSource"</span>: <span class="string">"Google"</span>
+}</pre></div></details>
+    <details class="endpoint"><summary><span class="method none">EVT</span><span class="path">customer.created / updated</span><span class="purpose">Client changes</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">Fields: customerId, firstName, lastName, email, phone, businessId.</div></div></details>
+    <details class="endpoint"><summary><span class="method none">EVT</span><span class="path">transaction.created</span><span class="purpose">Payment</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">Fields: transactionId, amount, paymentMethod, appointmentId, businessId.</div></div></details>
   </section>
 
-  <!-- GLOSSGENIUS -->
+  <!-- ============== GLOSSGENIUS ============== -->
   <section class="platform" id="glossgenius">
-    <div class="platform-header">
-      <h2>GlossGenius</h2>
-      <span class="tier-badge none">No public API</span>
-    </div>
-    <div class="platform-subline">Private backend only · Consumer booking site: <code>glossgenius.com/{slug}/booking</code></div>
+    <div class="platform-header"><h2>GlossGenius</h2><span class="tier-badge none">No public API</span></div>
+    <div class="platform-subline">Private backend · Consumer booking: <code>glossgenius.com/{slug}/booking</code></div>
+    <div class="alert"><strong>Zero official API.</strong> GG has no SDK, no dev portal, no Zapier, no partner program.</div>
 
-    <div class="alert"><strong>Zero official API.</strong> All discovery paths return 404. GG has no SDK, no developer portal, no Zapier, no partner program. Industry-confirmed.</div>
+    <div class="category"><h3>Private API (reverse-engineered — inferred, not guaranteed)</h3></div>
 
-    <div class="category"><h3>Private API (reverse-engineered — ToS risk)</h3></div>
-    <div class="note-row">Host <code>api.glossgenius.com</code> is live (Go-style gateway). Consumer booking flow at <code>glossgenius.com/&lt;slug&gt;/booking</code> is Next.js client-rendered, unauthenticated per slug.</div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}</span><span class="purpose">Business profile (inferred)</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}/services</span><span class="purpose">Service catalog</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}/staff</span><span class="purpose">Staff list</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/v1/public/availability</span><span class="purpose">Slot lookup</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/v1/public/bookings</span><span class="purpose">Create booking (needs Stripe PM token)</span></div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}</span><span class="purpose">Business profile</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre><span class="comment">// no params, returns business profile + location + hours</span></pre><div class="note">Capture exact params by loading the booking URL in Playwright DevTools.</div></div></details>
 
-    <div class="category"><h3>Sanctioned backdoor</h3></div>
-    <div class="note-row"><strong>Google Calendar sync</strong> — if a client grants Calendar OAuth, booked GG appointments appear as GCal events. Only officially-sanctioned read path.</div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/public/businesses/{slug}/services</span><span class="purpose">Service catalog</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Returns services with price + duration + staff assignments.</div></div></details>
 
-    <div class="alert info"><strong>Zoca strategy:</strong> Direct bookings through the public <code>glossgenius.com/&lt;slug&gt;/booking</code> URL (captured in <code>~/glossgenius_booking_links.csv</code>). For automated booking, capture the network trace in Playwright and script the private endpoints — treating them as an undocumented contract that can break anytime.</div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/v1/public/availability</span><span class="purpose">Slot lookup</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params (inferred)</div><pre>business_id=<span class="string">biz-uuid</span>
+service_id=<span class="string">svc-uuid</span>
+staff_id=<span class="string">staff-uuid</span>
+date=<span class="string">2026-04-22</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/v1/public/bookings</span><span class="purpose">Create booking (needs Stripe PM token)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+  <span class="key">"business_id"</span>: <span class="string">"biz-uuid"</span>,
+  <span class="key">"service_id"</span>:  <span class="string">"svc-uuid"</span>,
+  <span class="key">"staff_id"</span>:    <span class="string">"staff-uuid"</span>,
+  <span class="key">"start_time"</span>:  <span class="string">"2026-04-22T15:00:00Z"</span>,
+  <span class="key">"client"</span>: {
+    <span class="key">"first_name"</span>: <span class="string">"Jane"</span>,
+    <span class="key">"last_name"</span>:  <span class="string">"Doe"</span>,
+    <span class="key">"email"</span>:      <span class="string">"jane@example.com"</span>,
+    <span class="key">"phone"</span>:      <span class="string">"+15551234567"</span>
+  },
+  <span class="key">"stripe_payment_method_id"</span>: <span class="string">"pm_..."</span>    <span class="comment">// if deposit required</span>
+}</pre><div class="note">Actual schema TBD — capture from network tab on <code>glossgenius.com/&lt;slug&gt;/booking</code>.</div></div></details>
+
+    <div class="alert info"><strong>Recommended path:</strong> Use Playwright to capture real network traces and lock down the exact schemas before relying on them.</div>
   </section>
 
-  <!-- BOOKSY -->
+  <!-- ============== BOOKSY ============== -->
   <section class="platform" id="booksy">
-    <div class="platform-header">
-      <h2>Booksy</h2>
-      <span class="tier-badge none">No public API</span>
-    </div>
+    <div class="platform-header"><h2>Booksy</h2><span class="tier-badge none">No public API</span></div>
     <div class="platform-subline">Private consumer + merchant APIs · <code>us.booksy.com/api/us/2/customer_api</code></div>
+    <div class="alert"><strong>No dev portal.</strong> Referral/affiliate only. Cloudflare + bot detection.</div>
 
-    <div class="alert"><strong>No developer portal.</strong> Booksy's Partner Program is referral/affiliate, not API. Aggressive bot detection.</div>
+    <div class="auth-box"><strong>Headers (ALL calls):</strong> <code>x-api-key: {static app key}</code> + <code>x-language: en</code> + <code>x-fingerprint: {device uuid}</code> + mobile User-Agent · Authenticated: <code>Authorization: Bearer {JWT}</code></div>
 
     <div class="category"><h3>Private consumer API (reverse-engineered)</h3></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses?query=&amp;location=</span><span class="purpose">Search marketplace</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}</span><span class="purpose">Business detail</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/services</span><span class="purpose">Service catalog</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/staffers</span><span class="purpose">Staff</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/appointments/time_slots</span><span class="purpose">Slot lookup</span></div>
-    <div class="endpoint"><span class="method get">GET</span><span class="path">/businesses/{id}/reviews</span><span class="purpose">Reviews</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/me/login</span><span class="purpose">User login → JWT</span></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">/me/appointments</span><span class="purpose">Create booking (auth)</span></div>
 
-    <div class="auth-box">
-      <strong>Headers:</strong> <code>x-api-key</code> (static from mobile client) + <code>x-language</code> + <code>x-fingerprint</code> + mobile User-Agent · Authenticated: <code>Authorization: Bearer &lt;JWT&gt;</code> after login · Anonymous browse works with just <code>x-api-key</code>
-    </div>
-    <div class="alert warn"><strong>Cloudflare + bot detection.</strong> Aggressive use → 403/429. No official OAuth.</div>
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/businesses</span><span class="purpose">Search marketplace</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>query=<span class="string">hair salon</span>
+location=<span class="string">New York, NY</span>
+lat=<span class="number">40.7128</span>&amp;lng=<span class="number">-74.0060</span>
+page=<span class="number">1</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/businesses/{id}</span><span class="purpose">Business detail</span><span class="chev">▶</span></summary><div class="body-panel"><div class="note">Returns services, staff, reviews, hours.</div></div></details>
+
+    <details class="endpoint"><summary><span class="method get">GET</span><span class="path">/businesses/{id}/appointments/time_slots</span><span class="purpose">Slot lookup</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Query params</div><pre>service_variant_id=<span class="number">1234</span>
+staffer_id=<span class="number">5678</span>
+date=<span class="string">2026-04-22</span></pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/me/login</span><span class="purpose">User login → JWT</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body</div><pre>{
+  <span class="key">"email"</span>:    <span class="string">"user@example.com"</span>,
+  <span class="key">"password"</span>: <span class="string">"****"</span>
+}</pre></div></details>
+
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">/me/appointments</span><span class="purpose">Create booking (auth)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (inferred)</div><pre>{
+  <span class="key">"business_id"</span>: <span class="number">12345</span>,
+  <span class="key">"staffer_id"</span>:  <span class="number">5678</span>,
+  <span class="key">"service_variant_id"</span>: <span class="number">1234</span>,
+  <span class="key">"start_date"</span>: <span class="string">"2026-04-22T15:00:00Z"</span>,
+  <span class="key">"notes"</span>:      <span class="string">"First visit"</span>
+}</pre><div class="note">Exact payload needs network-tab capture.</div></div></details>
   </section>
 
-  <!-- FRESHA -->
+  <!-- ============== FRESHA ============== -->
   <section class="platform" id="fresha">
-    <div class="platform-header">
-      <h2>Fresha</h2>
-      <span class="tier-badge none">No public API</span>
-    </div>
-    <div class="platform-subline">GraphQL + JSON:API microservices · private only</div>
+    <div class="platform-header"><h2>Fresha</h2><span class="tier-badge none">No public API</span></div>
+    <div class="platform-subline">GraphQL + JSON:API microservices, private only</div>
+    <div class="alert"><strong>Publicly requested for 6+ years — never shipped.</strong></div>
+    <div class="auth-box"><strong>Auth:</strong> Bearer JWT · refreshed via <code>refresh.fresha.com</code> · Anonymous sessions minted on first page load.</div>
 
-    <div class="alert"><strong>Publicly requested for 6+ years — never shipped.</strong> <code>developer.fresha.com</code> doesn't resolve. GitHub <code>fresha</code> org only publishes internal OpenAPI tooling.</div>
+    <div class="category"><h3>GraphQL (consumer gateway)</h3></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://www.fresha.com/graphql</span><span class="purpose">Main query endpoint</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (example query)</div><pre>{
+  <span class="key">"operationName"</span>: <span class="string">"Location"</span>,
+  <span class="key">"variables"</span>: { <span class="key">"slug"</span>: <span class="string">"beauty-studio-ny"</span> },
+  <span class="key">"query"</span>: <span class="string">"query Location($slug:String!){ location(slug:$slug){ id name services{ id name price duration } staff{ id name } } }"</span>
+}</pre><div class="note">Introspection disabled; field names leaked via errors. Use the same queries the browser issues (captured from DevTools).</div></div></details>
 
-    <div class="category"><h3>Primary: GraphQL (reverse-engineered)</h3></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">https://www.fresha.com/graphql</span><span class="purpose">Main consumer gateway</span></div>
-    <div class="note-row">Introspection disabled; error messages leak field names. Observed Query fields: <code>location</code>, <code>locations</code>, <code>liteLocation</code>, <code>geolocation</code>, <code>searchHistory</code></div>
-    <div class="endpoint"><span class="method post">POST</span><span class="path">https://api-gateway-ws.fresha.com/graphql</span><span class="purpose">WebSocket subscriptions</span></div>
+    <details class="endpoint"><summary><span class="method post">POST</span><span class="path">https://www.fresha.com/graphql</span><span class="purpose">Create booking (mutation)</span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="label">Body (shape inferred)</div><pre>{
+  <span class="key">"operationName"</span>: <span class="string">"CreateAppointment"</span>,
+  <span class="key">"variables"</span>: {
+    <span class="key">"input"</span>: {
+      <span class="key">"locationId"</span>: <span class="string">"loc-uuid"</span>,
+      <span class="key">"staffId"</span>:    <span class="string">"staff-uuid"</span>,
+      <span class="key">"services"</span>: [{ <span class="key">"serviceId"</span>: <span class="string">"svc-uuid"</span> }],
+      <span class="key">"startAt"</span>:    <span class="string">"2026-04-22T15:00:00Z"</span>,
+      <span class="key">"client"</span>: { <span class="key">"email"</span>: <span class="string">"jane@example.com"</span>, <span class="key">"phone"</span>: <span class="string">"+15551234567"</span> }
+    }
+  },
+  <span class="key">"query"</span>: <span class="string">"mutation CreateAppointment($input: CreateAppointmentInput!){ createAppointment(input:$input){ id status } }"</span>
+}</pre></div></details>
 
-    <div class="category"><h3>Secondary: JSON:API microservices</h3></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">api.fresha.com</span><span class="purpose">Root gateway</span></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">analytics-api.fresha.com</span><span class="purpose">Analytics</span></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">deals-api.fresha.com</span><span class="purpose">Deals / offers</span></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">gift-cards-api.fresha.com</span><span class="purpose">Gift cards</span></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">payments.fresha.com</span><span class="purpose">Payments</span></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">refresh.fresha.com</span><span class="purpose">JWT token refresh</span></div>
-    <div class="endpoint"><span class="method none">HOST</span><span class="path">b2c-web-ff.fresha.com/proxy</span><span class="purpose">Feature flags</span></div>
+    <div class="category"><h3>JSON:API microservices</h3></div>
+    <details class="endpoint"><summary><span class="method none">HOST</span><span class="path">api.fresha.com · analytics-api · deals-api · gift-cards-api · payments · refresh</span><span class="purpose">All require <code>Accept: application/vnd.api+json</code></span><span class="chev">▶</span></summary>
+    <div class="body-panel"><div class="note">Per domain, each microservice follows JSON:API 1.0 envelope: <code>{ "data": { "type": "...", "id": "...", "attributes": {...} } }</code>. Specific endpoint paths are not publicly documented — capture via DevTools.</div></div></details>
 
-    <div class="auth-box"><strong>Auth:</strong> Bearer JWT · refreshed via <code>refresh.fresha.com</code> · Anonymous sessions minted on first page load · Accept header <code>application/vnd.api+json</code> for JSON:API services</div>
-
-    <div class="alert info"><strong>Practical path for Zoca:</strong> scraping public marketplace pages (Apify already has a Fresha extractor) or reverse-engineering GraphQL — both carry ToS risk. Reserve with Google is Google-side only.</div>
+    <div class="alert info"><strong>Practical path:</strong> Scraping Fresha marketplace pages (Apify has a Fresha extractor) or reverse-engineering GraphQL — both carry ToS risk.</div>
   </section>
 
   <div class="footer">
-    Generated 2026-04-21 · Zoca WIN AI Frontdesk · All endpoints verified against official reference docs · Live URL: <a href="https://mega-greninja.github.io/zoca-reports/api-dashboard.html" style="color:var(--text-subtle)">mega-greninja.github.io/zoca-reports/api-dashboard.html</a>
+    Generated 2026-04-21 · Zoca WIN AI Frontdesk · Click any endpoint to see body/params · Live URL: <a href="https://mega-greninja.github.io/zoca-reports/api-dashboard.html" style="color:var(--text-subtle)">mega-greninja.github.io/zoca-reports/api-dashboard.html</a>
   </div>
 </main>
 </div>
@@ -782,7 +1035,7 @@
 
   // Search filter
   const searchInput = document.getElementById('search');
-  const endpoints = document.querySelectorAll('.endpoint');
+  const endpoints = document.querySelectorAll('details.endpoint');
   searchInput.addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase().trim();
     endpoints.forEach(ep => {
@@ -790,6 +1043,15 @@
       const text = ep.textContent.toLowerCase();
       ep.classList.toggle('hidden', !text.includes(q));
     });
+  });
+
+  // Expand / collapse all
+  const expandBtn = document.getElementById('expand-all');
+  let allOpen = false;
+  expandBtn.addEventListener('click', () => {
+    allOpen = !allOpen;
+    endpoints.forEach(ep => { ep.open = allOpen; });
+    expandBtn.textContent = allOpen ? 'Collapse all' : 'Expand all';
   });
 </script>
 </body>
