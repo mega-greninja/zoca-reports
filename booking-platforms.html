@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Platforms — Scopes & Capabilities</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; padding: 40px 20px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; font-weight: 600; margin-bottom: 6px; color: #fff; }
+  .subtitle { color: #8b949e; font-size: 0.9rem; margin-bottom: 28px; }
+  .tier-section { margin-bottom: 32px; }
+  .tier-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #21262d; }
+  .tier-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .tier-dot.green { background: #3fb950; }
+  .tier-dot.yellow { background: #d29922; }
+  .tier-dot.red { background: #f85149; }
+  .tier-label { font-size: 1.1rem; font-weight: 600; }
+  .tier-desc { font-size: 0.82rem; color: #8b949e; }
+
+  .platform-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .card-top { padding: 18px 22px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .card-top:hover { background: #1c2128; }
+  .platform-name { font-size: 1.05rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .platform-summary { font-size: 0.8rem; color: #8b949e; }
+  .chevron { transition: transform 0.2s; color: #484f58; font-size: 0.8rem; }
+  .chevron.open { transform: rotate(90deg); }
+
+  .card-body { display: none; border-top: 1px solid #21262d; padding: 0; }
+  .card-body.open { display: block; }
+
+  .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .scope-item { padding: 14px 22px; border-bottom: 1px solid #21262d; }
+  .scope-item:nth-child(odd) { border-right: 1px solid #21262d; }
+  .scope-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; margin-bottom: 4px; }
+  .scope-value { font-size: 0.88rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .scope-detail { font-size: 0.78rem; color: #8b949e; margin-top: 3px; }
+
+  .badge { font-size: 0.68rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .badge-api { background: #0d4429; color: #3fb950; }
+  .badge-scraper { background: #3d2e00; color: #d29922; }
+  .badge-browser { background: #490202; color: #f85149; }
+  .badge-native { background: #0d4429; color: #3fb950; }
+  .badge-stripe { background: #1a1040; color: #a78bfa; }
+  .badge-sms { background: #0c3547; color: #58a6ff; }
+  .badge-na { background: #272c33; color: #8b949e; }
+  .badge-yes { background: #0d4429; color: #3fb950; }
+  .badge-no { background: #490202; color: #f85149; }
+  .badge-partial { background: #3d2e00; color: #d29922; }
+
+  .icon { font-size: 0.9rem; }
+
+  .flow-section { margin-top: 12px; padding: 16px 22px; background: #1c2128; border-top: 1px solid #21262d; }
+  .flow-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; margin-bottom: 8px; }
+  .flow-steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .flow-step { background: #21262d; padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 500; }
+  .flow-arrow { color: #484f58; font-size: 0.75rem; }
+
+  .summary-table { width: 100%; border-collapse: collapse; margin-top: 32px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; }
+  .summary-table th { background: #1c2128; padding: 10px 14px; text-align: center; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; border-bottom: 1px solid #30363d; }
+  .summary-table th:first-child { text-align: left; }
+  .summary-table td { padding: 10px 14px; text-align: center; border-bottom: 1px solid #21262d; font-size: 0.84rem; }
+  .summary-table td:first-child { text-align: left; font-weight: 600; }
+  .summary-table tr:last-child td { border-bottom: none; }
+  .summary-table tr:hover { background: #1c2128; }
+
+  .cell-yes { color: #3fb950; }
+  .cell-no { color: #f85149; }
+  .cell-partial { color: #d29922; }
+  .cell-stripe { color: #a78bfa; }
+
+  .legend { display: flex; gap: 18px; margin: 20px 0; flex-wrap: wrap; font-size: 0.78rem; color: #8b949e; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
+
+  .section-title { font-size: 1.15rem; font-weight: 600; color: #fff; margin-top: 40px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #21262d; }
+
+  .footer { margin-top: 36px; color: #484f58; font-size: 0.78rem; text-align: center; }
+
+  @media (max-width: 700px) {
+    .scope-grid { grid-template-columns: 1fr; }
+    .scope-item:nth-child(odd) { border-right: none; }
+    .flow-steps { flex-direction: column; align-items: flex-start; }
+    .flow-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Booking Platforms — Scopes & Capabilities</h1>
+<p class="subtitle">8 supported platforms · API access, booking, payments, card-on-file, deposits, SMS — April 2026</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:#3fb950"></div> Native API</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#d29922"></div> Scraper / Partial</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#f85149"></div> Browser Automation</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#a78bfa"></div> Our Stripe</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#8b949e"></div> Not Available</div>
+</div>
+
+<!-- ========== QUICK COMPARISON TABLE ========== -->
+<div class="section-title">Quick Comparison</div>
+
+<div style="overflow-x:auto;">
+<table class="summary-table">
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Tier</th>
+      <th>Services</th>
+      <th>Slots</th>
+      <th>Book</th>
+      <th>Card-on-File</th>
+      <th>Deposits</th>
+      <th>Cancel / Modify</th>
+      <th>Confirm SMS</th>
+      <th>Latency</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Square</td>
+      <td><span class="badge badge-api">OPEN</span></td>
+      <td class="cell-yes">API sync</td>
+      <td class="cell-yes">API 1s</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">Native</td>
+      <td class="cell-yes">Native</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">✓ Square</td>
+      <td class="cell-yes">&lt;2s</td>
+    </tr>
+    <tr>
+      <td>Mindbody</td>
+      <td><span class="badge badge-api">OPEN</span></td>
+      <td class="cell-yes">API sync</td>
+      <td class="cell-yes">API 1-2s</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">Native</td>
+      <td class="cell-yes">Native</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">✓ Mindbody</td>
+      <td class="cell-yes">&lt;2s</td>
+    </tr>
+    <tr>
+      <td>Acuity</td>
+      <td><span class="badge badge-api">OPEN</span></td>
+      <td class="cell-yes">API sync</td>
+      <td class="cell-yes">API 1s</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">Native</td>
+      <td class="cell-yes">Native</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">✓ Acuity</td>
+      <td class="cell-yes">&lt;2s</td>
+    </tr>
+    <tr>
+      <td>GlossGenius</td>
+      <td><span class="badge badge-scraper">CLOSED+</span></td>
+      <td class="cell-partial">Scraper sync</td>
+      <td class="cell-partial">Scraper 1-2s</td>
+      <td class="cell-yes">Private API</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-yes">API ⚡</td>
+      <td class="cell-yes">✓ GG</td>
+      <td class="cell-yes">&lt;2s</td>
+    </tr>
+    <tr>
+      <td>Phorest</td>
+      <td><span class="badge badge-scraper">CLOSED+</span></td>
+      <td class="cell-partial">Scraper sync</td>
+      <td class="cell-partial">Scraper 1s</td>
+      <td class="cell-partial">Partner API / Browser</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-partial">Slower</td>
+      <td class="cell-yes">✓ Phorest</td>
+      <td class="cell-partial">~15s</td>
+    </tr>
+    <tr>
+      <td>Vagaro</td>
+      <td><span class="badge badge-browser">CLOSED</span></td>
+      <td class="cell-partial">Scraper sync</td>
+      <td class="cell-partial">Scraper 1-2s</td>
+      <td class="cell-no">Browser ~20s</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-partial">Slower</td>
+      <td class="cell-yes">✓ Vagaro</td>
+      <td class="cell-no">~20s</td>
+    </tr>
+    <tr>
+      <td>Booksy</td>
+      <td><span class="badge badge-browser">CLOSED</span></td>
+      <td class="cell-partial">Scraper sync</td>
+      <td class="cell-partial">Scraper 2s</td>
+      <td class="cell-no">Browser ~25s</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-partial">Slower</td>
+      <td class="cell-yes">✓ Booksy</td>
+      <td class="cell-no">~25s</td>
+    </tr>
+    <tr>
+      <td>Fresha</td>
+      <td><span class="badge badge-browser">CLOSED</span></td>
+      <td class="cell-partial">Scraper sync</td>
+      <td class="cell-partial">Scraper 1-2s</td>
+      <td class="cell-no">Browser ~25s</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-stripe">Our Stripe</td>
+      <td class="cell-partial">Slower</td>
+      <td class="cell-yes">✓ Fresha</td>
+      <td class="cell-no">~25s</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== DETAILED PLATFORM CARDS ========== -->
+<div class="section-title">Detailed Platform Scopes</div>
+
+<!-- TIER: OPEN API -->
+<div class="tier-section">
+  <div class="tier-header">
+    <div class="tier-dot green"></div>
+    <div>
+      <div class="tier-label">Open API Platforms</div>
+      <div class="tier-desc">Full API for booking + native card-on-file + native deposits. Salon sees everything. We're thin middleware.</div>
+    </div>
+  </div>
+
+  <!-- SQUARE -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('square')">
+      <div class="platform-name"><span class="chevron" id="chev_square">&#9654;</span> Square <span class="badge badge-api">OPEN API</span></div>
+      <div class="platform-summary">Full API · Everything native · Nothing custom needed</div>
+    </div>
+    <div class="card-body" id="body_square">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> Our DB (Catalog API sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> searchAvailability — 1s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> createBooking → Confirmed</div>
+          <div class="scope-detail">Lands confirmed on salon calendar. Square sends confirmation SMS/email.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-native">NATIVE</span> Cards API + SqPaymentForm</div>
+          <div class="scope-detail">Card lives in salon's Square. Staff can see & charge from Square POS.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-native">NATIVE</span> Payments API / Prepayment</div>
+          <div class="scope-detail">Can also use our Stripe Connect as alternative. Salon is merchant of record.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> In-call instant</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Square sends natively</div>
+          <div class="scope-detail">Our SMS only for deposit/COF links if needed.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-api">INSTANT</span> &lt;2 seconds</div>
+          <div class="scope-detail">Fluid conversation, no filler needed.</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (API 1s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Book (API instant)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Deposit (Payments API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINDBODY -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('mindbody')">
+      <div class="platform-name"><span class="chevron" id="chev_mindbody">&#9654;</span> Mindbody <span class="badge badge-api">OPEN API</span></div>
+      <div class="platform-summary">Full API · Native COF & deposits · Nothing custom needed</div>
+    </div>
+    <div class="card-body" id="body_mindbody">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> Our DB (Public API sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> GetBookableItems + GetClassSchedules — 1-2s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> AddClient + AddClientToClass/Appointment → Confirmed</div>
+          <div class="scope-detail">Lands confirmed. Mindbody sends confirmation SMS/email.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-native">NATIVE</span> AddOrUpdateClientCreditCard</div>
+          <div class="scope-detail">Card in salon's CardPointe/MB Payments. Staff can see & charge.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-native">NATIVE</span> Cart / Checkout endpoints</div>
+          <div class="scope-detail">Via CardPointe / MB Payments. Our Stripe also possible as alternative.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> In-call instant</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Mindbody sends natively</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-api">INSTANT</span> &lt;2 seconds</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (API 1-2s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Book (API instant)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Deposit (Cart/Checkout)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACUITY -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('acuity')">
+      <div class="platform-name"><span class="chevron" id="chev_acuity">&#9654;</span> Acuity Scheduling <span class="badge badge-api">OPEN API</span></div>
+      <div class="platform-summary">Full API · Native deposit flow · Simplest end-to-end</div>
+    </div>
+    <div class="card-body" id="body_acuity">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> Our DB (sync via /services)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> /availability — 1s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> POST /appointments → Confirmed</div>
+          <div class="scope-detail">Acuity sends confirmation SMS/email natively.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-native">NATIVE</span> Payment field at booking</div>
+          <div class="scope-detail">Via merchant's Square or Stripe Connect. Staff can see & charge.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-native">NATIVE</span> Native deposit flow</div>
+          <div class="scope-detail">Simplest deposit experience — built into booking endpoint.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> In-call instant</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Acuity sends natively</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-api">INSTANT</span> &lt;2 seconds</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (API 1s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Book + Deposit (API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER: CLOSED-BUT-BOOKABLE -->
+<div class="tier-section">
+  <div class="tier-header">
+    <div class="tier-dot yellow"></div>
+    <div>
+      <div class="tier-label">Closed-but-Bookable Platforms</div>
+      <div class="tier-desc">Can book via API, but payments are walled off. Our Stripe vault is the only path for COF & deposits. Salon can't see saved cards.</div>
+    </div>
+  </div>
+
+  <!-- GLOSSGENIUS -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('glossgenius')">
+      <div class="platform-name"><span class="chevron" id="chev_glossgenius">&#9654;</span> GlossGenius <span class="badge badge-scraper">CLOSED+BOOKABLE</span></div>
+      <div class="platform-summary">Private API for booking · Our Stripe for all money</div>
+    </div>
+    <div class="card-body" id="body_glossgenius">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Our DB (scraper sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Real-time scraper — 1-2s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-api">PRIVATE API</span> Reverse-engineered → Confirmed</div>
+          <div class="scope-detail">GlossGenius sends confirmation SMS/email. Booking is instant.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link to Stripe vault</div>
+          <div class="scope-detail">Card lives in our Stripe. Salon staff CANNOT see or charge from GG UI.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link → Stripe Connect</div>
+          <div class="scope-detail">Salon onboards to Stripe Connect once. Money flows to salon's bank.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-api">API</span> In-call instant</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> GlossGenius sends natively</div>
+          <div class="scope-detail">Our SMS = deposit/COF link only. Watch double-SMS.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-api">INSTANT</span> &lt;2 seconds</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (Scraper 1-2s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Book (Private API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">SMS deposit link</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Stripe webhook → Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOREST -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('phorest')">
+      <div class="platform-name"><span class="chevron" id="chev_phorest">&#9654;</span> Phorest <span class="badge badge-scraper">CLOSED+BOOKABLE</span></div>
+      <div class="platform-summary">Partner API (when approved) or browser · Our Stripe for money</div>
+    </div>
+    <div class="card-body" id="body_phorest">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Our DB (scraper sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> availability_requests — 1s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-partial">PARTNER API</span> POST /booking (bookingStatus: ACTIVE)</div>
+          <div class="scope-detail">Partner API when approved, or browser automation (~15s). Phorest confirms with ~10 min delay.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link (PhorestPay blocked from API)</div>
+          <div class="scope-detail">PhorestPay not accessible via API. Card in our Stripe only.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link → POST /activate with depositAmount</div>
+          <div class="scope-detail">API records depositAmount but doesn't charge. Our Stripe collects, then activate.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-partial">SLOWER</span> Via API or browser</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Phorest sends (~10 min delay)</div>
+          <div class="scope-detail">Delay gives us time to collect deposit first. Send our SMS first.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-partial">MEDIUM</span> ~15 seconds (browser) or instant (API)</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (Scraper 1s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Book (Partner API)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">SMS deposit link</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Stripe webhook → /activate + depositAmount ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TIER: FULLY CLOSED -->
+<div class="tier-section">
+  <div class="tier-header">
+    <div class="tier-dot red"></div>
+    <div>
+      <div class="tier-label">Fully Closed Platforms</div>
+      <div class="tier-desc">Browser automation for bookings + our Stripe for all money. Slowest and most fragile, but unlocks the last mile of market coverage.</div>
+    </div>
+  </div>
+
+  <!-- VAGARO -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('vagaro')">
+      <div class="platform-name"><span class="chevron" id="chev_vagaro">&#9654;</span> Vagaro <span class="badge badge-browser">FULLY CLOSED</span></div>
+      <div class="platform-summary">Browser automation · Our Stripe for all money</div>
+    </div>
+    <div class="card-body" id="body_vagaro">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Our DB (scraper sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Real-time scraper — 1-2s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-browser">BROWSER</span> Automation ~20s</div>
+          <div class="scope-detail">Partner API exists but gated. Browser fallback confirmed. Vagaro sends confirmation.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link to Stripe vault</div>
+          <div class="scope-detail">Salon staff cannot see or charge card from Vagaro UI.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link → Stripe Connect</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-partial">SLOWER</span> Browser automation</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Vagaro sends natively</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-browser">SLOW</span> ~20 seconds</div>
+          <div class="scope-detail">"One moment please..." holding music territory.</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Hold slot (Browser ~20s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">SMS deposit link</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Stripe webhook → Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKSY -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('booksy')">
+      <div class="platform-name"><span class="chevron" id="chev_booksy">&#9654;</span> Booksy <span class="badge badge-browser">FULLY CLOSED</span></div>
+      <div class="platform-summary">Browser automation · Our Stripe for all money</div>
+    </div>
+    <div class="card-body" id="body_booksy">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Our DB (scraper sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Real-time scraper — 2s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-browser">BROWSER</span> Automation ~25s</div>
+          <div class="scope-detail">No public write API. Browser automation only. Booksy sends confirmation.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link to Stripe vault</div>
+          <div class="scope-detail">Salon staff cannot see or charge card from Booksy UI.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link → Stripe Connect</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-partial">SLOWER</span> Browser automation</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Booksy sends natively</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-browser">SLOW</span> ~25 seconds</div>
+          <div class="scope-detail">Must go async or use holding music.</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (Scraper 2s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Hold slot (Browser ~25s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">SMS deposit link</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Stripe webhook → Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRESHA -->
+  <div class="platform-card">
+    <div class="card-top" onclick="toggleCard('fresha')">
+      <div class="platform-name"><span class="chevron" id="chev_fresha">&#9654;</span> Fresha <span class="badge badge-browser">FULLY CLOSED</span></div>
+      <div class="platform-summary">Browser automation · Our Stripe for all money</div>
+    </div>
+    <div class="card-body" id="body_fresha">
+      <div class="scope-grid">
+        <div class="scope-item">
+          <div class="scope-label">Services</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Our DB (scraper sync)</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Slots / Availability</div>
+          <div class="scope-value"><span class="badge badge-scraper">SCRAPER</span> Real-time scraper — 1-2s</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Booking</div>
+          <div class="scope-value"><span class="badge badge-browser">BROWSER</span> Automation ~25s</div>
+          <div class="scope-detail">No public write API. Browser automation only. Fresha sends confirmation.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Card-on-File</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link to Stripe vault</div>
+          <div class="scope-detail">Salon staff cannot see or charge card from Fresha UI.</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Deposits</div>
+          <div class="scope-value"><span class="badge badge-stripe">OUR STRIPE</span> SMS link → Stripe Connect</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Cancel / Modify</div>
+          <div class="scope-value"><span class="badge badge-partial">SLOWER</span> Browser automation</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">Confirmation SMS</div>
+          <div class="scope-value"><span class="badge badge-yes">AUTO</span> Fresha sends natively</div>
+        </div>
+        <div class="scope-item">
+          <div class="scope-label">In-Call Latency</div>
+          <div class="scope-value"><span class="badge badge-browser">SLOW</span> ~25 seconds</div>
+        </div>
+      </div>
+      <div class="flow-section">
+        <div class="flow-title">Booking Flow</div>
+        <div class="flow-steps">
+          <span class="flow-step">Search (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Availability (Scraper)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Hold slot (Browser ~25s)</span><span class="flow-arrow">→</span>
+          <span class="flow-step">SMS deposit link</span><span class="flow-arrow">→</span>
+          <span class="flow-step">Stripe webhook → Confirmed ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== KEY ARCHITECTURE DECISIONS ========== -->
+<div class="section-title">Key Architecture Decisions</div>
+
+<div class="platform-card">
+  <div class="card-top" onclick="toggleCard('arch1')">
+    <div class="platform-name"><span class="chevron" id="chev_arch1">&#9654;</span> Stripe Connect Onboarding</div>
+    <div class="platform-summary">Required per salon for proper money flow</div>
+  </div>
+  <div class="card-body" id="body_arch1">
+    <div style="padding: 16px 22px; font-size: 0.88rem; line-height: 1.6;">
+      Every salon onboards to our Stripe Connect account <strong>once</strong> during setup. Without it, deposits go into <em>our</em> bank (and we owe the salon). With Connect, money flows: <strong>customer → Stripe Connect → salon's bank</strong>. We take a platform fee if desired. This pattern works universally across all 8 platforms.
+    </div>
+  </div>
+</div>
+
+<div class="platform-card">
+  <div class="card-top" onclick="toggleCard('arch2')">
+    <div class="platform-name"><span class="chevron" id="chev_arch2">&#9654;</span> Card-on-File Visibility Mismatch</div>
+    <div class="platform-summary">5 of 8 platforms can't see saved cards</div>
+  </div>
+  <div class="card-body" id="body_arch2">
+    <div style="padding: 16px 22px; font-size: 0.88rem; line-height: 1.6;">
+      For closed platforms (GlossGenius, Phorest, Vagaro, Booksy, Fresha), the card lives in <strong>our Stripe</strong>. Salon staff <strong>cannot</strong> see or charge it from their platform UI. We must build:
+      <ul style="margin: 10px 0 0 20px; color: #8b949e;">
+        <li>"Charge no-show fee" button in salon's Zoca dashboard</li>
+        <li>Automated no-show charging based on platform's cancel/no-show status</li>
+        <li>Refund flow through us (salon can't refund from their UI)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="platform-card">
+  <div class="card-top" onclick="toggleCard('arch3')">
+    <div class="platform-name"><span class="chevron" id="chev_arch3">&#9654;</span> Double-SMS Problem</div>
+    <div class="platform-summary">Platform confirmation + our deposit SMS = 2 messages</div>
+  </div>
+  <div class="card-body" id="body_arch3">
+    <div style="padding: 16px 22px; font-size: 0.88rem; line-height: 1.6;">
+      Every platform sends its own confirmation SMS/email. When we also send a deposit/COF link, the customer gets two messages. Mitigations:
+      <ul style="margin: 10px 0 0 20px; color: #8b949e;">
+        <li>Send our deposit SMS <strong>before</strong> the platform's confirmation fires</li>
+        <li>Keep our SMS short and complementary, not redundant</li>
+        <li>For Phorest, the ~10 min confirmation delay gives us a natural window</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="platform-card">
+  <div class="card-top" onclick="toggleCard('arch4')">
+    <div class="platform-name"><span class="chevron" id="chev_arch4">&#9654;</span> Unified Booking Flow</div>
+    <div class="platform-summary">3-stage: live instant → hold+SMS → async post-call</div>
+  </div>
+  <div class="card-body" id="body_arch4">
+    <div style="padding: 16px 22px; font-size: 0.88rem; line-height: 1.6;">
+      <strong>Stage 1 — Live Call Instant:</strong> Search, availability, book no-deposit → API if available<br>
+      <strong>Stage 2 — Hold + SMS:</strong> Reserve/hold slot, SMS customer deposit/COF link, agent stays briefly or ends call<br>
+      <strong>Stage 3 — Async Post-Call:</strong> Stripe webhook fires → confirm booking → platform sends native confirmation
+    </div>
+  </div>
+</div>
+
+<!-- ========== PROPOSED ARCHITECTURE DIAGRAM ========== -->
+<div class="section-title">Proposed Architecture</div>
+<div class="platform-card" style="padding: 22px;">
+  <pre style="font-family: 'SF Mono', SFMono-Regular, monospace; font-size: 0.8rem; color: #8b949e; line-height: 1.7; overflow-x: auto;">
+┌─ Adapters (per platform) ─────────────────────────┐
+│  Square / Mindbody / Acuity  → Full API path      │
+│  GlossGenius / Phorest       → API + our Stripe   │
+│  Vagaro / Booksy / Fresha    → Browser + Stripe   │
+└───────────────────────────────────────────────────┘
+                        ↓
+┌─ Shared Services ─────────────────────────────────┐
+│  • Unified Stripe Connect vault (salon-scoped)    │
+│  • SMS service (deposit + COF links)              │
+│  • Webhook listener (Stripe paid → activate)      │
+│  • Salon dashboard (charge no-show fees)          │
+└───────────────────────────────────────────────────┘</pre>
+</div>
+
+<div class="footer">
+  Zoca Booking Platforms — Scopes & Capabilities · Generated April 21, 2026
+</div>
+
+</div>
+
+<script>
+function toggleCard(id) {
+  const body = document.getElementById('body_' + id);
+  const chev = document.getElementById('chev_' + id);
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    chev.classList.remove('open');
+  } else {
+    body.classList.add('open');
+    chev.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>
