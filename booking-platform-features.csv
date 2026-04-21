@@ -4,15 +4,15 @@ Service & slot discovery,Real-time slot availability,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Service & slot discovery,Staff/provider list,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Service & slot discovery,Multi-location,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Booking actions,Book single service,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Booking actions,Multi-service cart,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Booking actions,Multi-service cart,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Booking actions,Add-on services,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Booking actions,Couple / 2-resource (same slot),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Booking actions,Party / group booking (3+),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Booking actions,Class / group fitness booking,Yes,Yes,Yes,No,No,Yes,No,Yes
+Booking actions,Party / group booking (3+),Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+Booking actions,Class / group fitness booking,Yes,Yes,Yes,No,No,Yes,Yes,Yes
 Booking actions,Staff preference,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Booking actions,Any-available-staff,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Booking actions,Recurring appointments,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Booking actions,Waitlist,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Booking actions,Waitlist,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Booking payment modes,Book with NO card info at all,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Booking payment modes,Book with card saved (no charge now),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Booking payment modes,Card saved only for no-show/late-cancel fee,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
@@ -21,20 +21,20 @@ Booking payment modes,Book with % deposit charged now,Yes,Yes,Yes,Yes,Yes,Yes,Ye
 Booking payment modes,Book with full prepayment (100% upfront),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Card-on-file,Save card on file,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Card-on-file,Charge saved card,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Deposit configurability,Per-service deposit rules,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Deposit configurability,Deposit for first-time clients only,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Deposit configurability,Deposit only above $ threshold,No,Yes,No,No,Yes,Yes,No,No
-Deposit configurability,Min / max deposit cap,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Deposit configurability,Per-service deposit rules,No,Yes,Yes,Yes,Yes,No,Yes,Yes
+Deposit configurability,Deposit for first-time clients only,No,Yes,No,Yes,Yes,Yes,Yes,Yes
+Deposit configurability,Deposit only above $ threshold,No,Yes,No,No,Yes,Yes,No,Yes
+Deposit configurability,Min / max deposit cap,Yes,Yes,No,Yes,Yes,No,Yes,No
 Deposit configurability,Deposit applied toward final total,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Deposit configurability,Refundable vs non-refundable toggle,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Deposit configurability,Deposit rule per staff member,No,Yes,No,No,Yes,Yes,No,No
+Deposit configurability,Deposit rule per staff member,No,Yes,No,No,No,No,No,No
 Cancellation & reschedule,Cancellation policy (configurable),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Cancellation & reschedule,Configurable cancellation window (hrs),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Cancellation & reschedule,Cancel appointment,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Cancellation & reschedule,Reschedule appointment,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Cancellation & reschedule,Auto late-cancel fee,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Cancellation & reschedule,Auto no-show fee,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Cancellation & reschedule,Rescheduling fee,No,Yes,No,No,Yes,Yes,No,No
+Cancellation & reschedule,Auto late-cancel fee,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+Cancellation & reschedule,Auto no-show fee,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+Cancellation & reschedule,Rescheduling fee,No,Yes,No,No,No,No,Yes,No
 Cancellation & reschedule,Refunds,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Tips / gift cards / packages,Tips at booking,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Tips / gift cards / packages,Gift card purchase,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
@@ -51,52 +51,52 @@ Customer data,Client notes / preferences,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Customer data,Intake forms,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Customer data,Client tags / segments,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Online presence / entry points,Public booking page (branded),Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Online presence / entry points,Custom domain / subdomain,Yes,Yes,Yes,No,Yes,Yes,No,No
+Online presence / entry points,Custom domain / subdomain,Yes,Yes,Yes,Yes,Yes,Yes,No,No
 Online presence / entry points,Embed booking widget on salon site,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Online presence / entry points,Instagram / Facebook booking,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Online presence / entry points,Reserve with Google,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Online presence / entry points,Marketplace / discovery listing,No,Yes,No,No,No,Yes,Yes,Yes
+Online presence / entry points,Marketplace / discovery listing,Yes,Yes,No,No,No,Yes,Yes,Yes
 Scheduling admin,Block time / breaks,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Scheduling admin,Vacation / time-off,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Scheduling admin,Special / holiday hours,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Scheduling admin,Buffer time between appts,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Scheduling admin,Processing time (hair color etc.),No,Yes,No,Yes,Yes,Yes,No,Yes
+Scheduling admin,Processing time (hair color etc.),Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Scheduling admin,Min/max advance booking window,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Scheduling admin,Resource/room booking,No,Yes,Yes,No,Yes,Yes,No,Yes
+Scheduling admin,Resource/room booking,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes
 Advanced booking rules,First-time vs returning rules,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Advanced booking rules,Consultation flow,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Advanced booking rules,Virtual / video appointments,Yes,Yes,Yes,No,Yes,Yes,No,Yes
 Forms & compliance,Consent forms / waivers,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Forms & compliance,E-signature on forms,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Forms & compliance,Before/after photo storage,No,Yes,No,Yes,Yes,Yes,No,Yes
+Forms & compliance,E-signature on forms,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+Forms & compliance,Before/after photo storage,No,Yes,No,Yes,Yes,Yes,Yes,Yes
 Payment methods,Apple Pay / Google Pay,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Payment methods,ACH / bank transfer,Yes,Yes,No,No,Yes,No,No,No
-Payment methods,Buy-now-pay-later (Afterpay / Klarna),Yes,No,No,No,No,No,No,Yes
-Payment methods,Split payments,Yes,Yes,No,No,Yes,Yes,No,Yes
+Payment methods,Buy-now-pay-later (Afterpay / Klarna / Affirm),Yes,Yes,No,Yes,No,Yes,No,Yes
+Payment methods,Split payments,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Payment methods,Invoicing,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes
 Loyalty & marketing,Loyalty / rewards points,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
-Loyalty & marketing,Referral program,Yes,No,No,Yes,Yes,Yes,Yes,Yes
+Loyalty & marketing,Referral program,No,Yes,No,Yes,Yes,Yes,Yes,Yes
 Loyalty & marketing,Promo codes / discounts,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Loyalty & marketing,Email marketing campaigns,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Loyalty & marketing,SMS marketing campaigns,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Loyalty & marketing,Automated drip / follow-ups,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Loyalty & marketing,Win-back / lapsed-client campaigns,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
-Reviews,Review collection,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Reviews,Review collection,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Reviews,Review response / management,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Business admin / POS,In-person POS checkout,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Business admin / POS,Retail / product sales,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Business admin / POS,Inventory management,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Business admin / POS,Staff commissions,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Business admin / POS,Payroll / tips distribution,Yes,Yes,No,Yes,Yes,Yes,No,Yes
-Business admin / POS,Staff scheduling / shifts,Yes,Yes,No,Yes,Yes,Yes,No,Yes
+Business admin / POS,Staff scheduling / shifts,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Business admin / POS,Staff clock in/out,Yes,Yes,No,Yes,Yes,Yes,No,Yes
 Reporting,Revenue reports,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
 Reporting,Staff performance,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Reporting,Client retention analytics,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
-Integrations,Google / Outlook calendar sync,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
-Integrations,Zoom / Google Meet,Yes,Yes,Yes,No,No,Yes,No,Yes
-Integrations,Zapier,Yes,Yes,Yes,No,No,Yes,No,No
-Integrations,QuickBooks / accounting,Yes,Yes,No,No,Yes,Yes,No,No
+Integrations,Google / Outlook calendar sync,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+Integrations,Zoom / Google Meet,Yes,Yes,Yes,No,Yes,Yes,No,Yes
+Integrations,Zapier,Yes,No,Yes,No,No,No,No,No
+Integrations,QuickBooks / accounting,Yes,Yes,No,Yes,Yes,Yes,No,No
 Integrations,Public API / webhooks,Yes,Yes,Yes,No,Yes,Yes,No,No
 Client-side communication,Two-way SMS chat with client,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
 Client-side communication,In-app messaging,No,Yes,No,No,Yes,Yes,Yes,Yes
