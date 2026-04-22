@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Yatik! — We Insure You</title>
+<meta property="og:title" content="Happy Birthday Yatik Gupta!">
+<meta property="og:description" content="Warm birthday wishes from We Insure You">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Poppins:wght@200;300;400;500;600;700&family=Great+Vibes&family=Cinzel:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow-x:hidden}
+body{font-family:'Poppins',sans-serif;background:#0a0a14;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden}
+
+canvas#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+canvas#stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+.glow-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:1;animation:float 8s ease-in-out infinite}
+.orb1{width:400px;height:400px;background:radial-gradient(circle,rgba(200,140,60,.12),transparent 70%);top:-100px;left:-100px;animation-delay:0s}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(180,60,120,.08),transparent 70%);bottom:-150px;right:-150px;animation-delay:3s}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(60,120,200,.06),transparent 70%);top:40%;left:60%;animation-delay:5s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.1)}}
+
+.main{position:relative;z-index:5;text-align:center;padding:40px 20px;max-width:800px;width:100%}
+
+.cake-emoji{font-size:4rem;margin-bottom:20px;animation:bounce 2s ease-in-out infinite;display:inline-block}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+
+.pre-text{font-family:'Poppins',sans-serif;font-size:.7rem;letter-spacing:8px;text-transform:uppercase;color:#c9953c;margin-bottom:16px;opacity:0;animation:fadeUp .8s ease forwards;animation-delay:.3s}
+
+.happy{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;color:#e8d5c0;letter-spacing:6px;text-transform:uppercase;opacity:0;animation:fadeUp .8s ease forwards;animation-delay:.6s}
+
+.birthday{font-family:'Great Vibes',cursive;font-size:5rem;line-height:1.1;background:linear-gradient(135deg,#f5dfa3 0%,#c9953c 40%,#e8c17a 60%,#f5dfa3 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:fadeUp .8s ease forwards,shimmer 3s linear infinite;animation-delay:.9s;opacity:0;margin:10px 0 5px}
+@keyframes shimmer{to{background-position:200% center}}
+
+.name{font-family:'Cinzel',serif;font-size:3.2rem;font-weight:700;letter-spacing:8px;text-transform:uppercase;color:#fff;text-shadow:0 0 40px rgba(201,149,60,.3);opacity:0;animation:fadeUp .8s ease forwards,glow 3s ease-in-out infinite;animation-delay:1.2s}
+@keyframes glow{0%,100%{text-shadow:0 0 40px rgba(201,149,60,.2)}50%{text-shadow:0 0 60px rgba(201,149,60,.4),0 0 80px rgba(201,149,60,.1)}}
+
+.divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,#c9953c,transparent);margin:30px auto;opacity:0;animation:fadeUp .6s ease forwards;animation-delay:1.5s}
+
+.message{font-family:'Playfair Display',serif;font-size:1.15rem;font-style:italic;color:#a09080;line-height:1.8;max-width:600px;margin:0 auto;opacity:0;animation:fadeUp .8s ease forwards;animation-delay:1.8s}
+
+.wishes-grid{display:flex;justify-content:center;gap:30px;margin-top:40px;flex-wrap:wrap;opacity:0;animation:fadeUp .8s ease forwards;animation-delay:2.2s}
+.wish-card{text-align:center;padding:20px}
+.wish-icon{font-size:2rem;margin-bottom:8px;display:block}
+.wish-text{font-size:.75rem;color:#8a7a65;letter-spacing:2px;text-transform:uppercase;font-weight:300}
+
+.divider2{width:60px;height:1px;background:linear-gradient(90deg,transparent,#c9953c55,transparent);margin:40px auto 30px;opacity:0;animation:fadeUp .6s ease forwards;animation-delay:2.5s}
+
+.company-block{opacity:0;animation:fadeUp .8s ease forwards;animation-delay:2.8s;margin-top:10px}
+.from-label{font-size:.6rem;letter-spacing:5px;text-transform:uppercase;color:#555;margin-bottom:10px}
+.company-name{font-family:'Cinzel',serif;font-size:1.4rem;letter-spacing:6px;text-transform:uppercase;color:#c9953c;font-weight:500}
+.company-tagline{font-size:.65rem;color:#555;margin-top:6px;font-style:italic;letter-spacing:2px}
+
+.footer-note{position:fixed;bottom:20px;left:0;right:0;text-align:center;font-size:.55rem;color:#2a2a30;letter-spacing:3px;text-transform:uppercase;z-index:5}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:600px){
+  .birthday{font-size:3.2rem}
+  .name{font-size:2rem;letter-spacing:4px}
+  .happy{font-size:1.3rem}
+  .message{font-size:1rem;padding:0 20px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="confetti"></canvas>
+
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<div class="main">
+  <div class="cake-emoji">&#127874;</div>
+  <div class="pre-text">Wishing You A Very</div>
+  <div class="happy">Happy</div>
+  <div class="birthday">Birthday!</div>
+  <div class="name">Yatik Gupta</div>
+
+  <div class="divider"></div>
+
+  <p class="message">
+    May this special day bring you endless joy, good health,
+    and all the success you deserve. Here's to another wonderful
+    year of achievements and cherished moments!
+  </p>
+
+  <div class="wishes-grid">
+    <div class="wish-card">
+      <span class="wish-icon">&#10024;</span>
+      <span class="wish-text">Success</span>
+    </div>
+    <div class="wish-card">
+      <span class="wish-icon">&#128154;</span>
+      <span class="wish-text">Health</span>
+    </div>
+    <div class="wish-card">
+      <span class="wish-icon">&#127775;</span>
+      <span class="wish-text">Happiness</span>
+    </div>
+    <div class="wish-card">
+      <span class="wish-icon">&#127873;</span>
+      <span class="wish-text">Prosperity</span>
+    </div>
+  </div>
+
+  <div class="divider2"></div>
+
+  <div class="company-block">
+    <div class="from-label">With Warm Wishes From</div>
+    <div class="company-name">We Insure You</div>
+    <div class="company-tagline">Your Trust, Our Commitment</div>
+  </div>
+</div>
+
+<div class="footer-note">Made with &#10084;&#65039;</div>
+
+<script>
+// Starfield
+(function(){
+  var c=document.getElementById("stars"),x=c.getContext("2d");
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();window.addEventListener("resize",resize);
+  var stars=[];
+  for(var i=0;i<120;i++){
+    stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+.3,a:Math.random(),da:Math.random()*.01+.003})
+  }
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    for(var i=0;i<stars.length;i++){
+      var s=stars[i];
+      s.a+=s.da;
+      var alpha=.2+Math.abs(Math.sin(s.a))*.6;
+      x.beginPath();
+      x.arc(s.x,s.y,s.r,0,Math.PI*2);
+      x.fillStyle="rgba(200,180,140,"+alpha+")";
+      x.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Confetti burst
+(function(){
+  var c=document.getElementById("confetti"),x=c.getContext("2d");
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();window.addEventListener("resize",resize);
+
+  var pieces=[],colors=["#c9953c","#e8c17a","#f5dfa3","#ff6b8a","#64d2ff","#ff9f43","#fff","#a29bfe","#fd79a8","#ffeaa7"];
+
+  function burst(){
+    for(var i=0;i<100;i++){
+      var angle=Math.random()*Math.PI*2;
+      var speed=Math.random()*8+3;
+      pieces.push({
+        x:c.width/2,y:c.height/2,
+        vx:Math.cos(angle)*speed*(Math.random()*2+.5),
+        vy:Math.sin(angle)*speed*(Math.random()*2+.5)-4,
+        w:Math.random()*8+4,h:Math.random()*6+2,
+        color:colors[Math.floor(Math.random()*colors.length)],
+        rot:Math.random()*360,dr:Math.random()*10-5,
+        gravity:.12,drag:.99,
+        life:1,decay:Math.random()*.008+.004
+      });
+    }
+  }
+
+  function addSlow(){
+    for(var i=0;i<3;i++){
+      pieces.push({
+        x:Math.random()*c.width,y:-20,
+        vx:Math.random()*2-1,vy:Math.random()*1.5+.5,
+        w:Math.random()*6+3,h:Math.random()*4+2,
+        color:colors[Math.floor(Math.random()*colors.length)],
+        rot:Math.random()*360,dr:Math.random()*6-3,
+        gravity:.03,drag:.998,
+        life:1,decay:Math.random()*.003+.001
+      });
+    }
+  }
+
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    for(var i=pieces.length-1;i>=0;i--){
+      var p=pieces[i];
+      p.vx*=p.drag;p.vy*=p.drag;
+      p.vy+=p.gravity;
+      p.x+=p.vx;p.y+=p.vy;
+      p.rot+=p.dr;
+      p.life-=p.decay;
+      if(p.life<=0){pieces.splice(i,1);continue}
+      x.save();
+      x.translate(p.x,p.y);
+      x.rotate(p.rot*Math.PI/180);
+      x.globalAlpha=p.life;
+      x.fillStyle=p.color;
+      x.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      x.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+  setTimeout(burst,800);
+  setTimeout(burst,2200);
+  setTimeout(burst,4000);
+  setInterval(addSlow,200);
+})();
+</script>
+</body>
+</html>
