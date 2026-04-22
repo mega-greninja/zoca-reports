@@ -30,7 +30,7 @@ canvas#confetti{z-index:10}
 .ribbon a:hover{opacity:.8}
 
 /* ── Hero ── */
-.hero{text-align:center;padding:48px 24px 36px;width:100%;max-width:680px}
+.hero{text-align:center;padding:48px 24px 36px;width:100%;max-width:820px}
 
 .cake-wrap{position:relative;display:inline-block;margin-bottom:20px}
 .cake-wrap .cake{font-size:4rem;display:block;animation:bob 3s ease-in-out infinite}
@@ -52,22 +52,22 @@ canvas#confetti{z-index:10}
 .rule{width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);margin:24px auto;opacity:0;animation:up .5s ease forwards 1s}
 
 /* ── Message ── */
-.msg{max-width:500px;width:100%;margin:0 auto;padding:24px 28px;background:rgba(37,150,209,.035);border:1px solid rgba(37,150,209,.08);border-radius:14px;opacity:0;animation:up .7s ease forwards 1.2s}
+.msg{max-width:600px;width:100%;margin:0 auto;padding:28px 34px;background:rgba(37,150,209,.035);border:1px solid rgba(37,150,209,.08);border-radius:14px;opacity:0;animation:up .7s ease forwards 1.2s}
 .msg .q{font-family:'Great Vibes',cursive;font-size:2.2rem;color:var(--blue);opacity:.25;line-height:1;text-align:left;margin-bottom:-8px}
 .msg p{font-family:'Playfair Display',serif;font-size:.95rem;font-style:italic;color:rgba(255,255,255,.45);line-height:1.8;text-align:center}
 
 /* ── Wishes ── */
-.wishes{display:flex;justify-content:center;gap:8px;margin-top:30px;width:100%;max-width:440px;padding:0 12px;opacity:0;animation:up .7s ease forwards 1.5s}
+.wishes{display:flex;justify-content:center;gap:12px;margin-top:30px;width:100%;max-width:520px;padding:0 12px;opacity:0;animation:up .7s ease forwards 1.5s}
 .wish{flex:1;text-align:center;padding:14px 4px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:10px;transition:all .3s}
 .wish:hover{background:rgba(37,150,209,.06);border-color:rgba(37,150,209,.15);transform:translateY(-2px)}
 .wish .wi{font-size:1.4rem;display:block;margin-bottom:5px}
 .wish .wt{font-size:.42rem;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase}
 
 /* ── Services ── */
-.svc-section{width:100%;max-width:640px;margin-top:44px;padding:0 20px;opacity:0;animation:up .7s ease forwards 1.8s}
+.svc-section{width:100%;max-width:780px;margin:44px auto 0;padding:0 20px;opacity:0;animation:up .7s ease forwards 1.8s}
 .svc-section .svc-label{text-align:center;font-size:.5rem;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:16px}
-.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.svc{text-align:center;padding:18px 8px;background:rgba(37,150,209,.03);border:1px solid rgba(37,150,209,.07);border-radius:10px;transition:all .3s;text-decoration:none;color:#fff;cursor:pointer}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.svc{text-align:center;padding:22px 12px;background:rgba(37,150,209,.03);border:1px solid rgba(37,150,209,.07);border-radius:12px;transition:all .3s;text-decoration:none;color:#fff;cursor:pointer}
 .svc:hover{background:rgba(37,150,209,.08);border-color:rgba(37,150,209,.2);transform:translateY(-2px)}
 .svc .svc-icon{font-size:1.6rem;display:block;margin-bottom:6px}
 .svc .svc-name{font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:400}
@@ -90,6 +90,32 @@ canvas#confetti{z-index:10}
 .foot{text-align:center;padding:36px 20px 20px;font-size:.45rem;color:rgba(255,255,255,.08);letter-spacing:3px;text-transform:uppercase;opacity:0;animation:up .5s ease forwards 2.4s}
 
 @keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Desktop / Laptop ── */
+@media(min-width:768px){
+  .hero{padding:56px 32px 40px}
+  .cake-wrap .cake{font-size:4.5rem}
+  .pre{font-size:.65rem;letter-spacing:7px}
+  .happy{font-size:1.8rem;letter-spacing:6px}
+  .bday{font-size:5rem}
+  .who{font-size:2.6rem;letter-spacing:6px}
+  .msg{padding:32px 40px}
+  .msg p{font-size:1.05rem;line-height:1.9}
+  .wishes{gap:16px;margin-top:36px}
+  .wish{padding:18px 8px;border-radius:12px}
+  .wish .wi{font-size:1.7rem;margin-bottom:7px}
+  .wish .wt{font-size:.5rem;letter-spacing:2px}
+  .svc-section{margin-top:52px}
+  .svc-grid{gap:16px}
+  .svc{padding:26px 14px;border-radius:14px}
+  .svc .svc-icon{font-size:1.9rem;margin-bottom:8px}
+  .svc .svc-name{font-size:.7rem;letter-spacing:2px}
+  .company{margin-top:52px}
+  .company .co-name{font-size:1.6rem;letter-spacing:6px}
+  .company .co-tag{font-size:.75rem;letter-spacing:3px}
+  .company .co-addr{font-size:.65rem}
+  .company .btn{padding:12px 30px;font-size:.65rem;letter-spacing:3px}
+}
 
 /* ── Mobile ── */
 @media(max-width:600px){
@@ -169,46 +195,47 @@ canvas#confetti{z-index:10}
       <div class="wish"><span class="wi">&#127873;</span><span class="wt">Prosperity</span></div>
     </div>
 
-    <div class="svc-section">
-      <div class="svc-label">Our Services &mdash; Protecting What Matters</div>
-      <div class="svc-grid">
-        <a class="svc" href="https://weinsureyou.in/life-insurance/" target="_blank" rel="noopener">
-          <span class="svc-icon">&#128722;</span>
-          <span class="svc-name">Life Insurance</span>
-        </a>
-        <a class="svc" href="https://weinsureyou.in/automobile/" target="_blank" rel="noopener">
-          <span class="svc-icon">&#128663;</span>
-          <span class="svc-name">Auto Mobile</span>
-        </a>
-        <a class="svc" href="https://weinsureyou.in/home-factory/" target="_blank" rel="noopener">
-          <span class="svc-icon">&#127968;</span>
-          <span class="svc-name">Home / Factory</span>
-        </a>
-        <a class="svc" href="https://weinsureyou.in/fire-theft/" target="_blank" rel="noopener">
-          <span class="svc-icon">&#128293;</span>
-          <span class="svc-name">Fire / Theft</span>
-        </a>
-        <a class="svc" href="https://weinsureyou.in/travel/" target="_blank" rel="noopener">
-          <span class="svc-icon">&#9992;&#65039;</span>
-          <span class="svc-name">Travel</span>
-        </a>
-        <a class="svc" href="https://weinsureyou.in/medical/" target="_blank" rel="noopener">
-          <span class="svc-icon">&#127973;</span>
-          <span class="svc-name">Medical</span>
-        </a>
-      </div>
-    </div>
+  </div>
 
-    <div class="company">
-      <div class="sep"></div>
-      <div class="from">With Warm Wishes From</div>
-      <div class="co-name">We Insure You</div>
-      <div class="co-tag">..... a trusted choice</div>
-      <div class="co-addr">2546, First Floor, Opp Sagar Cinema Complex<br>Sector 16, Faridabad - 121002<br>+91 95607 76655 &middot; +91 98100 21745</div>
-      <div class="btns">
-        <a class="btn btn-primary" href="https://weinsureyou.in/" target="_blank" rel="noopener">Visit Website &#8594;</a>
-        <a class="btn btn-outline" href="https://weinsureyou.in/contact-us/" target="_blank" rel="noopener">Contact Us</a>
-      </div>
+  <div class="svc-section">
+    <div class="svc-label">Our Services &mdash; Protecting What Matters</div>
+    <div class="svc-grid">
+      <a class="svc" href="https://weinsureyou.in/life-insurance/" target="_blank" rel="noopener">
+        <span class="svc-icon">&#128722;</span>
+        <span class="svc-name">Life Insurance</span>
+      </a>
+      <a class="svc" href="https://weinsureyou.in/automobile/" target="_blank" rel="noopener">
+        <span class="svc-icon">&#128663;</span>
+        <span class="svc-name">Auto Mobile</span>
+      </a>
+      <a class="svc" href="https://weinsureyou.in/home-factory/" target="_blank" rel="noopener">
+        <span class="svc-icon">&#127968;</span>
+        <span class="svc-name">Home / Factory</span>
+      </a>
+      <a class="svc" href="https://weinsureyou.in/fire-theft/" target="_blank" rel="noopener">
+        <span class="svc-icon">&#128293;</span>
+        <span class="svc-name">Fire / Theft</span>
+      </a>
+      <a class="svc" href="https://weinsureyou.in/travel/" target="_blank" rel="noopener">
+        <span class="svc-icon">&#9992;&#65039;</span>
+        <span class="svc-name">Travel</span>
+      </a>
+      <a class="svc" href="https://weinsureyou.in/medical/" target="_blank" rel="noopener">
+        <span class="svc-icon">&#127973;</span>
+        <span class="svc-name">Medical</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="company">
+    <div class="sep"></div>
+    <div class="from">With Warm Wishes From</div>
+    <div class="co-name">We Insure You</div>
+    <div class="co-tag">..... a trusted choice</div>
+    <div class="co-addr">2546, First Floor, Opp Sagar Cinema Complex<br>Sector 16, Faridabad - 121002<br>+91 95607 76655 &middot; +91 98100 21745</div>
+    <div class="btns">
+      <a class="btn btn-primary" href="https://weinsureyou.in/" target="_blank" rel="noopener">Visit Website &#8594;</a>
+      <a class="btn btn-outline" href="https://weinsureyou.in/contact-us/" target="_blank" rel="noopener">Contact Us</a>
     </div>
   </div>
 
