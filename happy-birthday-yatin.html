@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday Yatin! 🎂</title>
+<meta property="og:title" content="Happy Birthday Yatin Sharma! 🎂">
+<meta property="og:description" content="Warm birthday wishes for you, Yatin!">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Poppins:wght@200;300;400;500;600;700;800&family=Great+Vibes&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2596D1;--blue-dark:#1a7ab5;--gold:#e8c17a;--gold-light:#f5dfa3;--gold-dark:#c9953c;--bg:#06080e}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden;overflow-y:auto}
+
+canvas#confetti,canvas#particles{position:fixed;inset:0;pointer-events:none}
+canvas#particles{z-index:1}
+canvas#confetti{z-index:10}
+
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+  radial-gradient(ellipse 60% 40% at 25% 15%,rgba(37,150,209,.06) 0%,transparent 60%),
+  radial-gradient(ellipse 50% 40% at 75% 85%,rgba(37,150,209,.04) 0%,transparent 50%)}
+
+.page{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;width:100%}
+
+/* ── Ribbon ── */
+.ribbon{width:100%;padding:10px 20px;background:linear-gradient(90deg,var(--blue-dark),var(--blue),var(--blue-dark));text-align:center;font-size:.55rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.8)}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:48px 24px 36px;width:100%;max-width:820px}
+
+.cake-wrap{position:relative;display:inline-block;margin-bottom:20px}
+.cake-wrap .cake{font-size:4rem;display:block;animation:bob 3s ease-in-out infinite}
+.cake-wrap .sp{position:absolute;font-size:.9rem;animation:twk 1.5s ease-in-out infinite}
+.cake-wrap .sp:nth-child(2){top:-6px;left:-8px;animation-delay:0s}
+.cake-wrap .sp:nth-child(3){top:-4px;right:-8px;animation-delay:.4s}
+.cake-wrap .sp:nth-child(4){bottom:8px;left:-12px;animation-delay:.8s}
+.cake-wrap .sp:nth-child(5){bottom:10px;right:-10px;animation-delay:1.2s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes twk{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
+
+.pre{font-size:.6rem;letter-spacing:6px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;opacity:0;animation:up .7s ease forwards .2s}
+.happy{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:400;color:rgba(255,255,255,.65);letter-spacing:5px;text-transform:uppercase;opacity:0;animation:up .7s ease forwards .4s}
+.bday{font-family:'Great Vibes',cursive;font-size:4.2rem;line-height:1.05;background:linear-gradient(135deg,var(--gold-light),var(--gold-dark),var(--gold),var(--gold-light));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;opacity:0;animation:up .7s ease forwards .6s,shimmer 3s linear infinite;margin:2px 0}
+@keyframes shimmer{to{background-position:200% center}}
+.who{font-family:'Cinzel',serif;font-size:2.2rem;font-weight:700;letter-spacing:5px;text-transform:uppercase;opacity:0;animation:up .7s ease forwards .8s,glow 4s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 25px rgba(37,150,209,.12)}50%{text-shadow:0 0 45px rgba(37,150,209,.25)}}
+
+.rule{width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);margin:24px auto;opacity:0;animation:up .5s ease forwards 1s}
+
+/* ── Message ── */
+.msg{max-width:600px;width:100%;margin:0 auto;padding:28px 34px;background:rgba(37,150,209,.035);border:1px solid rgba(37,150,209,.08);border-radius:14px;opacity:0;animation:up .7s ease forwards 1.2s}
+.msg .q{font-family:'Great Vibes',cursive;font-size:2.2rem;color:var(--blue);opacity:.25;line-height:1;text-align:left;margin-bottom:-8px}
+.msg p{font-family:'Playfair Display',serif;font-size:.95rem;font-style:italic;color:rgba(255,255,255,.45);line-height:1.8;text-align:center}
+
+/* ── Wishes ── */
+.wishes{display:flex;justify-content:center;gap:12px;margin-top:30px;width:100%;max-width:520px;padding:0 12px;opacity:0;animation:up .7s ease forwards 1.5s}
+.wish{flex:1;text-align:center;padding:14px 4px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:10px;transition:all .3s}
+.wish:hover{background:rgba(37,150,209,.06);border-color:rgba(37,150,209,.15);transform:translateY(-2px)}
+.wish .wi{font-size:1.4rem;display:block;margin-bottom:5px}
+.wish .wt{font-size:.42rem;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase}
+
+/* ── From ── */
+.company{text-align:center;margin-top:44px;padding:0 24px;opacity:0;animation:up .7s ease forwards 2.1s}
+.company .sep{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(37,150,209,.3),transparent);margin:0 auto 20px}
+.company .from{font-size:.5rem;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:12px}
+.company .co-name{font-family:'Cinzel',serif;font-size:1.4rem;letter-spacing:5px;text-transform:uppercase;color:var(--blue);font-weight:600}
+.company .co-tag{font-size:.65rem;color:rgba(255,255,255,.25);margin-top:5px;font-style:italic;letter-spacing:2px}
+
+/* ── Footer ── */
+.foot{text-align:center;padding:36px 20px 20px;font-size:.45rem;color:rgba(255,255,255,.08);letter-spacing:3px;text-transform:uppercase;opacity:0;animation:up .5s ease forwards 2.4s}
+
+@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Desktop / Laptop ── */
+@media(min-width:768px){
+  .hero{padding:56px 32px 40px}
+  .cake-wrap .cake{font-size:4.5rem}
+  .pre{font-size:.65rem;letter-spacing:7px}
+  .happy{font-size:1.8rem;letter-spacing:6px}
+  .bday{font-size:5rem}
+  .who{font-size:2.6rem;letter-spacing:6px}
+  .msg{padding:32px 40px}
+  .msg p{font-size:1.05rem;line-height:1.9}
+  .wishes{gap:16px;margin-top:36px}
+  .wish{padding:18px 8px;border-radius:12px}
+  .wish .wi{font-size:1.7rem;margin-bottom:7px}
+  .wish .wt{font-size:.5rem;letter-spacing:2px}
+  .company{margin-top:52px}
+  .company .co-name{font-size:1.6rem;letter-spacing:6px}
+  .company .co-tag{font-size:.75rem;letter-spacing:3px}
+}
+
+/* ── Mobile ── */
+@media(max-width:600px){
+  .hero{padding:36px 16px 28px}
+  .cake-wrap .cake{font-size:3rem}
+  .cake-wrap .sp{font-size:.7rem}
+  .pre{font-size:.5rem;letter-spacing:4px}
+  .happy{font-size:1.1rem;letter-spacing:3px}
+  .bday{font-size:2.8rem}
+  .who{font-size:1.4rem;letter-spacing:2.5px}
+  .rule{margin:18px auto}
+  .msg{padding:20px 18px;margin:0 8px}
+  .msg .q{font-size:1.8rem}
+  .msg p{font-size:.88rem;line-height:1.7}
+  .wishes{gap:5px;margin-top:24px;padding:0 8px}
+  .wish{padding:12px 3px;border-radius:8px}
+  .wish .wi{font-size:1.2rem;margin-bottom:4px}
+  .wish .wt{font-size:.38rem;letter-spacing:1px}
+  .company{margin-top:32px;padding:0 16px}
+  .company .co-name{font-size:1.1rem;letter-spacing:3px}
+}
+@media(max-width:360px){
+  .bday{font-size:2.3rem}
+  .who{font-size:1.2rem;letter-spacing:2px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<canvas id="particles"></canvas>
+<canvas id="confetti"></canvas>
+
+<div class="page">
+
+  <div class="ribbon">
+    &#127881; Happy Birthday Yatin! &#127881;
+  </div>
+
+  <div class="hero">
+    <div class="cake-wrap">
+      <span class="sp">&#10024;</span>
+      <span class="sp">&#10024;</span>
+      <span class="sp">&#10024;</span>
+      <span class="sp">&#10024;</span>
+      <span class="cake">&#127874;</span>
+    </div>
+
+    <div class="pre">Wishing You A Very</div>
+    <div class="happy">Happy</div>
+    <div class="bday">Birthday!</div>
+    <div class="who">Yatin Sharma</div>
+
+    <div class="rule"></div>
+
+    <div class="msg">
+      <span class="q">&#8220;</span>
+      <p>May this special day bring you endless joy, good health,
+      and all the success you truly deserve. Here&#8217;s to another wonderful
+      year of achievements, growth and cherished moments!</p>
+    </div>
+
+    <div class="wishes">
+      <div class="wish"><span class="wi">&#10024;</span><span class="wt">Success</span></div>
+      <div class="wish"><span class="wi">&#128154;</span><span class="wt">Health</span></div>
+      <div class="wish"><span class="wi">&#127775;</span><span class="wt">Happiness</span></div>
+      <div class="wish"><span class="wi">&#127873;</span><span class="wt">Prosperity</span></div>
+    </div>
+
+  </div>
+
+  <div class="company">
+    <div class="sep"></div>
+    <div class="from">With Warm Wishes From</div>
+    <div class="co-name">Roshan</div>
+    <div class="co-tag">your friend &#10084;&#65039;</div>
+  </div>
+
+  <div class="foot">Made with &#10084;&#65039; &middot; Happy Birthday Yatin &copy; 2026</div>
+
+</div>
+
+<script>
+(function(){
+  var c=document.getElementById("particles"),g=c.getContext("2d");
+  function rz(){c.width=window.innerWidth;c.height=window.innerHeight}
+  rz();window.addEventListener("resize",rz);
+  var pts=[];
+  for(var i=0;i<70;i++){pts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+.3,a:Math.random(),da:Math.random()*.007+.002,vy:-(Math.random()*.12+.04),vx:Math.random()*.15-.075})}
+  (function draw(){
+    g.clearRect(0,0,c.width,c.height);
+    for(var i=0;i<pts.length;i++){var p=pts[i];p.a+=p.da;p.y+=p.vy;p.x+=p.vx;if(p.y<-10){p.y=c.height+10;p.x=Math.random()*c.width}g.beginPath();g.arc(p.x,p.y,p.r,0,Math.PI*2);g.fillStyle="rgba(37,150,209,"+(0.1+Math.abs(Math.sin(p.a))*.3)+")";g.fill()}
+    requestAnimationFrame(draw);
+  })();
+})();
+(function(){
+  var c=document.getElementById("confetti"),g=c.getContext("2d");
+  function rz(){c.width=window.innerWidth;c.height=window.innerHeight}
+  rz();window.addEventListener("resize",rz);
+  var pcs=[],cols=["#2596D1","#1a7ab5","#e8c17a","#f5dfa3","#ff6b8a","#64d2ff","#fff","#a29bfe","#ffeaa7","#74b9ff"];
+  function burst(cx,cy){for(var i=0;i<70;i++){var a=Math.random()*Math.PI*2,sp=Math.random()*6+2;pcs.push({x:cx,y:cy,vx:Math.cos(a)*sp*(Math.random()*1.5+.5),vy:Math.sin(a)*sp*(Math.random()*1.5+.5)-3,w:Math.random()*6+3,h:Math.random()*4+2,c:cols[~~(Math.random()*cols.length)],rot:Math.random()*360,dr:Math.random()*8-4,gv:.1,dg:.99,life:1,dc:Math.random()*.006+.003})}}
+  function rain(){for(var i=0;i<2;i++){pcs.push({x:Math.random()*c.width,y:-10,vx:Math.random()*1.2-.6,vy:Math.random()*.8+.3,w:Math.random()*5+2,h:Math.random()*3+1.5,c:cols[~~(Math.random()*cols.length)],rot:Math.random()*360,dr:Math.random()*4-2,gv:.02,dg:.999,life:1,dc:Math.random()*.002+.001})}}
+  (function draw(){
+    g.clearRect(0,0,c.width,c.height);
+    for(var i=pcs.length-1;i>=0;i--){var p=pcs[i];p.vx*=p.dg;p.vy*=p.dg;p.vy+=p.gv;p.x+=p.vx;p.y+=p.vy;p.rot+=p.dr;p.life-=p.dc;if(p.life<=0){pcs.splice(i,1);continue}g.save();g.translate(p.x,p.y);g.rotate(p.rot*Math.PI/180);g.globalAlpha=p.life;g.fillStyle=p.c;g.fillRect(-p.w/2,-p.h/2,p.w,p.h);g.restore()}
+    requestAnimationFrame(draw);
+  })();
+  setTimeout(function(){burst(c.width/2,c.height*.3)},500);
+  setTimeout(function(){burst(c.width*.3,c.height*.25)},1600);
+  setTimeout(function(){burst(c.width*.7,c.height*.35)},2800);
+  setInterval(rain,300);
+})();
+</script>
+</body>
+</html>
