@@ -58,10 +58,10 @@ canvas#confetti{z-index:10}
 
 /* ── Wishes ── */
 .wishes{display:flex;justify-content:center;gap:12px;margin-top:30px;width:100%;max-width:650px;padding:0 12px;opacity:0;animation:up .7s ease forwards 1.5s}
-.wish{flex:1;text-align:center;padding:14px 4px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:10px;transition:all .3s}
+.wish{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 4px;min-height:70px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:10px;transition:all .3s}
 .wish:hover{background:rgba(37,150,209,.06);border-color:rgba(37,150,209,.15);transform:translateY(-2px)}
-.wish .wi{font-size:1.4rem;display:block;margin-bottom:5px}
-.wish .wt{font-size:.42rem;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase}
+.wish .wi{font-size:1.4rem;line-height:1;height:1.6rem;display:flex;align-items:center;justify-content:center;margin-bottom:5px}
+.wish .wt{font-size:.42rem;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;line-height:1}
 
 /* ── Services ── */
 .svc-section{width:100%;max-width:650px;margin:44px auto 0;padding:0 20px;opacity:0;animation:up .7s ease forwards 1.8s}
@@ -102,8 +102,8 @@ canvas#confetti{z-index:10}
   .msg{padding:32px 40px}
   .msg p{font-size:1.05rem;line-height:1.9}
   .wishes{gap:16px;margin-top:36px}
-  .wish{padding:18px 8px;border-radius:12px}
-  .wish .wi{font-size:1.7rem;margin-bottom:7px}
+  .wish{padding:18px 8px;min-height:85px;border-radius:12px}
+  .wish .wi{font-size:1.7rem;height:2rem;margin-bottom:7px}
   .wish .wt{font-size:.5rem;letter-spacing:2px}
   .svc-section{margin-top:52px}
   .svc-grid{gap:16px}
