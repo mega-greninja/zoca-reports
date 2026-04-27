@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inbox V2 — Revised Engineering Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #09090b; color: #e4e4e7; overflow: hidden; height: 100vh; }
+
+  .deck { position: relative; height: 100vh; width: 100vw; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 48px 64px;
+    opacity: 0; transition: opacity 0.35s ease;
+  }
+  .slide.active { display: flex; opacity: 1; }
+  .slide-inner {
+    width: 100%; max-width: 1100px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  .nav {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.05); backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 8px 16px; z-index: 100;
+  }
+  .nav button {
+    background: rgba(255,255,255,0.07); border: none; color: #a1a1aa;
+    font-size: 16px; cursor: pointer; width: 34px; height: 34px;
+    border-radius: 9px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  .nav .counter { font-size: 12px; color: #52525b; font-weight: 600; min-width: 44px; text-align: center; }
+  .dots { display: flex; gap: 5px; }
+  .dots .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); cursor: pointer; transition: all 0.3s;
+  }
+  .dots .dot.active { background: #818cf8; width: 18px; border-radius: 4px; }
+  .kbd-hint { position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #27272a; }
+
+  .label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #818cf8; margin-bottom: 14px; }
+  h1 { font-size: 52px; font-weight: 800; line-height: 1.08; letter-spacing: -2.5px; color: #fafafa; text-align: center; max-width: 850px; }
+  h1 em { font-style: normal; color: #818cf8; }
+  h1 .g { color: #4ade80; }
+  h1 .a { color: #fbbf24; }
+  h1 .r { color: #f87171; }
+  h2 { font-size: 36px; font-weight: 700; line-height: 1.15; letter-spacing: -1.5px; color: #fafafa; margin-bottom: 8px; }
+  .sub { font-size: 17px; color: #71717a; line-height: 1.65; max-width: 640px; text-align: center; margin-top: 10px; }
+  .logo { position: absolute; top: 36px; right: 56px; font-size: 13px; font-weight: 800; letter-spacing: 3px; color: #27272a; text-transform: uppercase; }
+  .sn { position: absolute; top: 36px; left: 56px; font-size: 10px; font-weight: 700; color: #27272a; letter-spacing: 2px; text-transform: uppercase; }
+
+  .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 7px; letter-spacing: 0.3px; }
+  .tag.p { background: rgba(129,140,248,0.12); color: #a5b4fc; }
+  .tag.g { background: rgba(74,222,128,0.12); color: #86efac; }
+  .tag.a { background: rgba(251,191,36,0.12); color: #fde68a; }
+  .tag.r { background: rgba(248,113,113,0.12); color: #fca5a5; }
+  .tag.b { background: rgba(96,165,250,0.12); color: #93c5fd; }
+  .tag.gr { background: rgba(161,161,170,0.08); color: #71717a; }
+  .tag.c { background: rgba(34,211,238,0.12); color: #67e8f9; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+  .dia-row { display: flex; gap: 16px; align-items: stretch; width: 100%; max-width: 1000px; margin-top: 24px; }
+  .dia-box {
+    flex: 1; border-radius: 16px; padding: 22px; position: relative;
+    border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025);
+    display: flex; flex-direction: column;
+  }
+  .dia-box h3 { font-size: 14px; font-weight: 700; color: #fafafa; margin-bottom: 6px; }
+  .dia-box p { font-size: 12px; color: #71717a; line-height: 1.6; }
+  .dia-box .emoji { font-size: 28px; margin-bottom: 12px; }
+  .dia-box.accent-p { border-color: rgba(129,140,248,0.2); background: rgba(129,140,248,0.04); }
+  .dia-box.accent-g { border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.04); }
+  .dia-box.accent-a { border-color: rgba(251,191,36,0.2); background: rgba(251,191,36,0.04); }
+  .dia-box.accent-r { border-color: rgba(248,113,113,0.2); background: rgba(248,113,113,0.04); }
+  .dia-box.accent-b { border-color: rgba(96,165,250,0.2); background: rgba(96,165,250,0.04); }
+  .dia-box.accent-c { border-color: rgba(34,211,238,0.2); background: rgba(34,211,238,0.04); }
+
+  .arch { width: 100%; max-width: 900px; margin-top: 28px; position: relative; }
+  .arch-row { display: flex; justify-content: center; gap: 12px; position: relative; z-index: 2; }
+  .arch-box { padding: 10px 18px; border-radius: 10px; font-size: 12px; font-weight: 600; text-align: center; border: 1px solid; min-width: 120px; }
+  .arch-box.src { background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.2); color: #93c5fd; }
+  .arch-box.proc { background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.2); color: #a5b4fc; }
+  .arch-box.brain { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.2); color: #fde68a; }
+  .arch-box.out { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.2); color: #86efac; }
+  .arch-box.ui { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); color: #fca5a5; }
+  .arch-arrow { text-align: center; color: #3f3f46; font-size: 20px; padding: 6px 0; position: relative; z-index: 1; }
+  .arch-label { text-align: center; font-size: 10px; font-weight: 600; color: #3f3f46; letter-spacing: 1px; text-transform: uppercase; padding: 2px 0; }
+
+  .stats { display: flex; gap: 24px; margin-top: 36px; flex-wrap: wrap; justify-content: center; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 40px; font-weight: 800; line-height: 1; }
+  .stat .lbl { font-size: 11px; color: #52525b; margin-top: 6px; font-weight: 500; }
+
+  .hpipe { display: flex; align-items: center; gap: 0; width: 100%; max-width: 1050px; margin-top: 32px; overflow-x: auto; padding-bottom: 8px; }
+  .hp-node { flex-shrink: 0; padding: 16px 18px; border-radius: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); min-width: 130px; }
+  .hp-node .ico { font-size: 24px; margin-bottom: 8px; }
+  .hp-node h4 { font-size: 12px; font-weight: 700; color: #e4e4e7; }
+  .hp-node p { font-size: 10px; color: #52525b; margin-top: 4px; line-height: 1.4; }
+  .hp-arrow { flex-shrink: 0; color: #27272a; font-size: 20px; padding: 0 4px; }
+
+  .state-vis { display: flex; gap: 14px; width: 100%; max-width: 1000px; margin-top: 28px; align-items: flex-start; }
+  .state-col { flex: 1; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+  .state-header { padding: 12px 16px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+  .state-body { padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .state-item { padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; background: rgba(255,255,255,0.03); }
+
+  .scroll-y { overflow-y: auto; max-height: calc(100vh - 140px); width: 100%; }
+  .scroll-y::-webkit-scrollbar { width: 3px; }
+  .scroll-y::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+
+  .split { display: flex; gap: 32px; width: 100%; max-width: 1000px; margin-top: 24px; align-items: flex-start; }
+  .split > div { flex: 1; }
+
+  /* Table styles */
+  .tbl { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .tbl th { font-size: 10px; font-weight: 700; color: #52525b; letter-spacing: 1px; text-transform: uppercase; text-align: left; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .tbl td { font-size: 11px; color: #a1a1aa; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: top; }
+  .tbl td code { font-size: 10px; color: #a5b4fc; background: rgba(129,140,248,0.08); padding: 1px 5px; border-radius: 4px; }
+  .tbl tr:hover td { background: rgba(255,255,255,0.015); }
+
+  /* New badge */
+  .new-badge { display: inline-block; font-size: 9px; font-weight: 800; color: #4ade80; background: rgba(74,222,128,0.12); padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; vertical-align: middle; margin-left: 4px; }
+
+  /* Timeline connector */
+  .timeline { display: flex; flex-direction: column; gap: 0; width: 100%; max-width: 900px; z-index: 1; }
+  .tl-step { display: flex; gap: 16px; align-items: flex-start; padding: 8px 0; }
+  .tl-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; z-index: 2; }
+  .tl-card { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); }
+  .tl-title { font-size: 13px; font-weight: 700; }
+  .tl-desc { font-size: 11px; color: #71717a; margin-top: 4px; line-height: 1.5; }
+
+  /* Gap badge */
+  .gap { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; color: #f87171; background: rgba(248,113,113,0.1); padding: 3px 8px; border-radius: 5px; letter-spacing: 0.3px; }
+
+  @media (max-width: 900px) {
+    .slide { padding: 32px 20px; }
+    h1 { font-size: 30px; letter-spacing: -1px; }
+    h2 { font-size: 24px; }
+    .dia-row, .state-vis, .split { flex-direction: column; }
+    .hpipe { flex-wrap: wrap; justify-content: center; }
+    .hp-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ===== SLIDE 0: TITLE ===== -->
+  <div class="slide active" data-slide="0">
+    <div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <div class="label">Revised Engineering Spec · April 2026</div>
+      <h1>Inbox V2 — <em>grounded in the codebase</em></h1>
+      <p class="sub">Every table, service, and queue mapped to real files. Gaps from the original PRD identified and resolved.</p>
+      <div class="tags">
+        <span class="tag p">Conversations</span>
+        <span class="tag g">Units</span>
+        <span class="tag a">Classifier</span>
+        <span class="tag b">Database Schema</span>
+        <span class="tag r">Retell Webhooks</span>
+        <span class="tag c">DND + Error Handling</span>
+      </div>
+      <div style="margin-top: 28px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <div class="gap">GAP #1 — No DB schema in original</div>
+        <div class="gap">GAP #2 — Retell 3-webhook timing</div>
+        <div class="gap">GAP #3 — DND had 2 checks, needs 4</div>
+        <div class="gap">GAP #4 — Dual-system coexistence</div>
+        <div class="gap">GAP #5 — No error/retry strategy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 1: BEFORE / AFTER ===== -->
+  <div class="slide" data-slide="1">
+    <div class="sn">01 — THE PROBLEM</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Today vs. Inbox V2</h2>
+      <div class="dia-row" style="margin-top: 32px;">
+        <div class="dia-box accent-r">
+          <div style="font-size: 11px; font-weight: 700; color: #fca5a5; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;">Today — Scattered</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; gap: 8px; align-items: center;"><span style="font-size:20px;">📞</span><div style="flex:1; height: 30px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">Call logs — separate screen</div></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><span style="font-size:20px;">💬</span><div style="flex:1; height: 30px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">SMS — another screen</div></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><span style="font-size:20px;">📋</span><div style="flex:1; height: 30px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">Booking enquiries — yet another</div></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><span style="font-size:20px;">🧠</span><div style="flex:1; height: 30px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">26 conversation states — no inbox</div></div>
+          </div>
+          <p style="margin-top: 14px; font-size: 12px; color: #71717a;">Merchants piece together context manually. Follow-ups get lost. No unified AI visibility.</p>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 8px; flex-shrink: 0;"><span style="font-size: 32px; color: #3f3f46;">→</span></div>
+        <div class="dia-box accent-g">
+          <div style="font-size: 11px; font-weight: 700; color: #86efac; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;">Inbox V2 — Unified</div>
+          <div style="display: flex; gap: 8px; align-items: center;"><span style="font-size:20px;">👤</span>
+            <div style="flex:1; min-height: 80px; border-radius: 8px; background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.15); display: flex; flex-direction: column; justify-content: center; padding: 10px 14px;">
+              <div style="font-size: 12px; font-weight: 600; color: #d4d4d8;">Sarah Cohen</div>
+              <div style="font-size: 10px; color: #52525b; margin-top: 4px; line-height: 1.4;">📞 Called about Balayage<br>💬 Confirmed via SMS<br>✅ Booked Sat 3pm — $180</div>
+            </div>
+          </div>
+          <p style="margin-top: 14px; font-size: 12px; color: #71717a;">One thread per customer. Every interaction in order. AI classifies into 5 dimensions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 2: 3 CORE CONCEPTS ===== -->
+  <div class="slide" data-slide="2">
+    <div class="sn">02 — BUILDING BLOCKS</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Three concepts. Everything else is wiring.</h2>
+      <div class="dia-row" style="margin-top: 28px;">
+        <div class="dia-box accent-p">
+          <div class="emoji">💬</div>
+          <h3>Conversation</h3>
+          <p style="margin-top: 8px;"><strong style="color:#d4d4d8;">One row per merchant + customer.</strong> Created on first contact. Never splits. If closed and customer returns — same row reopens.</p>
+          <div style="margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; font-family: monospace; color: #a5b4fc;">Key = entityId + customerPhone</div>
+        </div>
+        <div class="dia-box accent-g">
+          <div class="emoji">📎</div>
+          <h3>Unit (Event)</h3>
+          <p style="margin-top: 8px;"><strong style="color:#d4d4d8;">One row per thing that happened.</strong> Call, SMS, booking, note — each is a unit in chronological order.</p>
+          <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 4px;">
+            <span class="tag b" style="font-size:10px;">📞 inbound-call</span>
+            <span class="tag g" style="font-size:10px;">💬 inbound-sms</span>
+            <span class="tag a" style="font-size:10px;">📋 lead-form</span>
+            <span class="tag p" style="font-size:10px;">✅ booking</span>
+            <span class="tag gr" style="font-size:10px;">👤 merchant-action</span>
+          </div>
+        </div>
+        <div class="dia-box accent-a">
+          <div class="emoji">🧠</div>
+          <h3>Classifier</h3>
+          <p style="margin-top: 8px;"><strong style="color:#d4d4d8;">One LLM prompt. One job.</strong> Reads last 10 units → outputs 5D state. Runs after every event. Never sends anything.</p>
+          <div style="margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; font-family: monospace; color: #fde68a;">10 units in → 5D state JSON out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 3: 5 DIMENSIONS ===== -->
+  <div class="slide" data-slide="3">
+    <div class="sn">03 — THE STATE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Every conversation has 5 dimensions</h2>
+      <p class="sub">The classifier sets all 5 on every run. Together they tell the merchant exactly what's going on.</p>
+      <div class="state-vis">
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(129,140,248,0.1); color: #a5b4fc;">Status</div>
+          <div class="state-body">
+            <div class="state-item" style="border-left: 3px solid #fbbf24;">🟡 Needs Action</div>
+            <div class="state-item" style="border-left: 3px solid #60a5fa;">🔵 Active</div>
+            <div class="state-item" style="border-left: 3px solid #71717a;">⚪ Closed</div>
+            <div class="state-item" style="border-left: 3px solid #f87171;">🔴 Spam</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">Which tab it appears in</div>
+        </div>
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(74,222,128,0.1); color: #86efac;">Stage</div>
+          <div class="state-body">
+            <div class="state-item">⏳ Awaiting reply</div>
+            <div class="state-item">💳 Awaiting payment</div>
+            <div class="state-item">📅 Awaiting callback</div>
+            <div class="state-item">📞 Call in progress</div>
+            <div class="state-item">💤 Idle</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">What's happening right now</div>
+        </div>
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(251,191,36,0.1); color: #fde68a;">Intent</div>
+          <div class="state-body">
+            <div class="state-item">📅 New Booking</div>
+            <div class="state-item">🔄 Change Booking</div>
+            <div class="state-item">❓ Question</div>
+            <div class="state-item">⭐ Review</div>
+            <div class="state-item">😤 Complaint</div>
+            <div class="state-item">🏢 Vendor</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">What the customer wants</div>
+        </div>
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(248,113,113,0.1); color: #fca5a5;">Disposition</div>
+          <div class="state-body">
+            <div class="state-item">✅ Booked <span style="color:#3f3f46;font-size:10px;">(ai/self/manual)</span></div>
+            <div class="state-item">🔄 Modified</div>
+            <div class="state-item">✔️ Resolved</div>
+            <div class="state-item">🤝 Handled</div>
+            <div class="state-item">❌ Lost</div>
+            <div class="state-item">🏢 Vendor</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">How it ended (closed only)</div>
+        </div>
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(34,211,238,0.1); color: #67e8f9;">Action Items</div>
+          <div class="state-body">
+            <div class="state-item">📅 Approve booking</div>
+            <div class="state-item">🔄 Approve change</div>
+            <div class="state-item">📞 Call back</div>
+            <div class="state-item" style="border-right: 3px solid #f87171;">🚨 Address complaint 📌</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">📌 = never auto-closes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 4: GAP #1 — DATABASE SCHEMA ===== -->
+  <div class="slide" data-slide="4">
+    <div class="sn">04 — GAP #1: DATABASE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner scroll-y">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <h2>The original PRD had zero database details</h2>
+      </div>
+      <p class="sub" style="margin-bottom: 16px;">No tables defined. No schema files referenced. Here's what actually exists and what's new.</p>
+
+      <div class="split" style="max-width: 1060px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #86efac; margin-bottom: 10px;">Existing tables (no changes)</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>clients.clients</code> — Customer identity (id, name, entityId)</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>clients.phone_numbers</code> — Phone normalization (last 10 digits)</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>chatbot.followups</code> — Follow-up scheduling (type, trigger, mode)</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>chatbot.state_rules</code> — Per-entity automated follow-up rules</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>l2b.agent_context</code> — Merchant config (name, hours, FAQs, policies)</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>l2b.do_not_disturb</code> — Per-client DND (isActive flag)</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>l2b.call_callbacks</code> — Existing callback tracking</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>twilio.call_transcripts</code> — Recordings + transcripts</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size:11px;"><code>entities.preferences</code> — Feature flags (key-value pairs)</p></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fde68a; margin-bottom: 10px;">New tables <span class="new-badge">NEW</span></div>
+          <div class="dia-box accent-a" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">chatbot.conversations <span class="new-badge">NEW</span></h3>
+            <p>One row per (entity, customer). Holds 5D state, action_items (JSONB), last_classified_unit_id, origin, channels_used, estimated_value, unread.</p>
+            <div style="margin-top: 8px; font-size: 10px; color: #fde68a; font-family: monospace;">UNIQUE (entity_id, customer_phone)</div>
+          </div>
+          <div class="dia-box accent-a" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">chatbot.conversation_units <span class="new-badge">NEW</span></h3>
+            <p>One row per event. Replaces chatbot.messages for V2. Has kind, channel, direction, payload, call-specific fields, SMS-specific fields, state_at_time snapshot.</p>
+            <div style="margin-top: 8px; font-size: 10px; color: #fde68a; font-family: monospace;">FK → chatbot.conversations(id)</div>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">chatbot.conversation_states + bridge column</h3>
+            <p>Existing table gets <code>inbox_v2_conversation_id</code> column — links old state model to new conversation.</p>
+          </div>
+
+          <div style="font-size: 13px; font-weight: 700; color: #f87171; margin: 14px 0 8px;">Why chatbot.messages doesn't work</div>
+          <div class="dia-box accent-r" style="padding: 12px 14px;">
+            <p style="font-size: 11px;">Only has: <code>id</code>, <code>clientId</code>, <code>role</code>, <code>channel</code>, <code>payload</code>. <strong style="color:#fca5a5;">No conversationId. No kind. No state snapshot. No call fields.</strong> Can't be extended — would break existing consumers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 5: DATABASE RELATIONSHIP MAP ===== -->
+  <div class="slide" data-slide="5">
+    <div class="sn">05 — DATA MODEL</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>How tables connect</h2>
+      <div style="width: 100%; max-width: 960px; margin-top: 20px;">
+
+        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 12px;">
+          <div style="padding: 14px 20px; border-radius: 12px; background: rgba(74,222,128,0.04); border: 1px solid rgba(74,222,128,0.15); text-align: center; min-width: 200px;">
+            <div style="font-size: 14px; font-weight: 700; color: #86efac;">👤 clients.clients</div>
+            <div style="font-size: 10px; color: #52525b; margin-top: 4px;">id, firstName, entityId, source</div>
+          </div>
+        </div>
+        <div style="text-align: center; color: #27272a; font-size: 14px;">├────────┬────────┬────────┬────────┤</div>
+        <div style="text-align: center; color: #27272a; font-size: 14px; padding: 2px 0;">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(129,140,248,0.04); border: 1px solid rgba(129,140,248,0.15); text-align: center; min-width: 140px;">
+            <div style="font-size: 11px; font-weight: 700; color: #a5b4fc;">📱 phone_numbers</div>
+            <div style="font-size: 9px; color: #52525b; margin-top: 2px;">countryCode + number</div>
+          </div>
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2); text-align: center; min-width: 160px;">
+            <div style="font-size: 11px; font-weight: 700; color: #fde68a;">💬 conversations <span class="new-badge">NEW</span></div>
+            <div style="font-size: 9px; color: #52525b; margin-top: 2px;">5D state, action_items</div>
+          </div>
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(129,140,248,0.04); border: 1px solid rgba(129,140,248,0.15); text-align: center; min-width: 130px;">
+            <div style="font-size: 11px; font-weight: 700; color: #a5b4fc;">📋 followups</div>
+            <div style="font-size: 9px; color: #52525b; margin-top: 2px;">scheduledTime, mode</div>
+          </div>
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(129,140,248,0.04); border: 1px solid rgba(129,140,248,0.15); text-align: center; min-width: 130px;">
+            <div style="font-size: 11px; font-weight: 700; color: #a5b4fc;">🚫 do_not_disturb</div>
+            <div style="font-size: 9px; color: #52525b; margin-top: 2px;">isActive, reason</div>
+          </div>
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(129,140,248,0.04); border: 1px solid rgba(129,140,248,0.15); text-align: center; min-width: 130px;">
+            <div style="font-size: 11px; font-weight: 700; color: #a5b4fc;">📞 call_callbacks</div>
+            <div style="font-size: 9px; color: #52525b; margin-top: 2px;">callId + clientId PK</div>
+          </div>
+        </div>
+        <div style="text-align: center; color: #27272a; font-size: 14px; padding: 6px 0;">↓ from conversations</div>
+        <div style="display: flex; justify-content: center;">
+          <div style="padding: 12px 20px; border-radius: 12px; background: rgba(251,191,36,0.04); border: 1px solid rgba(251,191,36,0.15); text-align: center; min-width: 280px;">
+            <div style="font-size: 13px; font-weight: 700; color: #fde68a;">📎 conversation_units <span class="new-badge">NEW</span></div>
+            <div style="font-size: 10px; color: #52525b; margin-top: 4px;">kind, payload, call_bucket, sms_body, state_at_time</div>
+          </div>
+        </div>
+        <div style="text-align: center; color: #27272a; font-size: 14px; padding: 6px 0;">↓ links to</div>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.15); text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #93c5fd;">🎙 call_transcripts</div>
+            <div style="font-size: 9px; color: #52525b;">via call_id</div>
+          </div>
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.15); text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #93c5fd;">📅 booking_enquiries</div>
+            <div style="font-size: 9px; color: #52525b;">via booking_id</div>
+          </div>
+          <div style="padding: 10px 14px; border-radius: 10px; background: rgba(96,165,250,0.04); border: 1px solid rgba(96,165,250,0.15); text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #93c5fd;">🔍 frontdesk_audit</div>
+            <div style="font-size: 9px; color: #52525b;">via traceId</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 18px; display: flex; justify-content: center; gap: 12px;">
+          <div style="padding: 10px 16px; border-radius: 10px; background: rgba(161,161,170,0.04); border: 1px dashed rgba(161,161,170,0.15); text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #a1a1aa;">🏪 l2b.agent_context</div>
+            <div style="font-size: 9px; color: #52525b;">feeds classifier: biz name, hours, services</div>
+          </div>
+          <div style="padding: 10px 16px; border-radius: 10px; background: rgba(161,161,170,0.04); border: 1px dashed rgba(161,161,170,0.15); text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #a1a1aa;">🚦 entities.preferences</div>
+            <div style="font-size: 9px; color: #52525b;">attribute='inbox_v2', value='true'</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 6: PIPELINE ===== -->
+  <div class="slide" data-slide="6">
+    <div class="sn">06 — PIPELINE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Event → Unit → Classify → Display</h2>
+      <p class="sub">Same pipeline for every event type. Simple, predictable, debuggable.</p>
+      <div class="hpipe">
+        <div class="hp-node" style="border-color: rgba(96,165,250,0.2);">
+          <div class="ico">📡</div><h4>Event arrives</h4>
+          <p>Call, SMS, booking,<br>form, or merchant action</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(129,140,248,0.2);">
+          <div class="ico">🚦</div><h4>Flag check</h4>
+          <p>entities.preferences<br>inbox_v2 = true?</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(74,222,128,0.2);">
+          <div class="ico">👤</div><h4>Resolve client</h4>
+          <p>phone_numbers →<br>client_contacts → client</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(74,222,128,0.2);">
+          <div class="ico">💾</div><h4>Save unit</h4>
+          <p>conversation_units<br>+ find/create conversation</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.04);">
+          <div class="ico">🧠</div><h4>Classify</h4>
+          <p>Redis lock → last 10 units<br>+ agent_context → LLM</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(129,140,248,0.2);">
+          <div class="ico">📸</div><h4>Snapshot + TTL</h4>
+          <p>State on unit.<br>Schedule timers.</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(74,222,128,0.2);">
+          <div class="ico">📱</div><h4>UI polls</h4>
+          <p>New state appears<br>in ~3-5s</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 14px; margin-top: 18px; flex-wrap: wrap; justify-content: center;">
+        <div class="dia-box" style="padding: 10px 16px; flex: 0 1 auto;"><p style="font-size: 11px;"><strong style="color:#a5b4fc;">Redis lock per conversation</strong> — key: <code>inbox:classify:{convId}</code>. 30s timeout. 3x retry.</p></div>
+        <div class="dia-box" style="padding: 10px 16px; flex: 0 1 auto;"><p style="font-size: 11px;"><strong style="color:#fde68a;">Optimistic-lock write</strong> — <code>WHERE last_classified_unit_id = :prev</code>. Stale worker no-ops.</p></div>
+        <div class="dia-box" style="padding: 10px 16px; flex: 0 1 auto;"><p style="font-size: 11px;"><strong style="color:#86efac;">No coalescing</strong> — 3 events in 2s = 3 classifier runs. Simple beats clever.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 7: GAP #2 — RETELL 3-WEBHOOK ===== -->
+  <div class="slide" data-slide="7">
+    <div class="sn">07 — GAP #2: RETELL WEBHOOKS</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <h2>The original PRD only mentioned <span class="r">call_ended</span></h2>
+      </div>
+      <p class="sub">But Retell sends 3 webhooks. The analysis arrives 5-30s after the call ends.</p>
+
+      <div class="dia-row" style="margin-top: 24px; max-width: 900px;">
+        <div class="dia-box" style="text-align: center;">
+          <div style="font-size: 28px;">📞</div>
+          <h3 style="margin-top: 8px;">call_started</h3>
+          <p style="margin-top: 6px;">call_id, agent_id, from/to number, start_timestamp</p>
+          <div style="margin-top: 10px; padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.2); font-size: 10px; color: #86efac;">→ Cache in Redis (TTL 2h)</div>
+        </div>
+        <div class="dia-box" style="text-align: center;">
+          <div style="font-size: 28px;">🔚</div>
+          <h3 style="margin-top: 8px;">call_ended</h3>
+          <p style="margin-top: 6px;">duration_ms, disconnect_reason. <strong style="color: #fca5a5;">No transcript. No analysis.</strong></p>
+          <div style="margin-top: 10px; padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.2); font-size: 10px; color: #fde68a;">→ Cache end data. Do NOT create unit yet.</div>
+        </div>
+        <div class="dia-box accent-a" style="text-align: center;">
+          <div style="font-size: 28px;">🧠</div>
+          <h3 style="margin-top: 8px;">call_analyzed</h3>
+          <p style="margin-top: 6px;"><strong style="color: #d4d4d8;">Summary, transcript, tool_calls, sentiment, bucket</strong> — everything the classifier needs.</p>
+          <div style="margin-top: 10px; padding: 6px 10px; border-radius: 6px; background: rgba(0,0,0,0.2); font-size: 10px; color: #86efac;">→ Create unit + run classifier HERE</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px; max-width: 900px; width: 100%;">
+        <div class="dia-box accent-r" style="flex: 1; padding: 14px 18px;">
+          <h3 style="font-size: 13px;">Edge case: call_analyzed never arrives</h3>
+          <p>Bull delayed job at <code>call_ended + 60s</code>. Creates minimal unit with duration only. Classifier runs with limited data. If call_analyzed arrives later → update unit + re-classify.</p>
+        </div>
+        <div class="dia-box accent-p" style="flex: 1; padding: 14px 18px;">
+          <h3 style="font-size: 13px;">Where in the codebase</h3>
+          <p><code>libs/win/src/lib/services/<br>frontdesk-retell-webhook.service.ts</code><br>Handles all 3 webhook types already.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 8: FOLLOW-UP SYSTEM ===== -->
+  <div class="slide" data-slide="8">
+    <div class="sn">08 — OUTBOUND</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Classifier <span class="a">labels</span>. Follow-up system <span class="g">sends</span>.</h2>
+      <p class="sub">All outbound goes through existing infrastructure. Nothing to rebuild.</p>
+      <div class="split" style="margin-top: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fafafa; margin-bottom: 12px;">SMS reply flow</div>
+          <div style="display: flex; flex-direction: column; gap: 0; max-width: 100%;">
+            <div style="padding: 10px 16px; border-radius: 10px 10px 0 0; border: 1px solid rgba(96,165,250,0.15); background: rgba(96,165,250,0.04); font-size: 11px;"><strong style="color: #93c5fd;">1.</strong> Customer SMS arrives (Twilio webhook)</div>
+            <div style="padding: 2px 0; text-align: center; color: #27272a; font-size: 12px;">↓</div>
+            <div style="padding: 10px 16px; border: 1px solid rgba(129,140,248,0.15); background: rgba(129,140,248,0.04); font-size: 11px;"><strong style="color: #a5b4fc;">2.</strong> Save unit + enqueue classifier (runs in parallel with AI agent)</div>
+            <div style="padding: 2px 0; text-align: center; color: #27272a; font-size: 12px;">↓</div>
+            <div style="padding: 10px 16px; border: 1px solid rgba(251,191,36,0.15); background: rgba(251,191,36,0.04); font-size: 11px;"><strong style="color: #fde68a;">3.</strong> AI agent decides reply → calls <code>request-followup</code> → DND check #1</div>
+            <div style="padding: 2px 0; text-align: center; color: #27272a; font-size: 12px;">↓</div>
+            <div style="padding: 10px 16px; border: 1px solid rgba(74,222,128,0.15); background: rgba(74,222,128,0.04); font-size: 11px;"><strong style="color: #86efac;">4.</strong> WinFollowupProcessor sends → DND check #2 → Twilio → delivery webhook</div>
+            <div style="padding: 2px 0; text-align: center; color: #27272a; font-size: 12px;">↓</div>
+            <div style="padding: 10px 16px; border-radius: 0 0 10px 10px; border: 1px solid rgba(129,140,248,0.15); background: rgba(129,140,248,0.04); font-size: 11px;"><strong style="color: #a5b4fc;">5.</strong> Save outbound-sms unit → classifier re-runs with updated timeline</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fafafa; margin-bottom: 12px;">3 existing pieces (all in production)</div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">💾 chatbot.followups</h3>
+            <p>scheduledTime, mode (SMS/PHONE), type (RESPONSE/REMINDER), trigger (BOT/CALL/SMS), processed, error.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">⚙️ WinFollowupProcessor</h3>
+            <p>Bull worker, concurrency 20. Job ID: <code>win_followup_{id}</code>. Re-fetches row before processing.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🔧 request-followup MCP tool</h3>
+            <p>AI agent calls this to schedule outbound. Writes to chatbot.followups. Available in FrontdeskService.</p>
+          </div>
+          <div class="dia-box accent-p" style="padding: 10px 14px;">
+            <p style="font-size: 11px;"><strong style="color: #a5b4fc;">Two independent LLM calls:</strong> AI reply agent ("what to say?") + Classifier ("what state?"). They don't interact.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 9: GAP #3 — DND (4 CHECKPOINTS) ===== -->
+  <div class="slide" data-slide="9">
+    <div class="sn">09 — GAP #3: DND (4 CHECKS)</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>DND has <span class="r">4</span> checkpoints, not 2</h2>
+      <p class="sub">The original PRD mentioned 2. The real system has 4 enforcement layers plus auto-lift.</p>
+
+      <div style="display: flex; gap: 0; flex-direction: column; width: 100%; max-width: 700px; margin-top: 24px;">
+        <div style="display: flex; gap: 14px; align-items: center; padding: 12px 0;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(251,191,36,0.12); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fde68a; flex-shrink: 0;">1</div>
+          <div style="flex: 1; padding: 12px 18px; border-radius: 12px; background: rgba(251,191,36,0.04); border: 1px solid rgba(251,191,36,0.15);">
+            <div style="font-size: 13px; font-weight: 700; color: #fde68a;">request-followup tool</div>
+            <div style="font-size: 11px; color: #71717a; margin-top: 2px;">Check <code>l2b.do_not_disturb.isActive</code>. Reject if true — followup row never created.</div>
+          </div>
+        </div>
+        <div style="text-align: center; color: #27272a;">↓</div>
+        <div style="display: flex; gap: 14px; align-items: center; padding: 12px 0;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(248,113,113,0.12); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fca5a5; flex-shrink: 0;">2</div>
+          <div style="flex: 1; padding: 12px 18px; border-radius: 12px; background: rgba(248,113,113,0.04); border: 1px solid rgba(248,113,113,0.15);">
+            <div style="font-size: 13px; font-weight: 700; color: #fca5a5;">WinFollowupProcessor (before send)</div>
+            <div style="font-size: 11px; color: #71717a; margin-top: 2px;">Re-check DND. If set since #1 (e.g., customer just texted STOP) → abort + deactivate followup.</div>
+          </div>
+        </div>
+        <div style="text-align: center; color: #27272a;">↓</div>
+        <div style="display: flex; gap: 14px; align-items: center; padding: 12px 0;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(129,140,248,0.12); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #a5b4fc; flex-shrink: 0;">3</div>
+          <div style="flex: 1; padding: 12px 18px; border-radius: 12px; background: rgba(129,140,248,0.04); border: 1px solid rgba(129,140,248,0.15);">
+            <div style="font-size: 13px; font-weight: 700; color: #a5b4fc;">TwilioService.sendSms()</div>
+            <div style="font-size: 11px; color: #71717a; margin-top: 2px;">Check <code>twilio.phone_blocklist</code>. Hard block — these numbers are permanently blocked, never auto-lifted.</div>
+          </div>
+        </div>
+        <div style="text-align: center; color: #27272a;">↓</div>
+        <div style="display: flex; gap: 14px; align-items: center; padding: 12px 0;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(74,222,128,0.12); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #86efac; flex-shrink: 0;">4</div>
+          <div style="flex: 1; padding: 12px 18px; border-radius: 12px; background: rgba(74,222,128,0.04); border: 1px solid rgba(74,222,128,0.15);">
+            <div style="font-size: 13px; font-weight: 700; color: #86efac;">Classifier input (dnd_on_file flag)</div>
+            <div style="font-size: 11px; color: #71717a; margin-top: 2px;">Classifier sees DND status → immediately sets <code>Lost(dnd)</code>. Prevents stale UI showing "Active" for a DND'd customer.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dia-box accent-a" style="margin-top: 16px; max-width: 700px; padding: 12px 18px;">
+        <p style="font-size: 12px;"><strong style="color: #fde68a;">Auto-lift:</strong> When a DND'd customer calls back → <code>DoNotDisturbRepository.disable()</code> fires. isActive → false. Conversation reopens. The MCP tool <code>enable-do-not-disturb</code> also cancels all pending followups.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 10: AUTO-CLOSE ===== -->
+  <div class="slide" data-slide="10">
+    <div class="sn">10 — AUTO-CLOSE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Two things happen <em>without</em> any new event</h2>
+      <p class="sub">Bull delayed jobs. Deterministic rules — no LLM needed. Direct state write.</p>
+      <div class="dia-row" style="margin-top: 28px; max-width: 800px;">
+        <div class="dia-box accent-p" style="text-align: center;">
+          <div style="font-size: 48px; font-weight: 800; color: #818cf8; margin: 8px 0;">24h</div>
+          <h3>Cold Close</h3>
+          <p style="margin-top: 8px;">After last outbound, if no inbound within 24h → <strong style="color:#d4d4d8;">Lost (cold)</strong></p>
+          <div style="margin-top: 14px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; color: #71717a;">↺ Resets on each outbound<br>✕ Cancels if any inbound</div>
+        </div>
+        <div class="dia-box accent-r" style="text-align: center;">
+          <div style="font-size: 48px; font-weight: 800; color: #f87171; margin: 8px 0;">7 days</div>
+          <h3>Action Item TTL</h3>
+          <p style="margin-top: 8px;">Non-pinned action item unresolved 7 days → <strong style="color:#d4d4d8;">Lost (cold)</strong></p>
+          <div style="margin-top: 14px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; color: #71717a;">📌 address-complaint PINNED<br>→ never auto-closes</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 16px; max-width: 800px; width: 100%;">
+        <div class="dia-box" style="flex: 1; padding: 10px 16px;"><p style="font-size: 11px;"><strong style="color: #fca5a5;">STOP keyword</strong> → immediately Closed/Lost(dnd). Overrides everything.</p></div>
+        <div class="dia-box" style="flex: 1; padding: 10px 16px;"><p style="font-size: 11px;"><strong style="color: #a5b4fc;">New queues:</strong> <code>inbox.cold-close</code> + <code>inbox.ttl-check</code> (both delayed jobs per conversation)</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 11: GAP #4 — DUAL SYSTEM COEXISTENCE ===== -->
+  <div class="slide" data-slide="11">
+    <div class="sn">11 — GAP #4: DUAL SYSTEM</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Existing 26-state model runs <em>alongside</em> new 5D</h2>
+      <p class="sub">They serve different purposes. Both run for V2-enrolled entities. No conflict.</p>
+
+      <div class="dia-row" style="margin-top: 28px; max-width: 900px;">
+        <div class="dia-box accent-p">
+          <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">Existing: 26 States</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#d4d4d8;">chatbot.conversation_states</strong><br>
+              <span style="color:#52525b;">AWAITING_FIRST_RESPONSE, ACTIVE_CONVERSATION, BOOKING_INTENT, HUMAN_HANDOVER, NEEDS_CALL_BACK, DO_NOT_CONTACT, BOOKED, DORMANT... (26 total)</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#d4d4d8;">Drives:</strong> AI reply agent behavior<br>
+              <span style="color:#52525b;">FrontdeskService + ChatbotService use this to decide HOW to reply to the customer.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#d4d4d8;">Continues unchanged.</strong><br>
+              <span style="color:#52525b;">Follow-up rules, state transitions, all existing behavior stays.</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; flex-shrink: 0; padding: 0 8px;"><span style="font-size: 24px; color: #3f3f46;">+</span></div>
+        <div class="dia-box accent-a">
+          <div style="font-size: 11px; font-weight: 700; color: #fde68a; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">New: 5 Dimensions</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#d4d4d8;">chatbot.conversations</strong> <span class="new-badge">NEW</span><br>
+              <span style="color:#52525b;">Status, Stage, Intent, Disposition, Action Items — 5D state on every classifier run.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#d4d4d8;">Drives:</strong> Merchant inbox UI<br>
+              <span style="color:#52525b;">What tab to show, what chips to display, what action items the merchant sees.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#d4d4d8;">Independent classifier.</strong><br>
+              <span style="color:#52525b;">Separate LLM call. Doesn't interact with the AI reply agent.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dia-box" style="margin-top: 16px; max-width: 900px; padding: 14px 20px;">
+        <p style="font-size: 12px;"><strong style="color: #86efac;">Bridge column:</strong> <code>chatbot.conversation_states.inbox_v2_conversation_id</code> links old model to new. Both systems write their own tables. No migration needed.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 12: GAP #5 — ERROR HANDLING ===== -->
+  <div class="slide" data-slide="12">
+    <div class="sn">12 — GAP #5: ERROR HANDLING</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>What happens when things fail</h2>
+      <p class="sub">The original PRD had zero error handling. Here's the retry strategy.</p>
+
+      <div class="dia-row" style="margin-top: 24px; max-width: 950px;">
+        <div class="dia-box accent-r">
+          <h3 style="font-size: 13px;">🧠 Classifier failures</h3>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#fca5a5;">LLM timeout (&gt;15s)</strong><br>
+              <span style="color:#71717a;">Retry 2x (5s, 10s backoff). If all fail → Sentry alert, state unchanged, unit.state_at_time = null.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#fca5a5;">Invalid JSON response</strong><br>
+              <span style="color:#71717a;">Retry 1x. If still invalid → log error, leave state unchanged.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#fca5a5;">Out-of-schema enum values</strong><br>
+              <span style="color:#71717a;">Validate against allowlists. Reject + retry 1x.</span>
+            </div>
+          </div>
+        </div>
+        <div class="dia-box accent-p">
+          <h3 style="font-size: 13px;">🔒 Infrastructure failures</h3>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#a5b4fc;">Redis lock timeout</strong><br>
+              <span style="color:#71717a;">Retry 3x (1s backoff). If all fail → requeue job with 30s delay.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#a5b4fc;">Optimistic lock conflict</strong><br>
+              <span style="color:#71717a;">Silent no-op. A newer classifier already wrote. Expected behavior.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#a5b4fc;">call_analyzed never arrives</strong><br>
+              <span style="color:#71717a;">60s delayed job creates minimal unit. Re-classify when data arrives.</span>
+            </div>
+          </div>
+        </div>
+        <div class="dia-box accent-g">
+          <h3 style="font-size: 13px;">📊 Observability</h3>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#86efac;">Classifier latency</strong><br>
+              <span style="color:#71717a;">Prometheus histogram per run.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#86efac;">Error rate</strong><br>
+              <span style="color:#71717a;">Sentry + Prometheus counter on failures.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#86efac;">Queue depth</strong><br>
+              <span style="color:#71717a;">Bull metrics for all 3 new queues.</span>
+            </div>
+            <div style="padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px;">
+              <strong style="color:#86efac;">Cost tracking</strong><br>
+              <span style="color:#71717a;">LLM token usage per entity per day.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 13: CLASSIFIER INPUT ASSEMBLY ===== -->
+  <div class="slide" data-slide="13">
+    <div class="sn">13 — CLASSIFIER INPUT</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Where classifier data comes from</h2>
+      <p class="sub">The original PRD showed input format but not where each field is sourced.</p>
+
+      <div style="width: 100%; max-width: 800px; margin-top: 20px;">
+        <table class="tbl">
+          <thead><tr><th>Input field</th><th>Source table</th><th>Column / computation</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">merchant name</td><td><code>l2b.agent_context</code></td><td>businessName</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">merchant timezone</td><td><code>l2b.agent_context</code></td><td>derived from workingHours or explicit</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">customer name</td><td><code>clients.clients</code></td><td>firstName + lastName</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">customer phone</td><td><code>clients.phone_numbers</code></td><td>countryCode + number (E.164)</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">is_returning</td><td><code>chatbot.conversations</code></td><td>any prior closed+Booked conv for same (entity, phone)</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">last booking</td><td><code>website.booking_enquiries</code></td><td>latest status=CONFIRMED, joined by clientId</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">dnd_on_file</td><td><code>l2b.do_not_disturb</code></td><td>isActive for this clientId</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">conversation origin</td><td><code>chatbot.conversations</code></td><td>origin (kind of first unit)</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">last 10 units</td><td><code>chatbot.conversation_units</code></td><td>ORDER BY created_at ASC LIMIT 10</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">prior state</td><td><code>chatbot.conversations</code></td><td>current 5D state fields</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">call bucket</td><td><code>conversation_units.call_bucket</code></td><td>from Retell call_analyzed webhook</td></tr>
+            <tr><td style="color:#d4d4d8; font-weight: 600;">SMS signals</td><td><code>conversation_units.sms_signals</code></td><td>detected before saving unit</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 16px; max-width: 800px; width: 100%;">
+        <div class="dia-box" style="flex: 1; padding: 10px 14px;">
+          <p style="font-size: 11px;"><strong style="color: #fde68a;">14 call buckets:</strong> APPOINTMENT_BOOKED, CHECKOUT_LINK_SENT, APPOINTMENT_CANCELLATION, APPOINTMENT_RESCHEDULED, CALL_TRANSFERRED, ENQUIRY_HANDLED, SERVICE_NOT_OFFERED, SLOT_NOT_AVAILABLE, DECLINED_AT_DEPOSIT, CALLBACK_NEEDED, COMPLAINT, ABANDONED_CALL, SALES_INSURANCE_CALL, SPAM</p>
+        </div>
+        <div class="dia-box" style="flex: 0.6; padding: 10px 14px;">
+          <p style="font-size: 11px;"><strong style="color: #86efac;">5 SMS signals:</strong> has_stop_keyword, has_callback_request, has_complaint_signal, has_spam_signal, has_book_confirmation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 14: API SURFACE ===== -->
+  <div class="slide" data-slide="14">
+    <div class="sn">14 — API SURFACE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>6 reads. 5 writes. 5 queues.</h2>
+      <div class="split" style="margin-top: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #86efac; margin-bottom: 10px;">📖 Reads</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/entity/:id — Conversation list + tab counts</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/entity/:id/counts — Tab counts only (polled)</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/conversations/:id — Header + state + actions</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/conversations/:id/messages — Unit timeline</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/messages/:unitId — Unit drill-down</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /frontdesk/activity/entity/:id — AI activity feed</p></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fde68a; margin-bottom: 10px;">✏️ Writes</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../messages — Send SMS (via follow-up) <span class="tag g" style="font-size:9px;padding:1px 4px;">🧠</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../close — Force close → Handled <span class="tag g" style="font-size:9px;padding:1px 4px;">🧠</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../spam — Mark as spam <span class="tag g" style="font-size:9px;padding:1px 4px;">🧠</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../notes — Add note <span class="tag gr" style="font-size:9px;padding:1px 4px;">no 🧠</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#a5b4fc;font-weight:700;">PATCH</span> .../read — Toggle read/unread <span class="tag gr" style="font-size:9px;padding:1px 4px;">no 🧠</span></p></div>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #a5b4fc; margin: 14px 0 8px;">⚡ Bull queues</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span class="tag p">inbox.classifier <span class="new-badge">NEW</span></span>
+            <span class="tag b">inbox.cold-close <span class="new-badge">NEW</span></span>
+            <span class="tag a">inbox.ttl-check <span class="new-badge">NEW</span></span>
+            <span class="tag g">WIN_FOLLOWUP</span>
+            <span class="tag gr">WIN_POSTCALL_ANALYSIS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 15: ROLLOUT ===== -->
+  <div class="slide" data-slide="15">
+    <div class="sn">15 — ROLLOUT</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Opt-in per entity. Separate tables. No migration.</h2>
+      <div class="split" style="margin-top: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #86efac; margin-bottom: 12px;">How it rolls out</div>
+          <div class="dia-box accent-g" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🚦 Feature flag via entities.preferences</h3>
+            <p><code>attribute = 'inbox_v2'</code>, <code>value = 'true'</code>. Every webhook branches. Non-enrolled = zero changes.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🗄️ V2 tables only</h3>
+            <p>conversations + conversation_units. Existing chatbot.messages untouched. No retroactive migration.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🧪 Test mode</h3>
+            <p><code>is_test = true</code> on conversations + units. Excluded from counts. Visible with <code>?includeTest=true</code>.</p>
+          </div>
+          <div class="dia-box">
+            <h3 style="font-size: 13px;">🖥️ Frontend gate</h3>
+            <p>Inbox + Activity tabs only mount for enrolled entities. Uses same preferences check.</p>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #71717a; margin-bottom: 12px;">Branch points (all webhook handlers)</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;">📞 <code>frontdesk-retell-webhook.service.ts</code><br><span style="color:#52525b;">call_started / call_ended / call_analyzed</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;">💬 <code>chatbot.controller.ts</code> (tasks-server)<br><span style="color:#52525b;">Twilio inbound + delivery callback</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;">📋 Form submission handler<br><span style="color:#52525b;">Lead-form webhook</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;">✅ <code>booking-enquiries.service.ts</code><br><span style="color:#52525b;">Booking events</span></p></div>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #71717a; margin: 14px 0 8px;">🚫 Not in V1</div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div class="dia-box" style="padding:8px 14px; opacity: 0.5;"><p style="font-size:11px;">Websockets / live streaming</p></div>
+            <div class="dia-box" style="padding:8px 14px; opacity: 0.5;"><p style="font-size:11px;">Per-action-item resolve buttons</p></div>
+            <div class="dia-box" style="padding:8px 14px; opacity: 0.5;"><p style="font-size:11px;">Bulk actions · Email · Multi-staff</p></div>
+            <div class="dia-box" style="padding:8px 14px; opacity: 0.5;"><p style="font-size:11px;">Retroactive migration</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 16: END-TO-END SCENARIO ===== -->
+  <div class="slide" data-slide="16">
+    <div class="sn">16 — REAL SCENARIO</div><div class="logo">ZOCA</div>
+    <div class="slide-inner scroll-y">
+      <h2>End-to-end: <em>Sarah wants a Balayage</em></h2>
+      <p class="sub" style="margin-bottom: 8px;">Traced through every system layer with actual table writes.</p>
+      <div class="timeline" style="margin-top: 16px;">
+        <div class="tl-step">
+          <div class="tl-dot" style="background: rgba(96,165,250,0.15); border: 2px solid #60a5fa;">📞</div>
+          <div class="tl-card" style="background: rgba(96,165,250,0.04); border-color: rgba(96,165,250,0.15);">
+            <div style="display: flex; justify-content: space-between;"><div class="tl-title" style="color: #93c5fd;">Sarah calls the salon</div><span class="tag b" style="font-size:9px;">10:30 AM</span></div>
+            <div class="tl-desc">Retell answers → call_ended fires (cached) → <strong style="color:#d4d4d8;">call_analyzed arrives 15s later</strong> with transcript + bucket: APPOINTMENT_BOOKED</div>
+            <div style="margin-top: 6px;"><span class="tag p" style="font-size:9px;">conversation created (entity + phone)</span><span class="tag g" style="font-size:9px; margin-left: 4px;">unit saved to conversation_units</span></div>
+          </div>
+        </div>
+        <div style="margin-left: 17px; border-left: 2px solid #27272a; height: 6px;"></div>
+        <div class="tl-step">
+          <div class="tl-dot" style="background: rgba(251,191,36,0.15); border: 2px solid #fbbf24;">🧠</div>
+          <div class="tl-card" style="background: rgba(251,191,36,0.04); border-color: rgba(251,191,36,0.15);">
+            <div class="tl-title" style="color: #fde68a;">Classifier runs</div>
+            <div class="tl-desc">Reads agent_context (Bella's Salon, America/New_York) + 1 unit → outputs 5D state.</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;">
+              <span class="tag gr" style="font-size:9px;">CLOSED</span><span class="tag gr" style="font-size:9px;">IDLE</span><span class="tag p" style="font-size:9px;">NewBooking</span><span class="tag g" style="font-size:9px;">Booked(ai)</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-left: 17px; border-left: 2px solid #27272a; height: 6px;"></div>
+        <div class="tl-step">
+          <div class="tl-dot" style="background: rgba(74,222,128,0.15); border: 2px solid #4ade80;">💬</div>
+          <div class="tl-card" style="background: rgba(74,222,128,0.04); border-color: rgba(74,222,128,0.15);">
+            <div style="display: flex; justify-content: space-between;"><div class="tl-title" style="color: #86efac;">AI sends confirmation SMS</div><span class="tag g" style="font-size:9px;">10:31 AM</span></div>
+            <div class="tl-desc">AI agent → request-followup (DND check #1 ✓) → chatbot.followups row → WinFollowupProcessor (DND check #2 ✓) → Twilio → delivery webhook → outbound-sms unit saved.</div>
+          </div>
+        </div>
+        <div style="margin-left: 17px; border-left: 2px solid #27272a; height: 6px;"></div>
+        <div class="tl-step">
+          <div class="tl-dot" style="background: rgba(129,140,248,0.15); border: 2px solid #818cf8;">📱</div>
+          <div class="tl-card" style="background: rgba(129,140,248,0.04); border-color: rgba(129,140,248,0.15);">
+            <div class="tl-title" style="color: #a5b4fc;">Merchant sees it in Inbox → Closed tab</div>
+            <div class="tl-desc">UI polls /inbox/entity/:id → sees conversation as Closed / Booked(ai). Full timeline: call transcript + booking details + SMS confirmation.</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px;">
+              <span class="tag gr" style="font-size:9px;">Status: CLOSED</span><span class="tag g" style="font-size:9px;">Disposition: Booked(ai)</span><span class="tag gr" style="font-size:9px;">Actions: []</span>
+            </div>
+            <div style="font-size: 10px; color: #3f3f46; margin-top: 4px;">If Sarah calls again later → same conversation reopens as Active.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SLIDE 17: SUMMARY ===== -->
+  <div class="slide" data-slide="17">
+    <div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <div class="label">Revised Summary</div>
+      <h1 style="font-size: 36px; letter-spacing: -1.5px;">
+        One conversation per customer.<br>
+        <em>5D classified</em> by LLM.<br>
+        <span class="g">Grounded in the codebase.</span>
+      </h1>
+      <div class="stats">
+        <div class="stat"><div class="num" style="color: #818cf8;">2</div><div class="lbl">New tables</div></div>
+        <div class="stat"><div class="num" style="color: #4ade80;">9</div><div class="lbl">Existing tables used</div></div>
+        <div class="stat"><div class="num" style="color: #fbbf24;">5</div><div class="lbl">State dimensions</div></div>
+        <div class="stat"><div class="num" style="color: #f87171;">3</div><div class="lbl">New Bull queues</div></div>
+        <div class="stat"><div class="num" style="color: #22d3ee;">4</div><div class="lbl">DND checkpoints</div></div>
+        <div class="stat"><div class="num" style="color: #a78bfa;">5</div><div class="lbl">Gaps resolved</div></div>
+      </div>
+      <div style="margin-top: 32px; padding: 16px 24px; border-radius: 14px; background: rgba(129,140,248,0.05); border: 1px solid rgba(129,140,248,0.12); max-width: 750px; text-align: center;">
+        <p style="font-size: 13px; color: #a5b4fc; font-weight: 600;">Original PRD gaps filled: DB schema · Retell 3-webhook timing · DND 4 checkpoints · Dual-system coexistence · Error handling &amp; observability</p>
+      </div>
+      <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+        <span class="tag p" style="font-size: 10px;">chatbot.conversations [NEW]</span>
+        <span class="tag p" style="font-size: 10px;">chatbot.conversation_units [NEW]</span>
+        <span class="tag g" style="font-size: 10px;">inbox.classifier queue [NEW]</span>
+        <span class="tag a" style="font-size: 10px;">inbox.cold-close queue [NEW]</span>
+        <span class="tag b" style="font-size: 10px;">inbox.ttl-check queue [NEW]</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="navigate(-1)">←</button>
+  <div class="dots" id="dots"></div>
+  <div class="counter" id="counter">1 / 18</div>
+  <button onclick="navigate(1)">→</button>
+</div>
+<div class="kbd-hint">arrow keys or swipe to navigate</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const counter = document.getElementById('counter');
+  const dotsC = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsC.appendChild(d);
+  }
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsC.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    dotsC.children[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+  function navigate(dir) { goTo(current + dir); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+  });
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const d = tx - e.changedTouches[0].clientX;
+    if (Math.abs(d) > 50) navigate(d > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
