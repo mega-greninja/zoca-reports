@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inbox V2 — Visual Walkthrough</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #09090b; color: #e4e4e7; overflow: hidden; height: 100vh; }
+
+  /* Slide system */
+  .deck { position: relative; height: 100vh; width: 100vw; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 48px 64px;
+    opacity: 0; transition: opacity 0.35s ease;
+  }
+  .slide.active { display: flex; opacity: 1; }
+  .slide-inner {
+    width: 100%; max-width: 1100px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(255,255,255,0.05); backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 8px 16px; z-index: 100;
+  }
+  .nav button {
+    background: rgba(255,255,255,0.07); border: none; color: #a1a1aa;
+    font-size: 16px; cursor: pointer; width: 34px; height: 34px;
+    border-radius: 9px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.14); color: #fff; }
+  .nav .counter { font-size: 12px; color: #52525b; font-weight: 600; min-width: 44px; text-align: center; }
+  .dots { display: flex; gap: 5px; }
+  .dots .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); cursor: pointer; transition: all 0.3s;
+  }
+  .dots .dot.active { background: #818cf8; width: 18px; border-radius: 4px; }
+  .kbd-hint { position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%); font-size: 10px; color: #27272a; }
+
+  /* Typography */
+  .label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #818cf8; margin-bottom: 14px;
+  }
+  h1 { font-size: 52px; font-weight: 800; line-height: 1.08; letter-spacing: -2.5px; color: #fafafa; text-align: center; max-width: 850px; }
+  h1 em { font-style: normal; color: #818cf8; }
+  h1 .g { color: #4ade80; }
+  h1 .a { color: #fbbf24; }
+  h1 .r { color: #f87171; }
+  h2 { font-size: 36px; font-weight: 700; line-height: 1.15; letter-spacing: -1.5px; color: #fafafa; margin-bottom: 8px; }
+  .sub { font-size: 17px; color: #71717a; line-height: 1.65; max-width: 640px; text-align: center; margin-top: 10px; }
+  .logo { position: absolute; top: 36px; right: 56px; font-size: 13px; font-weight: 800; letter-spacing: 3px; color: #27272a; text-transform: uppercase; }
+  .sn { position: absolute; top: 36px; left: 56px; font-size: 10px; font-weight: 700; color: #27272a; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Tags */
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 4px 10px;
+    border-radius: 7px; letter-spacing: 0.3px;
+  }
+  .tag.p { background: rgba(129,140,248,0.12); color: #a5b4fc; }
+  .tag.g { background: rgba(74,222,128,0.12); color: #86efac; }
+  .tag.a { background: rgba(251,191,36,0.12); color: #fde68a; }
+  .tag.r { background: rgba(248,113,113,0.12); color: #fca5a5; }
+  .tag.b { background: rgba(96,165,250,0.12); color: #93c5fd; }
+  .tag.gr { background: rgba(161,161,170,0.08); color: #71717a; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+  /* Visual flow */
+  .vflow {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0; width: 100%; max-width: 600px; margin-top: 28px;
+  }
+  .vf-node {
+    width: 100%; padding: 14px 22px;
+    border-radius: 14px; display: flex; align-items: center; gap: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    position: relative;
+  }
+  .vf-node.highlight { background: rgba(129,140,248,0.06); border-color: rgba(129,140,248,0.2); }
+  .vf-num {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(129,140,248,0.15); color: #818cf8;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .vf-text { font-size: 13px; font-weight: 600; color: #d4d4d8; }
+  .vf-text span { display: block; font-size: 11px; font-weight: 400; color: #52525b; margin-top: 2px; }
+  .vf-arrow { color: #27272a; font-size: 14px; padding: 3px 0; }
+
+  /* Diagram boxes */
+  .dia-row { display: flex; gap: 16px; align-items: stretch; width: 100%; max-width: 1000px; margin-top: 24px; }
+  .dia-box {
+    flex: 1; border-radius: 16px; padding: 22px; position: relative;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.025);
+    display: flex; flex-direction: column;
+  }
+  .dia-box h3 { font-size: 14px; font-weight: 700; color: #fafafa; margin-bottom: 6px; }
+  .dia-box p { font-size: 12px; color: #71717a; line-height: 1.6; }
+  .dia-box .emoji { font-size: 28px; margin-bottom: 12px; }
+  .dia-box.accent-p { border-color: rgba(129,140,248,0.2); background: rgba(129,140,248,0.04); }
+  .dia-box.accent-g { border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.04); }
+  .dia-box.accent-a { border-color: rgba(251,191,36,0.2); background: rgba(251,191,36,0.04); }
+  .dia-box.accent-r { border-color: rgba(248,113,113,0.2); background: rgba(248,113,113,0.04); }
+  .dia-box.accent-b { border-color: rgba(96,165,250,0.2); background: rgba(96,165,250,0.04); }
+
+  /* Visual architecture */
+  .arch {
+    width: 100%; max-width: 900px; margin-top: 28px;
+    position: relative;
+  }
+  .arch-row {
+    display: flex; justify-content: center; gap: 12px;
+    position: relative; z-index: 2;
+  }
+  .arch-box {
+    padding: 10px 18px; border-radius: 10px;
+    font-size: 12px; font-weight: 600; text-align: center;
+    border: 1px solid; min-width: 120px;
+  }
+  .arch-box.src { background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.2); color: #93c5fd; }
+  .arch-box.proc { background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.2); color: #a5b4fc; }
+  .arch-box.brain { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.2); color: #fde68a; }
+  .arch-box.out { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.2); color: #86efac; }
+  .arch-box.ui { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.2); color: #fca5a5; }
+  .arch-arrow {
+    text-align: center; color: #3f3f46; font-size: 20px;
+    padding: 6px 0; position: relative; z-index: 1;
+  }
+  .arch-label {
+    text-align: center; font-size: 10px; font-weight: 600;
+    color: #3f3f46; letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 0;
+  }
+
+  /* Stat boxes */
+  .stats { display: flex; gap: 24px; margin-top: 36px; flex-wrap: wrap; justify-content: center; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 40px; font-weight: 800; line-height: 1; }
+  .stat .lbl { font-size: 11px; color: #52525b; margin-top: 6px; font-weight: 500; }
+
+  /* Horizontal pipeline */
+  .hpipe {
+    display: flex; align-items: center; gap: 0;
+    width: 100%; max-width: 1050px; margin-top: 32px;
+    overflow-x: auto; padding-bottom: 8px;
+  }
+  .hp-node {
+    flex-shrink: 0; padding: 16px 18px;
+    border-radius: 14px; text-align: center;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.025);
+    min-width: 130px;
+  }
+  .hp-node .ico { font-size: 24px; margin-bottom: 8px; }
+  .hp-node h4 { font-size: 12px; font-weight: 700; color: #e4e4e7; }
+  .hp-node p { font-size: 10px; color: #52525b; margin-top: 4px; line-height: 1.4; }
+  .hp-arrow { flex-shrink: 0; color: #27272a; font-size: 20px; padding: 0 4px; }
+
+  /* Visual state machine */
+  .state-vis {
+    display: flex; gap: 14px; width: 100%; max-width: 1000px; margin-top: 28px;
+    align-items: flex-start;
+  }
+  .state-col {
+    flex: 1; border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .state-header {
+    padding: 12px 16px; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; text-align: center;
+  }
+  .state-body { padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .state-item {
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 12px; font-weight: 500;
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Scrollable */
+  .scroll-y { overflow-y: auto; max-height: calc(100vh - 140px); width: 100%; }
+  .scroll-y::-webkit-scrollbar { width: 3px; }
+  .scroll-y::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+
+  /* Visual inbox mockup */
+  .inbox-mock {
+    width: 100%; max-width: 700px; margin-top: 24px;
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+  }
+  .inbox-tabs {
+    display: flex; border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+  .inbox-tab {
+    padding: 10px 18px; font-size: 12px; font-weight: 600;
+    color: #52525b; position: relative;
+  }
+  .inbox-tab.active { color: #fafafa; }
+  .inbox-tab.active::after {
+    content: ''; position: absolute; bottom: 0; left: 12px; right: 12px;
+    height: 2px; background: #818cf8; border-radius: 2px 2px 0 0;
+  }
+  .inbox-tab .badge-count {
+    font-size: 10px; background: rgba(129,140,248,0.2); color: #a5b4fc;
+    padding: 1px 6px; border-radius: 10px; margin-left: 4px; font-weight: 700;
+  }
+  .inbox-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .inbox-row:hover { background: rgba(255,255,255,0.02); }
+  .inbox-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+  }
+  .inbox-content { flex: 1; min-width: 0; }
+  .inbox-name { font-size: 13px; font-weight: 600; color: #e4e4e7; display: flex; align-items: center; gap: 6px; }
+  .inbox-preview { font-size: 11px; color: #52525b; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inbox-meta { flex-shrink: 0; text-align: right; }
+  .inbox-time { font-size: 11px; color: #3f3f46; }
+  .inbox-chip {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 7px; border-radius: 5px; margin-top: 4px;
+  }
+
+  /* Split layout */
+  .split { display: flex; gap: 32px; width: 100%; max-width: 1000px; margin-top: 24px; align-items: flex-start; }
+  .split > div { flex: 1; }
+
+  @media (max-width: 900px) {
+    .slide { padding: 32px 20px; }
+    h1 { font-size: 30px; letter-spacing: -1px; }
+    h2 { font-size: 24px; }
+    .dia-row, .state-vis, .split { flex-direction: column; }
+    .hpipe { flex-wrap: wrap; justify-content: center; }
+    .hp-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ===================== SLIDE 1: TITLE ===================== -->
+  <div class="slide active" data-slide="0">
+    <div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <div class="label">Product Engineering Spec</div>
+      <h1>One inbox for <em>every</em> customer interaction</h1>
+      <p class="sub">Calls, SMS, lead forms, bookings — threaded into a single conversation per customer, auto-classified by AI.</p>
+      <div class="tags">
+        <span class="tag p">Calls</span>
+        <span class="tag g">SMS</span>
+        <span class="tag a">Lead Forms</span>
+        <span class="tag b">Bookings</span>
+        <span class="tag r">Merchant Actions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 2: BEFORE / AFTER ===================== -->
+  <div class="slide" data-slide="1">
+    <div class="sn">01 — THE PROBLEM</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Today vs. Inbox V2</h2>
+      <div class="dia-row" style="margin-top: 32px;">
+        <div class="dia-box accent-r" style="flex: 1;">
+          <div style="font-size: 11px; font-weight: 700; color: #fca5a5; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;">Today — Scattered</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 22px;">📞</span>
+              <div style="flex:1; height: 32px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">Call logs — separate screen</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 22px;">💬</span>
+              <div style="flex:1; height: 32px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">SMS — another screen</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 22px;">📋</span>
+              <div style="flex:1; height: 32px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">Lead forms — somewhere else</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 22px;">✅</span>
+              <div style="flex:1; height: 32px; border-radius: 8px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.15); display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #71717a;">Bookings — yet another place</div>
+            </div>
+          </div>
+          <p style="margin-top: 16px; font-size: 12px; color: #71717a;">Merchants manually piece together context. Follow-ups get lost. No visibility into what AI is doing.</p>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 8px; flex-shrink: 0;">
+          <span style="font-size: 32px; color: #3f3f46;">→</span>
+        </div>
+        <div class="dia-box accent-g" style="flex: 1;">
+          <div style="font-size: 11px; font-weight: 700; color: #86efac; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;">Inbox V2 — Unified</div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="font-size: 22px;">👤</span>
+              <div style="flex:1; min-height: 80px; border-radius: 8px; background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.15); display: flex; flex-direction: column; justify-content: center; padding: 10px 14px;">
+                <div style="font-size: 12px; font-weight: 600; color: #d4d4d8;">Sarah Cohen</div>
+                <div style="font-size: 10px; color: #52525b; margin-top: 4px; line-height: 1.4;">📞 Called about Balayage<br>💬 Confirmed via SMS<br>✅ Booked Sat 3pm — $180</div>
+              </div>
+            </div>
+          </div>
+          <p style="margin-top: 16px; font-size: 12px; color: #71717a;">One thread per customer. Every interaction in chronological order. AI classifies what needs attention.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 3: ARCHITECTURE OVERVIEW ===================== -->
+  <div class="slide" data-slide="2">
+    <div class="sn">02 — HOW IT WORKS</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>The full picture in one view</h2>
+      <p class="sub">Every interaction follows the same path — no exceptions.</p>
+      <div class="arch">
+        <!-- Sources -->
+        <div class="arch-label">EVENT SOURCES</div>
+        <div class="arch-row">
+          <div class="arch-box src">📞 Voice<br><span style="font-size:10px;opacity:0.6">call_ended webhook</span></div>
+          <div class="arch-box src">💬 Twilio<br><span style="font-size:10px;opacity:0.6">SMS in/out</span></div>
+          <div class="arch-box src">📋 Lead Form<br><span style="font-size:10px;opacity:0.6">submission</span></div>
+          <div class="arch-box src">✅ Booking<br><span style="font-size:10px;opacity:0.6">created/changed</span></div>
+          <div class="arch-box src">👤 Merchant<br><span style="font-size:10px;opacity:0.6">close/note/SMS</span></div>
+        </div>
+        <div class="arch-arrow">↓ ↓ ↓ ↓ ↓</div>
+
+        <!-- Gate -->
+        <div class="arch-row">
+          <div class="arch-box proc" style="min-width: 300px;">🚦 Feature Flag Gate<br><span style="font-size:10px;opacity:0.6">inbox_v2 = true? → V2 path &nbsp;|&nbsp; false? → existing handler</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <!-- Processing -->
+        <div class="arch-row" style="gap: 20px;">
+          <div class="arch-box proc">💾 Save Unit<br><span style="font-size:10px;opacity:0.6">chatbot.messages</span></div>
+          <div style="color:#27272a; display:flex; align-items:center;">→</div>
+          <div class="arch-box brain" style="min-width: 220px;">🧠 LLM Classifier<br><span style="font-size:10px;opacity:0.6">reads last 10 units → 5D state</span></div>
+          <div style="color:#27272a; display:flex; align-items:center;">→</div>
+          <div class="arch-box proc">📸 Snapshot<br><span style="font-size:10px;opacity:0.6">state saved on unit</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+
+        <!-- Output -->
+        <div class="arch-row" style="gap: 20px;">
+          <div class="arch-box out">📱 Inbox UI<br><span style="font-size:10px;opacity:0.6">per customer view</span></div>
+          <div class="arch-box ui">📊 Activity Feed<br><span style="font-size:10px;opacity:0.6">cross-customer AI view</span></div>
+          <div class="arch-box out">⏰ Auto-close Jobs<br><span style="font-size:10px;opacity:0.6">24h cold / 7d TTL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 4: 3 CORE CONCEPTS ===================== -->
+  <div class="slide" data-slide="3">
+    <div class="sn">03 — BUILDING BLOCKS</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Three concepts. Everything else is wiring.</h2>
+      <div class="dia-row" style="margin-top: 28px;">
+        <div class="dia-box accent-p">
+          <div class="emoji">💬</div>
+          <h3>Conversation</h3>
+          <p style="margin-top: 8px;"><strong style="color:#d4d4d8;">One row per merchant + customer.</strong> Created on first contact. Never splits. If closed and customer returns — same row reopens.</p>
+          <div style="margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; font-family: monospace; color: #a5b4fc;">
+            Key = merchantId + customerPhone
+          </div>
+        </div>
+        <div class="dia-box accent-g">
+          <div class="emoji">📎</div>
+          <h3>Unit (Event)</h3>
+          <p style="margin-top: 8px;"><strong style="color:#d4d4d8;">One row per thing that happened.</strong> Inbound call, outbound SMS, booking, merchant note — each is a unit, stored in order.</p>
+          <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 4px;">
+            <span class="tag b" style="font-size:10px;">📞 inbound-call</span>
+            <span class="tag b" style="font-size:10px;">📞 outbound-call</span>
+            <span class="tag g" style="font-size:10px;">💬 inbound-sms</span>
+            <span class="tag g" style="font-size:10px;">💬 outbound-sms</span>
+            <span class="tag a" style="font-size:10px;">📋 lead-form</span>
+            <span class="tag p" style="font-size:10px;">✅ booking</span>
+            <span class="tag gr" style="font-size:10px;">👤 merchant-action</span>
+          </div>
+        </div>
+        <div class="dia-box accent-a">
+          <div class="emoji">🧠</div>
+          <h3>Classifier</h3>
+          <p style="margin-top: 8px;"><strong style="color:#d4d4d8;">One LLM prompt. One job.</strong> Reads last 10 units → outputs a 5-dimension state object. Runs after every new event. Never sends anything.</p>
+          <div style="margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; font-family: monospace; color: #fde68a;">
+            Input: 10 units → Output: state JSON
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 5: 5 DIMENSIONS ===================== -->
+  <div class="slide" data-slide="4">
+    <div class="sn">04 — THE STATE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Every conversation has 5 dimensions</h2>
+      <p class="sub">The classifier sets all 5 on every run. Together they tell the merchant exactly what's going on.</p>
+      <div class="state-vis">
+        <!-- Status -->
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(129,140,248,0.1); color: #a5b4fc;">Status</div>
+          <div class="state-body">
+            <div class="state-item" style="border-left: 3px solid #fbbf24;">🟡 Needs Action</div>
+            <div class="state-item" style="border-left: 3px solid #60a5fa;">🔵 Active</div>
+            <div class="state-item" style="border-left: 3px solid #71717a;">⚪ Closed</div>
+            <div class="state-item" style="border-left: 3px solid #f87171;">🔴 Spam</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">Which tab it appears in</div>
+        </div>
+        <!-- Stage -->
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(74,222,128,0.1); color: #86efac;">Stage</div>
+          <div class="state-body">
+            <div class="state-item">⏳ Awaiting reply</div>
+            <div class="state-item">💳 Awaiting payment</div>
+            <div class="state-item">📅 Awaiting callback</div>
+            <div class="state-item">📞 Call in progress</div>
+            <div class="state-item">💤 Idle</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">What's happening right now</div>
+        </div>
+        <!-- Intent -->
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(251,191,36,0.1); color: #fde68a;">Intent</div>
+          <div class="state-body">
+            <div class="state-item">📅 New Booking</div>
+            <div class="state-item">🔄 Change Booking</div>
+            <div class="state-item">❓ Question</div>
+            <div class="state-item">⭐ Review</div>
+            <div class="state-item">😤 Complaint</div>
+            <div class="state-item">🏢 Vendor</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">What the customer wants</div>
+        </div>
+        <!-- Disposition -->
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(248,113,113,0.1); color: #fca5a5;">Disposition</div>
+          <div class="state-body">
+            <div class="state-item">✅ Booked <span style="color:#3f3f46;font-size:10px;">(ai/self/manual)</span></div>
+            <div class="state-item">🔄 Modified <span style="color:#3f3f46;font-size:10px;">(cancel/resched)</span></div>
+            <div class="state-item">✔️ Resolved</div>
+            <div class="state-item">🤝 Handled</div>
+            <div class="state-item">❌ Lost <span style="color:#3f3f46;font-size:10px;">(cold/dnd/...)</span></div>
+            <div class="state-item">🏢 Vendor</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">How it ended (closed only)</div>
+        </div>
+        <!-- Action Items -->
+        <div class="state-col">
+          <div class="state-header" style="background: rgba(34,211,238,0.1); color: #67e8f9;">Action Items</div>
+          <div class="state-body">
+            <div class="state-item">📅 Approve booking</div>
+            <div class="state-item">🔄 Approve change</div>
+            <div class="state-item">📞 Call back</div>
+            <div class="state-item" style="border-right: 3px solid #f87171;">🚨 Address complaint 📌</div>
+          </div>
+          <div style="padding: 0 14px 14px; font-size: 10px; color: #3f3f46;">What the merchant must do<br><span style="color:#f87171;">📌 = never auto-closes</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 6: PIPELINE VISUAL ===================== -->
+  <div class="slide" data-slide="5">
+    <div class="sn">05 — PIPELINE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Event → Unit → Classify → Display</h2>
+      <p class="sub">The same pipeline for every event type. Simple, predictable, debuggable.</p>
+      <div class="hpipe">
+        <div class="hp-node" style="border-color: rgba(96,165,250,0.2);">
+          <div class="ico">📡</div>
+          <h4>Event arrives</h4>
+          <p>Call, SMS, booking,<br>form, or merchant action</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(129,140,248,0.2);">
+          <div class="ico">🚦</div>
+          <h4>Flag check</h4>
+          <p>inbox_v2 = true?<br>Skip if not enrolled</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(74,222,128,0.2);">
+          <div class="ico">💾</div>
+          <h4>Save unit</h4>
+          <p>chatbot.messages<br>with full payload</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.04);">
+          <div class="ico">🧠</div>
+          <h4>Classify</h4>
+          <p>LLM reads 10 units<br>→ 5D state (~3-5s)</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(129,140,248,0.2);">
+          <div class="ico">📸</div>
+          <h4>Snapshot</h4>
+          <p>State frozen on unit<br>for Activity feed</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(248,113,113,0.2);">
+          <div class="ico">⏰</div>
+          <h4>Schedule TTL</h4>
+          <p>Cold-close 24h<br>or action TTL 7d</p>
+        </div>
+        <div class="hp-arrow">→</div>
+        <div class="hp-node" style="border-color: rgba(74,222,128,0.2);">
+          <div class="ico">📱</div>
+          <h4>UI updates</h4>
+          <p>Poll picks up<br>new state</p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-top: 20px; flex-wrap: wrap; justify-content: center;">
+        <div class="dia-box" style="padding: 12px 18px; flex: 0 1 auto;">
+          <p style="font-size: 11px;"><strong style="color:#fde68a;">Lock per conversation</strong> — two events on same customer serialize. Different customers run in parallel.</p>
+        </div>
+        <div class="dia-box" style="padding: 12px 18px; flex: 0 1 auto;">
+          <p style="font-size: 11px;"><strong style="color:#a5b4fc;">No coalescing</strong> — 3 events in 2 seconds = 3 classifier runs. Simple beats clever.</p>
+        </div>
+        <div class="dia-box" style="padding: 12px 18px; flex: 0 1 auto;">
+          <p style="font-size: 11px;"><strong style="color:#86efac;">No websockets</strong> — UI polls. ~3-5s delay while classifier runs. V1 trade-off.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 7: OUTBOUND SYSTEM ===================== -->
+  <div class="slide" data-slide="6">
+    <div class="sn">06 — OUTBOUND</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Classifier <span class="a">labels</span>. Follow-up system <span class="g">sends</span>.</h2>
+      <p class="sub">The classifier never sends anything. All outbound goes through existing infrastructure.</p>
+      <div class="split" style="margin-top: 28px;">
+        <div>
+          <!-- Visual flow -->
+          <div style="font-size: 13px; font-weight: 700; color: #fafafa; margin-bottom: 14px;">SMS reply flow</div>
+          <div class="vflow" style="margin-top: 0; max-width: 100%;">
+            <div class="vf-node"><div class="vf-num" style="background:rgba(96,165,250,0.15);color:#60a5fa;">1</div><div class="vf-text">Customer SMS arrives<span>Twilio inbound webhook</span></div></div>
+            <div class="vf-arrow">↓</div>
+            <div class="vf-node"><div class="vf-num">2</div><div class="vf-text">Save unit + enqueue classifier<span>Runs in parallel with AI agent</span></div></div>
+            <div class="vf-arrow">↓</div>
+            <div class="vf-node highlight"><div class="vf-num" style="background:rgba(251,191,36,0.15);color:#fbbf24;">3</div><div class="vf-text">AI agent decides reply<span>Calls request-followup tool → DND check #1</span></div></div>
+            <div class="vf-arrow">↓</div>
+            <div class="vf-node"><div class="vf-num" style="background:rgba(74,222,128,0.15);color:#4ade80;">4</div><div class="vf-text">WinFollowupProcessor sends<span>DND check #2 → Twilio → delivery webhook</span></div></div>
+            <div class="vf-arrow">↓</div>
+            <div class="vf-node"><div class="vf-num">5</div><div class="vf-text">Save outbound-sms unit<span>Classifier runs again on updated timeline</span></div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fafafa; margin-bottom: 14px;">3 existing pieces (already in production)</div>
+          <div class="dia-box" style="margin-bottom: 12px;">
+            <h3 style="font-size: 13px;">💾 chatbot.followups table</h3>
+            <p>One row per scheduled outbound. Has clientId, scheduledTime, mode (SMS/PHONE), message, processed status.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 12px;">
+            <h3 style="font-size: 13px;">⚙️ WinFollowupProcessor</h3>
+            <p>Bull worker. Picks up when scheduledTime arrives. Sends via Twilio (SMS) or voice provider (call).</p>
+          </div>
+          <div class="dia-box">
+            <h3 style="font-size: 13px;">🔧 request-followup tool</h3>
+            <p>The AI agent calls this to schedule outbound. It's the bridge between AI decisions and actual delivery.</p>
+          </div>
+          <div class="dia-box accent-r" style="margin-top: 12px;">
+            <h3 style="font-size: 13px;">🛑 DND — 2 checkpoints</h3>
+            <p><strong style="color:#fca5a5;">Check 1:</strong> When followup row is created (reject if DND)<br><strong style="color:#fca5a5;">Check 2:</strong> Right before sending (abort if DND set since)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 8: AUTO-CLOSE ===================== -->
+  <div class="slide" data-slide="7">
+    <div class="sn">07 — AUTO-CLOSE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Two things happen <em>without</em> any new event</h2>
+      <p class="sub">Bull delayed jobs handle time-based state transitions. No LLM needed — rules are deterministic.</p>
+      <div class="dia-row" style="margin-top: 28px; max-width: 800px;">
+        <div class="dia-box accent-p" style="text-align: center;">
+          <div style="font-size: 48px; font-weight: 800; color: #818cf8; margin: 8px 0;">24h</div>
+          <h3>Cold Close</h3>
+          <p style="margin-top: 8px;">After the last outbound, if no inbound arrives within 24 hours → auto-close as <strong style="color:#d4d4d8;">Lost (cold)</strong></p>
+          <div style="margin-top: 16px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; color: #71717a;">
+            ↺ Resets on each new outbound<br>
+            ✕ Cancels if any inbound arrives
+          </div>
+        </div>
+        <div class="dia-box accent-r" style="text-align: center;">
+          <div style="font-size: 48px; font-weight: 800; color: #f87171; margin: 8px 0;">7 days</div>
+          <h3>Action Item TTL</h3>
+          <p style="margin-top: 8px;">If a non-pinned action item sits unresolved for 7 days → auto-close as <strong style="color:#d4d4d8;">Lost (cold)</strong></p>
+          <div style="margin-top: 16px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 11px; color: #71717a;">
+            📌 address-complaint is PINNED<br>
+            → never auto-closes. Only manual Close.
+          </div>
+        </div>
+      </div>
+      <div class="dia-box" style="margin-top: 20px; max-width: 800px; padding: 14px 20px;">
+        <p style="font-size: 12px;"><strong style="color: #fde68a;">⚡ Hard rule:</strong> STOP keyword in latest SMS → immediately <strong style="color:#fca5a5;">Closed, Lost(dnd)</strong> regardless of anything else in flight.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 9: INBOX UI MOCKUP ===================== -->
+  <div class="slide" data-slide="8">
+    <div class="sn">08 — MERCHANT VIEW</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>What the merchant sees</h2>
+      <div class="split" style="margin-top: 24px; max-width: 1050px;">
+        <div style="flex: 1.3;">
+          <div class="inbox-mock">
+            <div class="inbox-tabs">
+              <div class="inbox-tab">All <span class="badge-count">47</span></div>
+              <div class="inbox-tab active">Needs Action <span class="badge-count">12</span></div>
+              <div class="inbox-tab">Active <span class="badge-count">8</span></div>
+              <div class="inbox-tab">Closed</div>
+              <div class="inbox-tab">Spam</div>
+            </div>
+            <div class="inbox-row">
+              <div class="inbox-avatar" style="background: #7c3aed;">SC</div>
+              <div class="inbox-content">
+                <div class="inbox-name">Sarah Cohen <span class="tag g" style="font-size:9px;padding:1px 5px;">R</span></div>
+                <div class="inbox-preview">Wants Balayage Sat 4/30 3pm — needs your OK</div>
+              </div>
+              <div class="inbox-meta">
+                <div class="inbox-time">11:42am</div>
+                <div class="inbox-chip" style="background:rgba(251,191,36,0.12);color:#fde68a;">Approve booking</div>
+              </div>
+            </div>
+            <div class="inbox-row">
+              <div class="inbox-avatar" style="background: #2563eb;">JT</div>
+              <div class="inbox-content">
+                <div class="inbox-name">James Torres <span class="tag b" style="font-size:9px;padding:1px 5px;">N</span></div>
+                <div class="inbox-preview">Asked for a 5pm callback about pricing</div>
+              </div>
+              <div class="inbox-meta">
+                <div class="inbox-time">10:15am</div>
+                <div class="inbox-chip" style="background:rgba(251,191,36,0.12);color:#fde68a;">Call back 5pm</div>
+              </div>
+            </div>
+            <div class="inbox-row">
+              <div class="inbox-avatar" style="background: #dc2626;">ML</div>
+              <div class="inbox-content">
+                <div class="inbox-name">Maria Lopez</div>
+                <div class="inbox-preview">Upset about her last color treatment</div>
+              </div>
+              <div class="inbox-meta">
+                <div class="inbox-time">Yesterday</div>
+                <div class="inbox-chip" style="background:rgba(248,113,113,0.12);color:#fca5a5;">Address complaint</div>
+              </div>
+            </div>
+            <div class="inbox-row" style="opacity:0.5;">
+              <div class="inbox-avatar" style="background: #059669;">AK</div>
+              <div class="inbox-content">
+                <div class="inbox-name">Aisha Khan</div>
+                <div class="inbox-preview">Approve cancellation of Friday appointment</div>
+              </div>
+              <div class="inbox-meta">
+                <div class="inbox-time">Apr 22</div>
+                <div class="inbox-chip" style="background:rgba(129,140,248,0.12);color:#a5b4fc;">Approve change</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="flex: 0.8;">
+          <div style="font-size: 13px; font-weight: 700; color: #fafafa; margin-bottom: 12px;">Each row shows</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size: 12px;">👤 <strong style="color:#d4d4d8;">Avatar + Name</strong> — initials, colored circle</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size: 12px;">🏷 <strong style="color:#d4d4d8;">N/R chip</strong> — New or Returning customer</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size: 12px;">📞💬📋✅ <strong style="color:#d4d4d8;">Channel icons</strong> — which channels used</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size: 12px;">🏷 <strong style="color:#d4d4d8;">Action chip</strong> — highest-priority action needed</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size: 12px;">🤖 <strong style="color:#d4d4d8;">AI summary</strong> — one line, ≤120 chars</p></div>
+            <div class="dia-box" style="padding: 10px 14px;"><p style="font-size: 12px;">💰 <strong style="color:#d4d4d8;">Estimated value</strong> + unread dot</p></div>
+          </div>
+          <div style="margin-top: 16px; font-size: 13px; font-weight: 700; color: #fafafa; margin-bottom: 8px;">Merchant actions</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span class="tag p" style="font-size:11px;">Send SMS</span>
+            <span class="tag a" style="font-size:11px;">Add note</span>
+            <span class="tag r" style="font-size:11px;">Mark spam</span>
+            <span class="tag gr" style="font-size:11px;">Close ✕</span>
+          </div>
+          <p style="font-size: 11px; color: #3f3f46; margin-top: 8px;">Close = only resolution button in V1. Clears all action items → Handled.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 10: ACTIVITY FEED ===================== -->
+  <div class="slide" data-slide="9">
+    <div class="sn">09 — TWO VIEWS, SAME DATA</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Inbox vs. Activity Feed</h2>
+      <p class="sub">Same underlying data, different lens. Inbox = per-customer. Activity = what the AI is doing.</p>
+      <div class="dia-row" style="margin-top: 28px; max-width: 900px;">
+        <div class="dia-box accent-p" style="flex: 1;">
+          <div style="font-size: 11px; font-weight: 700; color: #a5b4fc; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">📥 Inbox</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px;">
+              <strong style="color:#d4d4d8;">Per-customer</strong> — one thread per customer<br>
+              <span style="color:#52525b;">All conversations across all statuses</span>
+            </div>
+            <div style="padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px;">
+              <strong style="color:#d4d4d8;">Full timeline</strong> — every event type shown<br>
+              <span style="color:#52525b;">Calls, SMS, forms, bookings, notes</span>
+            </div>
+            <div style="padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px;">
+              <strong style="color:#d4d4d8;">Current state</strong> — shows live classified state<br>
+              <span style="color:#52525b;">What's the status RIGHT NOW</span>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; flex-shrink: 0; color: #27272a; font-size: 18px;">vs</div>
+        <div class="dia-box accent-a" style="flex: 1;">
+          <div style="font-size: 11px; font-weight: 700; color: #fde68a; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">📊 Frontdesk Activity</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px;">
+              <strong style="color:#d4d4d8;">Cross-customer</strong> — all conversations in one feed<br>
+              <span style="color:#52525b;">Only open, inbound-started threads</span>
+            </div>
+            <div style="padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px;">
+              <strong style="color:#d4d4d8;">AI actions only</strong> — what the agent did<br>
+              <span style="color:#52525b;">Calls placed, SMS sent, tools used</span>
+            </div>
+            <div style="padding: 10px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); font-size: 12px;">
+              <strong style="color:#d4d4d8;">State-at-time</strong> — frozen snapshot per card<br>
+              <span style="color:#52525b;">What was the state WHEN this happened</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 11: API ===================== -->
+  <div class="slide" data-slide="10">
+    <div class="sn">10 — API SURFACE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>6 reads. 5 writes. 4 queues.</h2>
+      <div class="split" style="margin-top: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #86efac; margin-bottom: 10px;">📖 Read endpoints</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/entity/:id — Conversation list (paginated, filterable)</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/entity/:id/counts — Tab counts only (cheap, polled)</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/conversations/:id — Header + state + action items</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/conversations/:id/messages — Unit timeline</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /inbox/messages/:unitId — Unit drill-down (transcript, tools)</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#86efac;font-weight:700;">GET</span> /frontdesk/activity/entity/:id — AI activity feed</p></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #fde68a; margin-bottom: 10px;">✏️ Write endpoints</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../messages — Send manual SMS (via follow-up)</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../close — Force close → Handled</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../spam — Mark as spam</p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#fde68a;font-weight:700;">POST</span> .../notes — Add note <span style="color:#52525b;">(no classifier rerun)</span></p></div>
+            <div class="dia-box" style="padding:10px 14px;"><p style="font-size:11px;"><span style="color:#a5b4fc;font-weight:700;">PATCH</span> .../read — Toggle read/unread</p></div>
+          </div>
+          <div style="font-size: 13px; font-weight: 700; color: #a5b4fc; margin: 14px 0 10px;">⚡ Bull queues</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <span class="tag p">inbox.classifier</span>
+            <span class="tag b">inbox.cold-close</span>
+            <span class="tag a">inbox.ttl-check</span>
+            <span class="tag g">WIN_FOLLOWUP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 12: ROLLOUT + NOT V1 ===================== -->
+  <div class="slide" data-slide="11">
+    <div class="sn">11 — ROLLOUT & SCOPE</div><div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <h2>Opt-in rollout. Clear boundaries.</h2>
+      <div class="split" style="margin-top: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #86efac; margin-bottom: 12px;">✅ How it rolls out</div>
+          <div class="dia-box accent-g" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🚦 Feature flag per entity</h3>
+            <p>Every webhook branches: <code style="color:#86efac;">inbox_v2 = true</code> → new path. Non-enrolled entities see zero changes.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🗄️ Separate tables</h3>
+            <p>V2 writes to V2 tables only. Existing tables untouched. No retroactive migration.</p>
+          </div>
+          <div class="dia-box" style="margin-bottom: 10px;">
+            <h3 style="font-size: 13px;">🧪 Test mode</h3>
+            <p><code style="color:#a5b4fc;">isTest = true</code> hides from production. Visible with <code style="color:#a5b4fc;">?includeTest=true</code>.</p>
+          </div>
+          <div class="dia-box">
+            <h3 style="font-size: 13px;">🖥️ Frontend gate</h3>
+            <p>Inbox + Activity tabs only mount for enrolled entities.</p>
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #71717a; margin-bottom: 12px;">🚫 Not in V1</div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Websockets / live streaming</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Per-action-item resolve buttons</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Bulk merchant actions</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Email channel</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Multi-staff assignment</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Mid-stream outbound cancellation</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Cross-merchant customer linking</p></div>
+            <div class="dia-box" style="padding:10px 14px; opacity: 0.5;"><p style="font-size:12px;">Per-merchant classifier customization</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLIDE 13: SUMMARY ===================== -->
+  <div class="slide" data-slide="12">
+    <div class="logo">ZOCA</div>
+    <div class="slide-inner">
+      <div class="label">Summary</div>
+      <h1 style="font-size: 38px; letter-spacing: -1.5px;">
+        One conversation per customer.<br>
+        <em>LLM-classified</em> into 5 dimensions.<br>
+        Outbound through <span class="g">existing infra</span>.
+      </h1>
+      <div class="stats">
+        <div class="stat"><div class="num" style="color: #818cf8;">7</div><div class="lbl">Event types</div></div>
+        <div class="stat"><div class="num" style="color: #4ade80;">5</div><div class="lbl">State dimensions</div></div>
+        <div class="stat"><div class="num" style="color: #fbbf24;">14</div><div class="lbl">Call buckets</div></div>
+        <div class="stat"><div class="num" style="color: #f87171;">25</div><div class="lbl">QA scenarios</div></div>
+        <div class="stat"><div class="num" style="color: #22d3ee;">11</div><div class="lbl">API endpoints</div></div>
+        <div class="stat"><div class="num" style="color: #a78bfa;">1</div><div class="lbl">LLM prompt</div></div>
+      </div>
+      <div style="margin-top: 36px; padding: 16px 24px; border-radius: 14px; background: rgba(129,140,248,0.05); border: 1px solid rgba(129,140,248,0.12); max-width: 700px; text-align: center;">
+        <p style="font-size: 14px; color: #a5b4fc; font-weight: 600;">Opt-in per entity &nbsp;·&nbsp; Polling only &nbsp;·&nbsp; No per-action buttons &nbsp;·&nbsp; Ship it.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav">
+  <button onclick="navigate(-1)">←</button>
+  <div class="dots" id="dots"></div>
+  <div class="counter" id="counter">1 / 13</div>
+  <button onclick="navigate(1)">→</button>
+</div>
+<div class="kbd-hint">arrow keys or swipe to navigate</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  const counter = document.getElementById('counter');
+  const dotsC = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsC.appendChild(d);
+  }
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsC.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    dotsC.children[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+  function navigate(dir) { goTo(current + dir); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+  });
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const d = tx - e.changedTouches[0].clientX;
+    if (Math.abs(d) > 50) navigate(d > 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
