@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice AI Platform Migration | Zoca</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface-2: #1a1a26;
+    --surface-3: #22222f;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --text-muted: #8888a0;
+    --text-dim: #555568;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --accent-glow: rgba(108, 92, 231, 0.15);
+    --green: #00cec9;
+    --green-dim: rgba(0, 206, 201, 0.12);
+    --red: #ff6b6b;
+    --red-dim: rgba(255, 107, 107, 0.12);
+    --orange: #fdcb6e;
+    --orange-dim: rgba(253, 203, 110, 0.12);
+    --blue: #74b9ff;
+    --blue-dim: rgba(116, 185, 255, 0.12);
+    --pink: #fd79a8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .deck {
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    padding: 48px 64px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    display: flex;
+    opacity: 1;
+  }
+
+  .slide-number {
+    position: fixed;
+    bottom: 24px;
+    right: 40px;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    z-index: 100;
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 24px;
+  }
+
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .nav button:hover { color: var(--text); background: var(--surface-2); }
+  .nav button.active { color: var(--accent-light); background: var(--accent-glow); }
+
+  /* Progress bar */
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    transition: width 0.4s ease;
+    z-index: 200;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 52px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  h1 .gradient {
+    background: linear-gradient(135deg, var(--accent-light), var(--pink), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 680px;
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent-light);
+    margin-bottom: 16px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent); }
+
+  .card-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .card-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .card-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface-2); }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .tag.green { background: var(--green-dim); color: var(--green); }
+  .tag.red { background: var(--red-dim); color: var(--red); }
+  .tag.orange { background: var(--orange-dim); color: var(--orange); }
+  .tag.blue { background: var(--blue-dim); color: var(--blue); }
+  .tag.purple { background: var(--accent-glow); color: var(--accent-light); }
+
+  /* Lists */
+  .check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .check-list .icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 1px;
+  }
+
+  .check-list .icon.pain { background: var(--red-dim); color: var(--red); }
+  .check-list .icon.good { background: var(--green-dim); color: var(--green); }
+  .check-list .icon.warn { background: var(--orange-dim); color: var(--orange); }
+
+  /* Metric cards */
+  .metric {
+    text-align: center;
+    padding: 28px 16px;
+  }
+
+  .metric .value {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .metric .desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  /* Architecture diagram */
+  .arch-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .arch-box.retell {
+    border-color: var(--red);
+    background: var(--red-dim);
+  }
+
+  .arch-box.yours {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .arch-box.neutral {
+    border-color: var(--border);
+  }
+
+  .arch-arrow {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 20px;
+    padding: 4px 0;
+  }
+
+  /* Comparison highlight */
+  .winner {
+    position: relative;
+  }
+
+  .winner::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    border: 2px solid var(--green);
+    pointer-events: none;
+  }
+
+  /* Flex utilities */
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+  .gap-20 { gap: 20px; }
+  .gap-24 { gap: 24px; }
+  .gap-32 { gap: 32px; }
+  .flex-1 { flex: 1; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .justify-between { justify-content: space-between; }
+  .mt-auto { margin-top: auto; }
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mt-32 { margin-top: 32px; }
+  .mb-8 { margin-bottom: 8px; }
+  .text-center { text-align: center; }
+  .text-sm { font-size: 13px; }
+  .text-muted { color: var(--text-muted); }
+  .text-dim { color: var(--text-dim); }
+  .text-green { color: var(--green); }
+  .text-red { color: var(--red); }
+  .text-orange { color: var(--orange); }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .font-bold { font-weight: 700; }
+  .w-full { width: 100%; }
+
+  /* Slide-specific */
+  .title-slide {
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .title-slide .meta {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 32px;
+  }
+
+  .title-slide .meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .content-slide {
+    gap: 24px;
+  }
+
+  .section-divider {
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .section-divider h1 {
+    font-size: 64px;
+  }
+
+  /* Platform logos */
+  .platform-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .platform-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* Score bar */
+  .score-bar {
+    height: 8px;
+    background: var(--surface-3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+
+  .score-bar .fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .score-label {
+    font-size: 13px;
+    font-weight: 500;
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .score-value {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    gap: 0;
+    margin-top: 16px;
+  }
+
+  .timeline-item {
+    flex: 1;
+    padding: 16px;
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    position: relative;
+  }
+
+  .timeline-item:first-child { border-radius: 10px 0 0 10px; }
+  .timeline-item:last-child { border-radius: 0 10px 10px 0; }
+
+  .timeline-item .week {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent-light);
+    margin-bottom: 6px;
+  }
+
+  .timeline-item .task {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  /* Keyboard hints */
+  .keyboard-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 40px;
+    font-size: 12px;
+    color: var(--text-dim);
+    z-index: 100;
+    display: flex;
+    gap: 16px;
+  }
+
+  .key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-muted);
+  }
+
+  /* Responsive scroll for content-heavy slides */
+  .scrollable {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 8px;
+  }
+
+  .scrollable::-webkit-scrollbar { width: 4px; }
+  .scrollable::-webkit-scrollbar-track { background: transparent; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Two-column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    flex: 1;
+  }
+
+  /* Verdict card */
+  .verdict {
+    background: linear-gradient(135deg, rgba(108, 92, 231, 0.08), rgba(253, 121, 168, 0.05));
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 28px 32px;
+  }
+
+  .verdict h3 {
+    color: var(--accent-light);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Title -->
+  <div class="slide title-slide active" data-slide="1">
+    <div class="label">Engineering Assessment</div>
+    <h1>Replacing <span class="gradient">Retell AI</span></h1>
+    <p class="subtitle">
+      Voice quality, transcription accuracy, and provider flexibility — evaluating VAPI, LiveKit, Pipecat, Bolna, and Twilio ConversationRelay as alternatives for the WIN AI Frontdesk.
+    </p>
+    <div class="meta">
+      <span>Zoca Engineering</span>
+      <span>|</span>
+      <span>April 2026</span>
+      <span>|</span>
+      <span>Confidential</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: The Problem -->
+  <div class="slide content-slide" data-slide="2">
+    <div class="label">The Problem</div>
+    <h2>Why We're Evaluating Alternatives</h2>
+    <p class="subtitle mb-8">Three core issues with Retell that directly impact client experience.</p>
+
+    <div class="card-grid cols-3 mt-24">
+      <div class="card">
+        <div style="font-size: 32px; margin-bottom: 12px;">🗣</div>
+        <h3>Voice Quality</h3>
+        <p class="text-muted text-sm mt-8">Voices sound noticeably AI-generated. Callers immediately recognize they're talking to a bot, reducing trust and engagement. Limited TTS provider options on Retell.</p>
+        <div class="mt-16">
+          <span class="tag red">Client-Facing Impact</span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size: 32px; margin-bottom: 12px;">📝</div>
+        <h3>Transcription Quality</h3>
+        <p class="text-muted text-sm mt-8">STT accuracy is poor — names, services, and appointment details are frequently misheard. Leads to wrong bookings, missed context, and frustrated callers.</p>
+        <div class="mt-16">
+          <span class="tag red">Booking Accuracy Impact</span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size: 32px; margin-bottom: 12px;">🔒</div>
+        <h3>Provider Lock-in</h3>
+        <p class="text-muted text-sm mt-8">Retell locks us into their chosen STT and TTS providers. Very few options to choose from. Cannot test better alternatives (Deepgram Nova-3, ElevenLabs, Cartesia).</p>
+        <div class="mt-16">
+          <span class="tag orange">Flexibility Constraint</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-24" style="background: var(--red-dim); border-color: rgba(255,107,107,0.3);">
+      <div class="flex items-center gap-12">
+        <span style="font-size: 20px;">⚠</span>
+        <span class="text-sm"><strong>Bottom line:</strong> All three problems are <strong>provider flexibility problems</strong>. Retell doesn't let us choose the best STT or TTS. The fix = a platform that lets us swap providers independently.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Current Architecture -->
+  <div class="slide content-slide" data-slide="3">
+    <div class="label">Current State</div>
+    <h2>Our Retell Integration</h2>
+    <p class="subtitle">14 integration touchpoints — but well-modularized. ~70% of code stays for any migration.</p>
+
+    <div class="two-col mt-24">
+      <div>
+        <h3 class="text-red mb-8">Retell-Owned (Changes)</h3>
+        <div class="card" style="border-color: rgba(255,107,107,0.3);">
+          <ul class="check-list">
+            <li><span class="icon pain">!</span>Telephony + SIP routing</li>
+            <li><span class="icon pain">!</span>STT transcription (locked provider)</li>
+            <li><span class="icon pain">!</span>LLM conversation loop</li>
+            <li><span class="icon pain">!</span>TTS voice synthesis (limited options)</li>
+            <li><span class="icon pain">!</span>Webhook event format (call_started, call_ended, call_analyzed)</li>
+            <li><span class="icon pain">!</span>MCP tool protocol</li>
+            <li><span class="icon pain">!</span>Agent/prompt hosting (dashboard)</li>
+            <li><span class="icon pain">!</span>9 Knowledge Bases</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-green mb-8">Zoca-Owned (Stays)</h3>
+        <div class="card" style="border-color: rgba(0,206,201,0.3);">
+          <ul class="check-list">
+            <li><span class="icon good">✓</span>Business context fetching (services, hours, FAQs)</li>
+            <li><span class="icon good">✓</span>Booking platform integrations (Square, Acuity, Mindbody)</li>
+            <li><span class="icon good">✓</span>Twilio SMS sending</li>
+            <li><span class="icon good">✓</span>Client/lead CRUD</li>
+            <li><span class="icon good">✓</span>Phone → entity_id mapping</li>
+            <li><span class="icon good">✓</span>Callback/follow-up logic</li>
+            <li><span class="icon good">✓</span>booking_enquiries pipeline</li>
+            <li><span class="icon good">✓</span>Human handover flow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-16">
+      <div class="flex items-center gap-12">
+        <span class="tag green">Key Insight</span>
+        <span class="text-sm">Our business logic is decoupled from Retell. The conversation loop, STT, and TTS are the only Retell-dependent pieces. Migration = rewiring the edges, not rewriting the core.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Current Scale -->
+  <div class="slide content-slide" data-slide="4">
+    <div class="label">Scale & Numbers</div>
+    <h2>What We're Running Today</h2>
+
+    <div class="card-grid cols-4 mt-32">
+      <div class="card metric">
+        <div class="value text-green">25+</div>
+        <div class="desc">Active AI Agents</div>
+      </div>
+      <div class="card metric">
+        <div class="value" style="color: var(--accent-light);">422</div>
+        <div class="desc">Phone Numbers</div>
+      </div>
+      <div class="card metric">
+        <div class="value" style="color: var(--orange);">9</div>
+        <div class="desc">Knowledge Bases</div>
+      </div>
+      <div class="card metric">
+        <div class="value" style="color: var(--pink);">9</div>
+        <div class="desc">MCP Tools</div>
+      </div>
+    </div>
+
+    <div class="mt-32">
+      <h3 class="mb-8">Tools That Must Migrate</h3>
+      <div class="card-grid cols-3">
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">send-sms</div>
+          <div class="text-sm text-muted mt-8">Outbound SMS via Twilio</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">search-services</div>
+          <div class="text-sm text-muted mt-8">Find services with pricing</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">check-availability</div>
+          <div class="text-sm text-muted mt-8">Get available time slots</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">book</div>
+          <div class="text-sm text-muted mt-8">Lock slot & confirm booking</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">get-appointments</div>
+          <div class="text-sm text-muted mt-8">Caller's upcoming appointments</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">modify-appointment</div>
+          <div class="text-sm text-muted mt-8">Cancel / reschedule</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">card-validation</div>
+          <div class="text-sm text-muted mt-8">Validate CC for deposits</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">staff</div>
+          <div class="text-sm text-muted mt-8">Staff lookup for scheduling</div>
+        </div>
+        <div class="card" style="padding: 16px 20px;">
+          <div class="font-mono text-sm text-green">do-not-disturb</div>
+          <div class="text-sm text-muted mt-8">DND management</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Section Divider -->
+  <div class="slide section-divider" data-slide="5">
+    <div class="label">Platform Analysis</div>
+    <h1>The <span class="gradient">Alternatives</span></h1>
+    <p class="subtitle text-center">Five platforms evaluated across cost, flexibility, migration effort, and feature parity.</p>
+  </div>
+
+  <!-- SLIDE 6: VAPI -->
+  <div class="slide content-slide" data-slide="6">
+    <div class="label">Platform 1</div>
+    <div class="platform-header">
+      <div class="platform-icon" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white;">V</div>
+      <div>
+        <h2 style="margin-bottom: 0;">VAPI</h2>
+        <span class="text-muted text-sm">Voice AI Orchestration Platform</span>
+      </div>
+      <div style="margin-left: auto;">
+        <span class="tag purple">Closest to Retell</span>
+      </div>
+    </div>
+
+    <div class="two-col scrollable">
+      <div class="flex flex-col gap-16">
+        <div>
+          <h3 class="mb-8">STT Providers (8+)</h3>
+          <div class="card">
+            <div class="flex flex-col gap-8">
+              <div class="flex justify-between"><span class="text-sm">Deepgram Nova 2/3</span><span class="tag green">Best</span></div>
+              <div class="flex justify-between"><span class="text-sm">AssemblyAI</span><span class="tag green">Great</span></div>
+              <div class="flex justify-between"><span class="text-sm">Speechmatics</span><span class="tag green">Premium</span></div>
+              <div class="flex justify-between"><span class="text-sm">Google STT</span><span class="tag blue">Good</span></div>
+              <div class="flex justify-between"><span class="text-sm">Azure STT</span><span class="tag blue">Good</span></div>
+              <div class="flex justify-between"><span class="text-sm">OpenAI Whisper</span><span class="tag blue">Good</span></div>
+              <div class="flex justify-between"><span class="text-sm">Gladia / Talkscriber</span><span class="tag blue">OK</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">TTS Providers (10+)</h3>
+          <div class="card">
+            <div class="flex flex-col gap-8">
+              <div class="flex justify-between"><span class="text-sm">ElevenLabs</span><span class="tag green">Most Natural</span></div>
+              <div class="flex justify-between"><span class="text-sm">Cartesia</span><span class="tag green">Low Latency</span></div>
+              <div class="flex justify-between"><span class="text-sm">PlayHT</span><span class="tag green">142+ langs</span></div>
+              <div class="flex justify-between"><span class="text-sm">Hume (Octave)</span><span class="tag blue">Empathic</span></div>
+              <div class="flex justify-between"><span class="text-sm">LMNT</span><span class="tag blue">Cloning</span></div>
+              <div class="flex justify-between"><span class="text-sm">Azure / OpenAI / Deepgram / Rime / Smallest</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Key Features</h3>
+          <ul class="check-list">
+            <li><span class="icon good">✓</span>Swap any STT/LLM/TTS independently</li>
+            <li><span class="icon good">✓</span>Bring your own API keys</li>
+            <li><span class="icon good">✓</span>Custom TTS via webhook (run your own model)</li>
+            <li><span class="icon good">✓</span>Custom LLM (any OpenAI-compatible endpoint)</li>
+            <li><span class="icon good">✓</span>Twilio SIP trunk integration</li>
+            <li><span class="icon good">✓</span>Squads (multi-agent handoff)</li>
+            <li><span class="icon warn">!</span><span class="text-red">No warm transfer to humans</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-16">
+        <div>
+          <h3 class="mb-8">Pricing Breakdown</h3>
+          <div class="card">
+            <table>
+              <tr><td class="text-muted">Platform fee</td><td class="font-mono font-bold">$0.05/min</td></tr>
+              <tr><td class="text-muted">STT (Deepgram)</td><td class="font-mono">~$0.01/min</td></tr>
+              <tr><td class="text-muted">LLM (GPT-4o-mini)</td><td class="font-mono">~$0.01/min</td></tr>
+              <tr><td class="text-muted">TTS (ElevenLabs)</td><td class="font-mono">~$0.06/min</td></tr>
+              <tr><td class="text-muted">Telephony</td><td class="font-mono">~$0.02/min</td></tr>
+              <tr style="border-top: 2px solid var(--border);">
+                <td class="font-bold">Total</td>
+                <td class="font-mono font-bold" style="color: var(--orange);">$0.13–0.15/min</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Pros & Cons</h3>
+          <div class="card" style="border-color: rgba(0,206,201,0.3);">
+            <div class="text-sm font-bold text-green mb-8">PROS</div>
+            <ul class="check-list">
+              <li><span class="icon good">+</span><span class="text-sm">Same architecture as Retell — easiest migration</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Maximum provider flexibility</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Voice cloning (ElevenLabs, LMNT)</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">SOC 2, HIPAA (enterprise)</span></li>
+            </ul>
+          </div>
+          <div class="card mt-8" style="border-color: rgba(255,107,107,0.3);">
+            <div class="text-sm font-bold text-red mb-8">CONS</div>
+            <ul class="check-list">
+              <li><span class="icon pain">–</span><span class="text-sm">~2x more expensive than Retell</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">No warm transfer (feature regression)</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">10 concurrent calls on pay-as-you-go</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">14-day call history limit</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: LiveKit -->
+  <div class="slide content-slide" data-slide="7">
+    <div class="label">Platform 2</div>
+    <div class="platform-header">
+      <div class="platform-icon" style="background: linear-gradient(135deg, #00cec9, #74b9ff); color: white;">LK</div>
+      <div>
+        <h2 style="margin-bottom: 0;">LiveKit</h2>
+        <span class="text-muted text-sm">Open-Source Real-Time Infrastructure</span>
+      </div>
+      <div style="margin-left: auto;">
+        <span class="tag green">Best Long-Term</span>
+      </div>
+    </div>
+
+    <div class="two-col scrollable">
+      <div class="flex flex-col gap-16">
+        <div>
+          <h3 class="mb-8">Architecture Difference</h3>
+          <div class="card">
+            <div class="text-sm text-muted mb-8">Retell/VAPI: Platform runs the conversation</div>
+            <div class="arch-box retell">Retell runs: VAD → STT → LLM → TTS</div>
+            <div class="arch-arrow">↕ webhooks</div>
+            <div class="arch-box yours">Your code: context + tools only</div>
+            <div class="text-sm text-muted mt-16 mb-8">LiveKit: YOU run the conversation</div>
+            <div class="arch-box yours">Your code: VAD → STT → LLM → TTS + context + tools</div>
+            <div class="arch-arrow">↕ WebRTC</div>
+            <div class="arch-box neutral">LiveKit: SIP + media routing only</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Provider Options</h3>
+          <div class="card">
+            <table>
+              <tr><th>Component</th><th>Options</th></tr>
+              <tr><td>STT</td><td>12+ providers (Deepgram, AssemblyAI, Azure, Google, Whisper, custom)</td></tr>
+              <tr><td>TTS</td><td>15+ providers (ElevenLabs, Cartesia, Azure, PlayHT, custom)</td></tr>
+              <tr><td>LLM</td><td>Any (OpenAI, Claude, Gemini, Groq, self-hosted)</td></tr>
+              <tr><td>VAD</td><td>Silero, custom semantic turn detection</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Key Features</h3>
+          <ul class="check-list">
+            <li><span class="icon good">✓</span>Total pipeline control — swap anything</li>
+            <li><span class="icon good">✓</span>Warm transfer via SIP REFER</li>
+            <li><span class="icon good">✓</span>Self-host or use LiveKit Cloud</li>
+            <li><span class="icon good">✓</span>Open source (10.2K GitHub stars)</li>
+            <li><span class="icon good">✓</span>60+ provider plugins</li>
+            <li><span class="icon good">✓</span>Semantic turn detection (not just silence)</li>
+            <li><span class="icon good">✓</span>Krisp noise cancellation built-in</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-16">
+        <div>
+          <h3 class="mb-8">Pricing (LiveKit Cloud)</h3>
+          <div class="card">
+            <table>
+              <tr><td class="text-muted">Agent session</td><td class="font-mono font-bold">$0.01/min</td></tr>
+              <tr><td class="text-muted">STT (Deepgram)</td><td class="font-mono">~$0.006/min</td></tr>
+              <tr><td class="text-muted">LLM (GPT-4o-mini)</td><td class="font-mono">~$0.001/min</td></tr>
+              <tr><td class="text-muted">TTS (Cartesia)</td><td class="font-mono">~$0.025/min</td></tr>
+              <tr><td class="text-muted">SIP/telephony</td><td class="font-mono">~$0.004/min</td></tr>
+              <tr style="border-top: 2px solid var(--border);">
+                <td class="font-bold">Total</td>
+                <td class="font-mono font-bold text-green">$0.046–0.08/min</td>
+              </tr>
+            </table>
+            <div class="mt-8 text-sm text-muted">Self-hosted: 40–80% cheaper on orchestration layer</div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Pros & Cons</h3>
+          <div class="card" style="border-color: rgba(0,206,201,0.3);">
+            <div class="text-sm font-bold text-green mb-8">PROS</div>
+            <ul class="check-list">
+              <li><span class="icon good">+</span><span class="text-sm">Cheapest at scale (~65% less than VAPI)</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Zero vendor lock-in — own everything</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Warm transfer supported</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Future-proof (video, multimodal ready)</span></li>
+            </ul>
+          </div>
+          <div class="card mt-8" style="border-color: rgba(255,107,107,0.3);">
+            <div class="text-sm font-bold text-red mb-8">CONS</div>
+            <ul class="check-list">
+              <li><span class="icon pain">–</span><span class="text-sm">2–3 month build (major architecture shift)</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">Need 2+ engineers with Python/WebRTC skills</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">Build your own analytics dashboard</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">Latency needs manual tuning (1.3–1.5s default)</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Pipecat -->
+  <div class="slide content-slide" data-slide="8">
+    <div class="label">Platform 3</div>
+    <div class="platform-header">
+      <div class="platform-icon" style="background: linear-gradient(135deg, #fdcb6e, #e17055); color: white;">PC</div>
+      <div>
+        <h2 style="margin-bottom: 0;">Pipecat</h2>
+        <span class="text-muted text-sm">Open-Source Voice Agent Framework (by Daily.co)</span>
+      </div>
+      <div style="margin-left: auto;">
+        <span class="tag orange">Largest Ecosystem</span>
+      </div>
+    </div>
+
+    <div class="two-col scrollable">
+      <div class="flex flex-col gap-16">
+        <div class="card">
+          <h3 class="mb-8">How It Compares to LiveKit</h3>
+          <table>
+            <tr><th>Dimension</th><th>LiveKit</th><th>Pipecat</th></tr>
+            <tr><td class="text-muted">Plugins</td><td>60+</td><td class="font-bold">100+</td></tr>
+            <tr><td class="text-muted">Language</td><td>Python, Node.js</td><td>Python only</td></tr>
+            <tr><td class="text-muted">Turn detection</td><td>Custom model</td><td class="font-bold">SmartTurn (built-in)</td></tr>
+            <tr><td class="text-muted">State management</td><td>Build yourself</td><td class="font-bold">Pipecat Flows</td></tr>
+            <tr><td class="text-muted">Cloud cost</td><td>$0.01/min</td><td>$0.01–0.03/min</td></tr>
+            <tr><td class="text-muted">Debugger</td><td>Basic</td><td class="font-bold">Whisker</td></tr>
+            <tr><td class="text-muted">Telephony</td><td>Native SIP</td><td>Via Daily.co</td></tr>
+            <tr><td class="text-muted">Concurrency</td><td>Up to 600</td><td class="font-bold">Unlimited</td></tr>
+          </table>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Key Advantages Over LiveKit</h3>
+          <ul class="check-list">
+            <li><span class="icon good">✓</span>SmartTurn — no need to build turn detection</li>
+            <li><span class="icon good">✓</span>Pipecat Flows — conversation state machine built-in</li>
+            <li><span class="icon good">✓</span>100+ integrations — largest plugin ecosystem</li>
+            <li><span class="icon good">✓</span>Whisker real-time debugger</li>
+            <li><span class="icon good">✓</span>Unlimited concurrency on Cloud</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-16">
+        <div>
+          <h3 class="mb-8">Pricing</h3>
+          <div class="card">
+            <table>
+              <tr><td class="text-muted">Open-source</td><td class="font-mono font-bold text-green">Free</td></tr>
+              <tr><td class="text-muted">Pipecat Cloud</td><td class="font-mono">$0.01–0.03/min</td></tr>
+              <tr><td class="text-muted">PSTN calls</td><td class="font-mono">$0.018/min</td></tr>
+              <tr><td class="text-muted">SIP</td><td class="font-mono">$0.005/min</td></tr>
+              <tr><td class="text-muted">Noise cancellation</td><td class="font-mono text-green">Free (10K min/mo)</td></tr>
+              <tr style="border-top: 2px solid var(--border);">
+                <td class="font-bold">All-in estimate</td>
+                <td class="font-mono font-bold" style="color: var(--orange);">$0.06–0.10/min</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="mb-8">Migration Assessment</h3>
+          <div class="card">
+            <table>
+              <tr><td class="text-muted">Effort</td><td class="font-bold">2–3 months</td></tr>
+              <tr><td class="text-muted">Team</td><td>2+ developers (Python)</td></tr>
+              <tr><td class="text-muted">Architecture change</td><td><span class="tag red">Major</span></td></tr>
+              <tr><td class="text-muted">Warm transfer</td><td><span class="tag green">Supported</span></td></tr>
+              <tr><td class="text-muted">Risk</td><td><span class="tag orange">Medium</span></td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="background: var(--orange-dim); border-color: rgba(253,203,110,0.3);">
+          <div class="text-sm"><strong>Verdict:</strong> Same build effort as LiveKit, but more batteries included (SmartTurn, Flows, Whisker). Best choice if going the open-source route and wanting conversation state management out of the box.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Bolna + Twilio CR -->
+  <div class="slide content-slide" data-slide="9">
+    <div class="label">Platforms 4 & 5</div>
+    <h2>Other Contenders</h2>
+
+    <div class="two-col mt-16 scrollable">
+      <div>
+        <div class="platform-header">
+          <div class="platform-icon" style="background: linear-gradient(135deg, #00b894, #55efc4); color: #1a1a26;">B</div>
+          <div>
+            <h3 style="margin-bottom: 0;">Bolna</h3>
+            <span class="text-muted text-sm">Hybrid Open-Source + Cloud</span>
+          </div>
+        </div>
+        <div class="card">
+          <table>
+            <tr><td class="text-muted">Cost</td><td class="font-mono font-bold text-green">~$0.06/min</td></tr>
+            <tr><td class="text-muted">Migration</td><td>4–6 weeks</td></tr>
+            <tr><td class="text-muted">STT options</td><td>Deepgram, Azure (3-4 total)</td></tr>
+            <tr><td class="text-muted">TTS options</td><td>Azure, ElevenLabs (3-4 total)</td></tr>
+            <tr><td class="text-muted">Telephony</td><td>Twilio, Plivo</td></tr>
+            <tr><td class="text-muted">Concurrency</td><td>100+ calls</td></tr>
+            <tr><td class="text-muted">Warm transfer</td><td><span class="tag orange">Unknown</span></td></tr>
+          </table>
+        </div>
+        <div class="mt-12">
+          <div class="card" style="border-color: rgba(0,206,201,0.3);">
+            <div class="text-sm font-bold text-green mb-8">PROS</div>
+            <ul class="check-list">
+              <li><span class="icon good">+</span><span class="text-sm">Cheapest managed option</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Open-source escape hatch</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Sub-300ms latency claimed</span></li>
+            </ul>
+          </div>
+          <div class="card mt-8" style="border-color: rgba(255,107,107,0.3);">
+            <div class="text-sm font-bold text-red mb-8">CONS</div>
+            <ul class="check-list">
+              <li><span class="icon pain">–</span><span class="text-sm">Early-stage (Series A Jan 2026)</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">Limited provider options</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">Smaller community / docs</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="platform-header">
+          <div class="platform-icon" style="background: linear-gradient(135deg, #e74c3c, #ff6b6b); color: white;">T</div>
+          <div>
+            <h3 style="margin-bottom: 0;">Twilio ConversationRelay</h3>
+            <span class="text-muted text-sm">Build-Your-Own on Twilio</span>
+          </div>
+        </div>
+        <div class="card">
+          <table>
+            <tr><td class="text-muted">Cost</td><td class="font-mono font-bold" style="color: var(--orange);">~$0.09–0.11/min</td></tr>
+            <tr><td class="text-muted">Migration</td><td>6–8 weeks</td></tr>
+            <tr><td class="text-muted">STT options</td><td>Google, Amazon, Deepgram</td></tr>
+            <tr><td class="text-muted">TTS options</td><td>Google, Amazon, ElevenLabs</td></tr>
+            <tr><td class="text-muted">Telephony</td><td class="font-bold text-green">Native Twilio (keep all numbers)</td></tr>
+            <tr><td class="text-muted">Concurrency</td><td>Unlimited</td></tr>
+            <tr><td class="text-muted">Warm transfer</td><td><span class="tag green">Native</span></td></tr>
+          </table>
+        </div>
+        <div class="mt-12">
+          <div class="card" style="border-color: rgba(0,206,201,0.3);">
+            <div class="text-sm font-bold text-green mb-8">PROS</div>
+            <ul class="check-list">
+              <li><span class="icon good">+</span><span class="text-sm">Stay in Twilio ecosystem (already using it)</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Keep all 422 phone numbers as-is</span></li>
+              <li><span class="icon good">+</span><span class="text-sm">Proven scale + reliability</span></li>
+            </ul>
+          </div>
+          <div class="card mt-8" style="border-color: rgba(255,107,107,0.3);">
+            <div class="text-sm font-bold text-red mb-8">CONS</div>
+            <ul class="check-list">
+              <li><span class="icon pain">–</span><span class="text-sm">Only 3 STT + 3 TTS options</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">Must build conversation loop (WebSocket)</span></li>
+              <li><span class="icon pain">–</span><span class="text-sm">No voice cloning built-in</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Head-to-Head Comparison -->
+  <div class="slide content-slide" data-slide="10">
+    <div class="label">Comparison</div>
+    <h2>Head-to-Head</h2>
+
+    <div class="scrollable mt-16">
+      <div class="card" style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 160px;">Dimension</th>
+              <th style="text-align:center; color: var(--red);">Retell (Now)</th>
+              <th style="text-align:center; color: var(--accent-light);">VAPI</th>
+              <th style="text-align:center; color: var(--green);">LiveKit</th>
+              <th style="text-align:center; color: var(--orange);">Pipecat</th>
+              <th style="text-align:center; color: #55efc4;">Bolna</th>
+              <th style="text-align:center; color: var(--pink);">Twilio CR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-bold">Cost / min</td>
+              <td class="text-center font-mono">~$0.07</td>
+              <td class="text-center font-mono text-orange">$0.13–0.15</td>
+              <td class="text-center font-mono text-green">$0.046–0.08</td>
+              <td class="text-center font-mono">$0.06–0.10</td>
+              <td class="text-center font-mono text-green">~$0.06</td>
+              <td class="text-center font-mono">$0.09–0.11</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Migration Effort</td>
+              <td class="text-center">—</td>
+              <td class="text-center"><span class="tag green">3–4 wks</span></td>
+              <td class="text-center"><span class="tag red">2–3 mo</span></td>
+              <td class="text-center"><span class="tag red">2–3 mo</span></td>
+              <td class="text-center"><span class="tag orange">4–6 wks</span></td>
+              <td class="text-center"><span class="tag orange">6–8 wks</span></td>
+            </tr>
+            <tr>
+              <td class="font-bold">STT Providers</td>
+              <td class="text-center text-red">Locked</td>
+              <td class="text-center text-green">8+</td>
+              <td class="text-center text-green">12+</td>
+              <td class="text-center text-green">20+</td>
+              <td class="text-center">3–4</td>
+              <td class="text-center">3</td>
+            </tr>
+            <tr>
+              <td class="font-bold">TTS Providers</td>
+              <td class="text-center text-red">Limited</td>
+              <td class="text-center text-green">10+</td>
+              <td class="text-center text-green">15+</td>
+              <td class="text-center text-green">28+</td>
+              <td class="text-center">3–4</td>
+              <td class="text-center">3</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Custom STT / TTS</td>
+              <td class="text-center text-red">No</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-red">No</td>
+              <td class="text-center text-red">No</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Warm Transfer</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-red">No</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-orange">Unknown</td>
+              <td class="text-center text-green">Yes</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Concurrent Calls</td>
+              <td class="text-center">Unlimited</td>
+              <td class="text-center text-red">10</td>
+              <td class="text-center">5–600</td>
+              <td class="text-center text-green">Unlimited</td>
+              <td class="text-center">100+</td>
+              <td class="text-center text-green">Unlimited</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Self-Host</td>
+              <td class="text-center text-red">No</td>
+              <td class="text-center text-red">No</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-green">Yes</td>
+              <td class="text-center text-red">No</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Arch. Change</td>
+              <td class="text-center">—</td>
+              <td class="text-center"><span class="tag green">None</span></td>
+              <td class="text-center"><span class="tag red">Major</span></td>
+              <td class="text-center"><span class="tag red">Major</span></td>
+              <td class="text-center"><span class="tag orange">Moderate</span></td>
+              <td class="text-center"><span class="tag orange">Moderate</span></td>
+            </tr>
+            <tr>
+              <td class="font-bold">Platform Risk</td>
+              <td class="text-center">Low</td>
+              <td class="text-center">Low</td>
+              <td class="text-center text-green">Very Low</td>
+              <td class="text-center">Low</td>
+              <td class="text-center text-orange">Medium</td>
+              <td class="text-center text-green">Very Low</td>
+            </tr>
+            <tr>
+              <td class="font-bold">Keeps Twilio #s</td>
+              <td class="text-center">N/A</td>
+              <td class="text-center text-green">SIP trunk</td>
+              <td class="text-center text-green">SIP trunk</td>
+              <td class="text-center text-green">Via Daily</td>
+              <td class="text-center text-green">Direct</td>
+              <td class="text-center text-green">Native</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Cost Comparison -->
+  <div class="slide content-slide" data-slide="11">
+    <div class="label">Cost Analysis</div>
+    <h2>Monthly Cost Projection</h2>
+    <p class="subtitle">Based on estimated 10,000 minutes/month across 25+ agents.</p>
+
+    <div class="card-grid cols-3 mt-24">
+      <div class="card metric">
+        <div class="desc mb-8">10K min/month</div>
+        <div class="value" style="font-size: 28px; color: var(--red);">$700</div>
+        <div class="desc">Retell (current)</div>
+        <div class="text-dim text-sm mt-8">~$0.07/min</div>
+      </div>
+      <div class="card metric">
+        <div class="desc mb-8">10K min/month</div>
+        <div class="value" style="font-size: 28px; color: var(--orange);">$1,300–1,500</div>
+        <div class="desc">VAPI</div>
+        <div class="text-dim text-sm mt-8">~$0.13–0.15/min</div>
+      </div>
+      <div class="card metric" style="border-color: var(--green);">
+        <div class="desc mb-8">10K min/month</div>
+        <div class="value" style="font-size: 28px; color: var(--green);">$460–800</div>
+        <div class="desc">LiveKit Cloud</div>
+        <div class="text-dim text-sm mt-8">~$0.046–0.08/min</div>
+      </div>
+    </div>
+
+    <div class="card-grid cols-3 mt-16">
+      <div class="card metric">
+        <div class="desc mb-8">10K min/month</div>
+        <div class="value" style="font-size: 28px; color: var(--orange);">$600–1,000</div>
+        <div class="desc">Pipecat Cloud</div>
+        <div class="text-dim text-sm mt-8">~$0.06–0.10/min</div>
+      </div>
+      <div class="card metric" style="border-color: var(--green);">
+        <div class="desc mb-8">10K min/month</div>
+        <div class="value" style="font-size: 28px; color: var(--green);">$600</div>
+        <div class="desc">Bolna Cloud</div>
+        <div class="text-dim text-sm mt-8">~$0.06/min</div>
+      </div>
+      <div class="card metric">
+        <div class="desc mb-8">10K min/month</div>
+        <div class="value" style="font-size: 28px;">$900–1,100</div>
+        <div class="desc">Twilio CR</div>
+        <div class="text-dim text-sm mt-8">~$0.09–0.11/min</div>
+      </div>
+    </div>
+
+    <div class="card mt-24" style="background: var(--green-dim); border-color: rgba(0,206,201,0.3);">
+      <div class="flex items-center gap-12">
+        <span style="font-size: 20px;">💡</span>
+        <span class="text-sm"><strong>At 50K min/month</strong> (scaling to 100+ agents), LiveKit self-hosted drops to <strong>~$0.03/min = $1,500/mo</strong> vs VAPI at <strong>$7,500/mo</strong>. The cost gap widens dramatically at scale.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Migration Effort -->
+  <div class="slide content-slide" data-slide="12">
+    <div class="label">Migration Effort</div>
+    <h2>What It Takes to Switch</h2>
+
+    <div class="scrollable mt-16">
+      <!-- VAPI -->
+      <div class="mb-8">
+        <div class="flex items-center gap-12 mb-8">
+          <div class="platform-icon" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; width: 32px; height: 32px; font-size: 14px;">V</div>
+          <h3 style="margin-bottom: 0;">VAPI — 3–4 Weeks</h3>
+          <span class="tag green">Easiest</span>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="week">Week 1</div>
+            <div class="task">Create libs/vapi module. Adapt webhook service. Test with 1 agent.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Week 2</div>
+            <div class="task">Migrate 9 MCP tools to VAPI tool format. Adapt context builder.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Week 3</div>
+            <div class="task">Migrate 25 agents (prompts, KBs, voices). Set up Twilio SIP routing.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Week 4</div>
+            <div class="task">Parallel run. QA all agents. Cut over.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LiveKit -->
+      <div class="mt-24 mb-8">
+        <div class="flex items-center gap-12 mb-8">
+          <div class="platform-icon" style="background: linear-gradient(135deg, #00cec9, #74b9ff); color: white; width: 32px; height: 32px; font-size: 14px;">LK</div>
+          <h3 style="margin-bottom: 0;">LiveKit — 2–3 Months</h3>
+          <span class="tag red">Hardest</span>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="week">Wk 1–2</div>
+            <div class="task">Build agent prototype. Connect Twilio SIP for 1 test number.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Wk 3–4</div>
+            <div class="task">Port 9 tools as native functions. Build context loading API.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Wk 5–6</div>
+            <div class="task">Port prompts. Build post-call analysis. Transcript storage.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Wk 7–8</div>
+            <div class="task">Transfer logic (SIP REFER). Phone routing. Multi-entity.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="week">Wk 9–12</div>
+            <div class="task">Monitoring. Load testing. Gradual rollout entity by entity.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Files changed comparison -->
+      <div class="mt-24">
+        <h3 class="mb-8">Code Changes Required</h3>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>File / Component</th>
+                <th style="text-align:center;">VAPI</th>
+                <th style="text-align:center;">LiveKit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-mono text-sm">win-onboarding.controller.ts</td>
+                <td class="text-center"><span class="tag orange">Adapt</span></td>
+                <td class="text-center"><span class="tag red">Replace</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">frontdesk-retell-webhook.service.ts</td>
+                <td class="text-center"><span class="tag orange">Rewrite</span></td>
+                <td class="text-center"><span class="tag red">Replace</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">frontdesk-agent-context.service.ts</td>
+                <td class="text-center"><span class="tag green">Minor</span></td>
+                <td class="text-center"><span class="tag green">Minor</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">tools/*.tool.ts (9 files)</td>
+                <td class="text-center"><span class="tag orange">Adapt format</span></td>
+                <td class="text-center"><span class="tag orange">Rewrite as Python functions</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">libs/retell/ (SDK wrapper)</td>
+                <td class="text-center"><span class="tag red">Replace → libs/vapi/</span></td>
+                <td class="text-center"><span class="tag red">Replace → Python agent</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">transcript_mapping writes</td>
+                <td class="text-center"><span class="tag orange">Adapt fields</span></td>
+                <td class="text-center"><span class="tag orange">Adapt fields</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">Conversation loop</td>
+                <td class="text-center"><span class="tag green">VAPI handles</span></td>
+                <td class="text-center"><span class="tag red">Build from scratch</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">Analytics / Dashboard</td>
+                <td class="text-center"><span class="tag green">VAPI provides</span></td>
+                <td class="text-center"><span class="tag red">Build yourself</span></td>
+              </tr>
+              <tr>
+                <td class="font-mono text-sm">New Python codebase</td>
+                <td class="text-center"><span class="tag green">Not needed</span></td>
+                <td class="text-center"><span class="tag red">Yes — entire agent</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: Recommendation -->
+  <div class="slide content-slide" data-slide="13">
+    <div class="label">Recommendation</div>
+    <h2>Proposed Path Forward</h2>
+
+    <div class="flex flex-col gap-20 mt-24 scrollable">
+      <div class="verdict">
+        <h3>Phase 1 — Quick Win (Weeks 1–4)</h3>
+        <div class="flex items-center gap-12 mt-8">
+          <div class="platform-icon" style="background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; width: 36px; height: 36px; font-size: 16px;">V</div>
+          <span style="font-size: 18px; font-weight: 600;">Migrate to VAPI</span>
+        </div>
+        <div class="mt-12">
+          <ul class="check-list">
+            <li><span class="icon good">→</span>Same architecture — minimal risk, fastest path</li>
+            <li><span class="icon good">→</span>Immediately test Deepgram Nova-3 + ElevenLabs / Cartesia</li>
+            <li><span class="icon good">→</span>Validates whether better STT/TTS actually solves the problem</li>
+            <li><span class="icon good">→</span>1–2 developers, 3–4 weeks</li>
+          </ul>
+        </div>
+        <div class="mt-12 text-sm text-muted">
+          <strong>Trade-off:</strong> Costs ~2x more ($0.13/min vs $0.07/min) and loses warm transfer. Acceptable as a validation step before committing to a larger build.
+        </div>
+      </div>
+
+      <div class="verdict" style="background: linear-gradient(135deg, rgba(0,206,201,0.08), rgba(116,185,255,0.05)); border-color: var(--green);">
+        <h3 style="color: var(--green);">Phase 2 — Scale Play (Months 2–5)</h3>
+        <div class="flex items-center gap-12 mt-8">
+          <div class="platform-icon" style="background: linear-gradient(135deg, #00cec9, #74b9ff); color: white; width: 36px; height: 36px; font-size: 14px;">LK</div>
+          <span style="font-size: 18px; font-weight: 600;">Build on LiveKit Cloud</span>
+        </div>
+        <div class="mt-12">
+          <ul class="check-list">
+            <li><span class="icon good">→</span>Once VAPI validates that better providers solve the problem</li>
+            <li><span class="icon good">→</span>65% cost savings vs VAPI at scale ($0.046 vs $0.13/min)</li>
+            <li><span class="icon good">→</span>Zero vendor lock-in — own the full pipeline</li>
+            <li><span class="icon good">→</span>Warm transfer back via SIP REFER</li>
+            <li><span class="icon good">→</span>2+ engineers, 2–3 months</li>
+          </ul>
+        </div>
+        <div class="mt-12 text-sm text-muted">
+          <strong>When to trigger:</strong> Once agent count exceeds 50+ or monthly minutes exceed 20K. The cost savings justify the engineering investment at that point.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="flex items-center gap-12">
+          <span style="font-size: 20px;">🧪</span>
+          <div>
+            <div class="font-bold text-sm">Alternative: Bake-Off First</div>
+            <div class="text-sm text-muted mt-8">Before committing, run a side-by-side test call on VAPI and LiveKit with the same prompt. Compare voice quality + transcription accuracy. Takes 1–2 days, zero risk.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: Next Steps -->
+  <div class="slide content-slide" data-slide="14">
+    <div class="label">Next Steps</div>
+    <h2>Decision & Action Items</h2>
+
+    <div class="flex flex-col gap-16 mt-24">
+      <div class="card">
+        <h3 class="mb-8">Decisions Needed</h3>
+        <div class="card-grid cols-2" style="gap: 12px;">
+          <div style="padding: 12px 16px; background: var(--surface-2); border-radius: 8px;">
+            <div class="font-bold text-sm">1. Two-phase approach or direct to LiveKit?</div>
+            <div class="text-muted text-sm mt-8">VAPI first (fast, validates providers) → LiveKit later (cost optimization) <br>vs. invest upfront in LiveKit (slower, but skip the intermediate step)</div>
+          </div>
+          <div style="padding: 12px 16px; background: var(--surface-2); border-radius: 8px;">
+            <div class="font-bold text-sm">2. Warm transfer priority?</div>
+            <div class="text-muted text-sm mt-8">If warm transfer is critical for clients, VAPI is disqualified — go directly to LiveKit, Pipecat, or Twilio CR</div>
+          </div>
+          <div style="padding: 12px 16px; background: var(--surface-2); border-radius: 8px;">
+            <div class="font-bold text-sm">3. Engineering capacity?</div>
+            <div class="text-muted text-sm mt-8">VAPI: 1–2 devs, 3–4 weeks.<br>LiveKit: 2+ devs (Python), 2–3 months.<br>Do we have the bandwidth?</div>
+          </div>
+          <div style="padding: 12px 16px; background: var(--surface-2); border-radius: 8px;">
+            <div class="font-bold text-sm">4. Budget tolerance?</div>
+            <div class="text-muted text-sm mt-8">VAPI doubles per-minute cost. LiveKit reduces it. What's the acceptable range while we're at 25 agents?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="mb-8">Immediate Action Items</h3>
+        <table>
+          <tr>
+            <td><span class="tag blue">1</span></td>
+            <td class="font-bold">Run a bake-off</td>
+            <td class="text-muted">Set up a test call on VAPI with Deepgram Nova-3 + ElevenLabs. Compare transcription and voice quality against current Retell output.</td>
+            <td class="font-mono text-sm">1–2 days</td>
+          </tr>
+          <tr>
+            <td><span class="tag blue">2</span></td>
+            <td class="font-bold">Test LiveKit prototype</td>
+            <td class="text-muted">Spin up a basic LiveKit Cloud agent with the same prompt. Assess voice quality and latency firsthand.</td>
+            <td class="font-mono text-sm">3–4 days</td>
+          </tr>
+          <tr>
+            <td><span class="tag blue">3</span></td>
+            <td class="font-bold">Decide & plan</td>
+            <td class="text-muted">Based on bake-off results, choose platform and assign engineering team.</td>
+            <td class="font-mono text-sm">1 day</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-auto" style="padding-top: 24px; border-top: 1px solid var(--border); margin-top: 32px;">
+      <div class="flex justify-between items-center">
+        <span class="text-muted text-sm">Zoca Engineering — Voice AI Migration Assessment — April 2026</span>
+        <span class="text-dim text-sm">Confidential</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="slide-number"><span id="currentSlide">1</span> / <span id="totalSlides">14</span></div>
+
+<div class="nav" id="nav">
+  <button onclick="goToSlide(1)" class="active">Title</button>
+  <button onclick="goToSlide(2)">Problem</button>
+  <button onclick="goToSlide(3)">Architecture</button>
+  <button onclick="goToSlide(4)">Scale</button>
+  <button onclick="goToSlide(6)">VAPI</button>
+  <button onclick="goToSlide(7)">LiveKit</button>
+  <button onclick="goToSlide(8)">Pipecat</button>
+  <button onclick="goToSlide(9)">Others</button>
+  <button onclick="goToSlide(10)">Compare</button>
+  <button onclick="goToSlide(11)">Cost</button>
+  <button onclick="goToSlide(12)">Effort</button>
+  <button onclick="goToSlide(13)">Recommend</button>
+  <button onclick="goToSlide(14)">Next Steps</button>
+</div>
+
+<div class="keyboard-hint">
+  <span><span class="key">←</span> <span class="key">→</span> Navigate</span>
+  <span><span class="key">F</span> Fullscreen</span>
+</div>
+
+<script>
+  let current = 1;
+  const total = document.querySelectorAll('.slide').length;
+  document.getElementById('totalSlides').textContent = total;
+
+  function goToSlide(n) {
+    if (n < 1 || n > total) return;
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+    current = n;
+    document.getElementById('currentSlide').textContent = current;
+    document.getElementById('progress').style.width = ((current / total) * 100) + '%';
+
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    const navButtons = document.querySelectorAll('.nav button');
+    const slideToNav = {1:0, 2:1, 3:2, 4:3, 5:4, 6:4, 7:5, 8:6, 9:7, 10:8, 11:9, 12:10, 13:11, 14:12};
+    if (slideToNav[current] !== undefined && navButtons[slideToNav[current]]) {
+      navButtons[slideToNav[current]].classList.add('active');
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goToSlide(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goToSlide(current - 1); }
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.nav') || e.target.closest('a')) return;
+    const x = e.clientX;
+    if (x > window.innerWidth * 0.6) goToSlide(current + 1);
+    else if (x < window.innerWidth * 0.4) goToSlide(current - 1);
+  });
+
+  goToSlide(1);
+</script>
+
+</body>
+</html>
